@@ -1,7 +1,3 @@
----
-title: ubnt-intrepid
----
-
 # About Me
 * name: Yusuke Sasaki
 
