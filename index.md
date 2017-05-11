@@ -1,6 +1,5 @@
 ---
 title: ubnt-intrepid
-layout: post
 ---
 
 # About Me
