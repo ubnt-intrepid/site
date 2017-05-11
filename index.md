@@ -16,6 +16,10 @@ layout: post
 # Works
 * [rhq](https://github.com/ubnt-intrepid/rhq)
   A command line repository management tool written in Rust.
+* [rust-gurobi](https://github.com/ubnt-intrepid/rust-gurobi)
+  Unofficial bindings of Gurobi optimizer for Rust.
+
+See also [GitHub's profile page](https://github.com/ubnt-intrepid).
 
 # Social
 * [GitHub](https://github.com/ubnt-intrepid)
