@@ -2,10 +2,10 @@
 * name: Yusuke Sasaki
 
 # Languages
+* Rust
 * Japanese
 * English (a little...)
 * C/C++
-* Rust
 * Python3
 
 # Works
@@ -13,6 +13,8 @@
   A command line repository management tool written in Rust.
 * [rust-gurobi](https://github.com/ubnt-intrepid/rust-gurobi)
   Unofficial bindings of Gurobi optimizer for Rust.
+* [finchers](https://github.com/finchers-rs/finchers)
+  An HTTP combinator library inspired by Finch
 
 See also [GitHub's profile page](https://github.com/ubnt-intrepid).
 
@@ -20,7 +22,7 @@ See also [GitHub's profile page](https://github.com/ubnt-intrepid).
 * [GitHub](https://github.com/ubnt-intrepid)
 * [Twitter](https://twitter.com/ubnt_intrepid)
 * [Qiita](http://qiita.com/ubnt_intrepid)
-* [Mastodon](https://sns.ubnt-intrepid.nagoya/@ubnt_intrepid)
+* [Mastodon](https://mstdn.maud.io/@ubnt_intrepid)
 * [Keybase](https://keybase.io/ubnt_intrepid)
 
 # Blog
