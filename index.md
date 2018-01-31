@@ -21,10 +21,7 @@ See also [GitHub's profile page](https://github.com/ubnt-intrepid).
 # Social
 * [GitHub](https://github.com/ubnt-intrepid)
 * [Twitter](https://twitter.com/ubntintrepid)
-* [Qiita](http://qiita.com/ubnt_intrepid)
-* [Mastodon](https://mstdn.maud.io/@ubnt_intrepid)
 * [Keybase](https://keybase.io/ubnt_intrepid)
 
 # Blog
-* [Hatena](http://ubnt-intrepid.hatenablog.com)
-
+* [GitHub Pages](http://ubnt-intrepid.github.io/blog)
