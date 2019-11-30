@@ -1,0 +1,24 @@
+base_url = "https://ubnt-intrepid.github.io"
+title = "ubnt-intrepid's blog"
+description = """
+My blog for technical topics.
+"""
+
+compile_sass = true
+highlight_code = true
+build_search_index = true
+theme = "even"
+
+taxonomies = [
+  { name = "tags", rss = true },
+  { name = "categories", rss = true },
+]
+
+[extra]
+even_menu = [
+  { name = "Home", url = "$BASE_URL" },
+  { name = "About", url = "$BASE_URL/about" },
+  { name = "Tags", url = "$BASE_URL/tags" },
+  { name = "Categories", url = "$BASE_URL/categories" },
+]
+even_title = "$TITLE"

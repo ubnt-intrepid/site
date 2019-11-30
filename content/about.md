@@ -1,3 +1,8 @@
++++
+title = "About Me"
+template = "about.html"
++++
+
 # About Me
 * name: Yusuke Sasaki
 
