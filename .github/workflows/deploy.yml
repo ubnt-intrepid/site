@@ -23,9 +23,6 @@ jobs:
         mv -v ./zola $HOME/.zola/bin
         echo ::add-path::$HOME/.zola/bin
 
-    - name: Check URLs
-      run: zola check
-
     - name: Build site
       run: zola build -o ./public
 
