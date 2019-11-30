@@ -1,4 +1,4 @@
-base_url = "https://ubnt-intrepid.github.io"
+base_url = "https://ubnt-intrepid.netlify.com"
 title = "$TITLE"
 description = """
 My blog for technical topics.
