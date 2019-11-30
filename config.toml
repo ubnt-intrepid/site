@@ -1,5 +1,5 @@
 base_url = "https://ubnt-intrepid.github.io"
-title = "ubnt-intrepid's blog"
+title = "$TITLE"
 description = """
 My blog for technical topics.
 """
