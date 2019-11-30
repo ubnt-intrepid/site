@@ -2,6 +2,10 @@ name: Deploy
 on:
   push:
     branches: [source]
+  pull_request:
+
+env:
+  ZOLA_VERSION: 0.9.0
 
 jobs:
   build:
@@ -11,7 +15,24 @@ jobs:
     - uses: actions/checkout@master
       with:
         submodules: true
-    - uses: shalzz/zola-deploy-action@master
+
+    - name: Install zola
+      run: |
+        curl -L "https://github.com/getzola/zola/releases/download/v${ZOLA_VERSION}/zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz" | tar zxf -
+        mkdir -pv $HOME/.zola/bin
+        mv -v ./zola $HOME/.zola/bin
+        echo ::add-path::$HOME/.zola/bin
+
+    - name: Check URLs
+      run: zola check
+
+    - name: Build site
+      run: zola build -o ./public
+
+    - name: Deploy to GitHub Pages
+      if: github.event_name == 'push' && github.ref == 'refs/heads/source'
+      uses: peaceiris/actions-gh-pages@v2.3.1
       env:
-        PAGES_BRANCH: master
-        TOKEN: ${{ secrets.ZOLA_DEPLOY_TOKEN }}
+        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        PUBLISH_BRANCH: master
+        PUBLISH_DIR: ./public
