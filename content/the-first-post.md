@@ -1,6 +1,6 @@
 +++
 title = "The first post"
-date = 2019-12-01
+date = 2019-11-30
 
 [taxonomies]
 tags = [ "blog", "rust" ]
