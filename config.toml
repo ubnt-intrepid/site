@@ -22,3 +22,5 @@ even_menu = [
   { name = "Categories", url = "$BASE_URL/categories" },
 ]
 even_title = "$TITLE"
+
+use_embedly = true

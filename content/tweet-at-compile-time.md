@@ -9,11 +9,9 @@ categories = [ "programming" ]
 
 を作った。
 
-<div align="center">
-  <a href="https://github.com/ubnt-intrepid/tweet-at-compile-time"><code>tweet-at-compile-time</code></a>
-</div>
-
 <!-- more -->
+
+{{ embedly(title="ubnt-intrepid/tweet-at-compile-time", url="https://github.com/ubnt-intrepid/tweet-at-compile-time") }}
 
 # 使い方
 ※ compiler plugin を使用しているため nightly チャンネル必須
