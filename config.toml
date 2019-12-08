@@ -6,8 +6,9 @@ My blog for technical topics.
 
 compile_sass = true
 highlight_code = true
+highlight_theme = "ayu-light"
 build_search_index = true
-theme = "even"
+theme = "zulma"
 
 taxonomies = [
   { name = "tags", rss = true },
@@ -15,12 +16,13 @@ taxonomies = [
 ]
 
 [extra]
-even_menu = [
+zulma_title = "$TITLE"
+zulma_brand = { text = "$TITLE" }
+zulma_menu = [
   { name = "Home", url = "$BASE_URL" },
-  { name = "About", url = "$BASE_URL/about" },
+  #{ name = "About", url = "$BASE_URL/about" },
   { name = "Tags", url = "$BASE_URL/tags" },
   { name = "Categories", url = "$BASE_URL/categories" },
 ]
-even_title = "$TITLE"
 
 use_embedly = true

@@ -1,6 +1,8 @@
-{% extends "even/templates/page.html" %}
+{% extends "zulma/templates/page.html" %}
 
-{% block page_after_footer %}
+{% block page_footer %}
+
+{{ post_macros::post_footer(page=page) }}
 
 <script src="https://utteranc.es/client.js"
         repo="ubnt-intrepid/site"
@@ -11,4 +13,4 @@
         async>
 </script>
 
-{% endblock page_after_footer %}
+{% endblock page_footer %}
