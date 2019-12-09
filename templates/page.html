@@ -45,12 +45,14 @@
                         </div>
 
                         {% if page.taxonomies.tags %}
-                        <div class="tags level-item">
-                            {% for tag in page.taxonomies.tags %}
-                                <span class="tag is-info is-light">
-                                    <a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">#{{ tag }}</a>
-                                </span>
-                            {% endfor %}
+                        <div class="container">
+                            <div class="tags level-item">
+                                {% for tag in page.taxonomies.tags %}
+                                    <span class="tag is-info is-light">
+                                        <a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">#{{ tag }}</a>
+                                    </span>
+                                {% endfor %}
+                            </div>
                         </div>
                         {% endif %}
 
