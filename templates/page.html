@@ -1,18 +1,65 @@
-{% extends "zulma/templates/page.html" %}
+{% extends "index.html" %}
 
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 
-{% block page_footer %}
+{% block hero %}{% endblock hero %}
 
-{{ post_macros::post_footer(page=page) }}
+{% block content %}
+<main>
+    <section class="container">
+        <div class="columns is-desktop">
+            <div class="column is-10-desktop is-offset-1-desktop">
+                <article itemscope itemtype="http://schema.org/BlogPosting">
+                    <div class="card article">
+                        <div class="card-content">
+                            <div class="media">
+                                <div class="media-content has-text-centered">
+                                    <a href="{{ page.permalink | safe }}">
+                                        <p class="title article-title">{{ page.title }}</p>
+                                    </a>
+                                    <div class="tags has-addons level-item">
+                                        <span class="tag is-rounded">
+                                            Posted on {{ page.date | date(format="%b %e, %Y") }}
+                                        </span>
+                                        <span class="tag is-rounded">
+                                            <a href="https://github.com/ubnt-intrepid/site/edit/master/content/{{ page.relative_path | safe }}">
+                                                Edit Request
+                                            </a>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <div itemprop="articleBody" class="content article-body">
+                                {{ page.content | safe }}
+                            </div>
+                        </div>
 
-<script src="https://utteranc.es/client.js"
-        repo="ubnt-intrepid/site"
-        issue-term="pathname"
-        label="utterances"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-</script>
+                        <!--
+                        {% if page.taxonomies.tags %}
+                        <div class="tags level-item">
+                            {% for tag in page.taxonomies.tags %}
+                                <span class="tag is-info is-light">
+                                    <a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">#{{ tag }}</a>
+                                </span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        -->
 
-{% endblock page_footer %}
+                        <script src="https://utteranc.es/client.js"
+                            repo="ubnt-intrepid/site"
+                            issue-term="pathname"
+                            label="utterances"
+                            theme="github-light"
+                            crossorigin="anonymous"
+                            async>
+                        </script>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+    </section>
+</main>
+{% endblock content %}

@@ -8,7 +8,6 @@ compile_sass = true
 highlight_code = true
 highlight_theme = "ayu-light"
 build_search_index = true
-theme = "zulma"
 
 taxonomies = [
   { name = "tags", rss = true },
@@ -16,13 +15,4 @@ taxonomies = [
 ]
 
 [extra]
-zulma_title = "missing documentation for life"
-zulma_brand = { text = "missing documentation for life" }
-zulma_menu = [
-  { name = "Home", url = "$BASE_URL" },
-  #{ name = "About", url = "$BASE_URL/about" },
-  { name = "Tags", url = "$BASE_URL/tags" },
-  { name = "Categories", url = "$BASE_URL/categories" },
-]
-
 use_embedly = true

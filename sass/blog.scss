@@ -1,0 +1,32 @@
+html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-size: 14px;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    -ms-flex-direction: column;
+    background: #F0F2F4;
+}
+
+.articles {
+    .content p {
+        line-height: 1.9;
+        margin: 15px 0;
+    }
+}
+
+.article {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.article-title {
+    font-size: 2rem;
+    font-weight: lighter;
+    line-height: 2;
+}
+
+.article-body {
+    line-height: 1.7;
+    margin: 0 6rem;
+}

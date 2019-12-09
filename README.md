@@ -12,3 +12,7 @@
 ```shell-session
 $ zola serve
 ```
+
+## Acknowledgements
+
+* The original theme of this blog is based on [the blog theme](https://github.com/BulmaTemplates/bulma-templates/blob/master/templates/blog.html) in [Free Bulma Templates](https://bulmatemplates.github.io/bulma-templates/).
