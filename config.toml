@@ -16,3 +16,4 @@ taxonomies = [
 
 [extra]
 use_embedly = true
+utterances = { repo = "ubnt-intrepid/site" }

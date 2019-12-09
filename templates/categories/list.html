@@ -1,4 +1,35 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
+
+{% block title %}Categories | {{ config.title }}{% endblock title %}
+
+{% block header %}
+<section class="hero">
+    <div class="hero-body has-text-centered">
+        <div class="container">
+            <h1 class="title">Categories</h1>
+        </div>
+    </div>
+</section>
+{% endblock header %}
 
 {% block content %}
+<div class="container has-text-centered">
+    <div class="columns">
+        <div class="column is-8 is-offset-2">
+            {% if terms %}
+            <div class="list box">
+                <div class="tags is-centered">
+                    {% for term in terms %}
+                    <span class="tag is-medium">
+                    <a href="{{ term.permalink | safe }}">
+                        <span>#{{ term.name }} ({{ term.pages | length }})</span>
+                    </a>
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock content %}

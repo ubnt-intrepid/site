@@ -1,4 +1,41 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
+
+{% block title %}Tag: {{ term.name }} | {{ config.title }}{% endblock title %}
+
+{% block header %}
+<section class="hero">
+    <div class="hero-body has-text-centered">
+        <div class="container">
+            <h1 class="title">Tag: {{ term.name }}</h1>
+        </div>
+    </div>
+</section>
+{% endblock header %}
 
 {% block content %}
+<div class="container">
+    <section class="articles">
+        <div class="column is-8 is-offset-2">
+            {% for page in term.pages %}
+            <div class="card article">
+                <div class="card-content">
+                    <div class="media">
+                        <div class="media-content has-text-centered">
+                            <a href="{{ page.permalink | safe }}">
+                                <p class="title article-title">{{ page.title }}</p>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="content article-body">
+                        {{ page.summary | safe }}
+                        <nav class="readmore">
+                            <a itemprop="url" href="{{ page.permalink | safe }}">Read More&nbsp;&raquo;</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
 {% endblock content %}

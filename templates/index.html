@@ -1,112 +1,61 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html lang="ja">
+{% block nav_brand %}
+{% endblock nav_bland %}
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}{{ config.title }}{% endblock title %}</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.9.1/css/OverlayScrollbars.min.css'>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <!-- Bulma Version 0.8.x-->
-    <link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
-    <link rel="stylesheet" href="/blog.css" />
-</head>
-
-<body>
-    <nav class="navbar">
+{% block header %}
+<section class="hero is-light">
+    <div class="hero-body has-text-centered">
         <div class="container">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="/">{{ config.title }}</a>
-                <span class="navbar-burger burger" data-target="navbarMenu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </span>
-            </div>
-
-            <div id="navbarMenu" class="navbar-menu">
-                <div class="navbar-end">
-                    <!--
-                    <a class="navbar-item is-active" href="/">Home</a>
-                    <a class="navbar-item is-active" href="/tags">Tags</a>
-                    <a class="navbar-item is-active" href="/categories">Categories</a>
-                    -->
-                </div>
-            </div>
+            <h1 class="title">{{ config.title }}</h1>
         </div>
-    </nav>
+    </div>
+</section>
+{% endblock header %}
 
-    {% block content %}
-    <div class="container">
-        <section class="articles">
-            <div class="column is-8 is-offset-2">
-                {% for page in paginator.pages %}
-                <div class="card article">
-                    <div class="card-content">
-                        <div class="media">
-                            <div class="media-content has-text-centered">
-                                <a href="{{ page.permalink | safe }}">
-                                    <p class="title article-title">{{ page.title }}</p>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="content article-body">
-                            {{ page.summary | safe }}
-                            <nav class="readmore">
-                                <a itemprop="url" href="{{ page.permalink | safe }}">Read More&nbsp;&raquo;</a>
-                            </nav>
+{% block content %}
+<div class="container">
+    <section class="articles">
+        <div class="column is-8 is-offset-2">
+            {% for page in paginator.pages %}
+            <div class="card article">
+                <div class="card-content">
+                    <div class="media">
+                        <div class="media-content has-text-centered">
+                            <a href="{{ page.permalink | safe }}">
+                                <p class="title article-title">{{ page.title }}</p>
+                            </a>
                         </div>
                     </div>
+                    <div class="content article-body">
+                        {{ page.summary | safe }}
+                        <nav class="readmore">
+                            <a itemprop="url" href="{{ page.permalink | safe }}">Read More&nbsp;&raquo;</a>
+                        </nav>
+                    </div>
                 </div>
-                {% endfor %}
-
-                <div class="column is-10 is-offset-1">
-                    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-                        {% if paginator.previous %}
-                            <a class="button is-primary pagination-previous" href="{{ paginator.previous }}">&laquo; Previous</a>
-                        {% else %}
-                            <a class="button is-primary pagination-previous" disabled title="This is the first page">&laquo;Previous</a>
-                        {% endif %}
-                        <ul class="pagination-list">
-                            <li>Page {{ paginator.current_index }} of {{ paginator.number_pagers }}</li>
-                        </ul>
-                        {% if paginator.next %}
-                            <a class="button is-primary pagination-next" href="{{ paginator.next }}">Next &raquo;</a>
-                        {% else %}
-                            <a class="button is-primary pagination-next" disabled title="This is the last page">Next &raquo;</a>
-                        {% endif %}
-                    </nav>
-                </div>
-
             </div>
-        </section>
-    </div>
-    {% endblock content %}
+            {% endfor %}
 
-    {% block footer %}
-    <footer class="footer">
-        <div class="content has-text-centered">
-            <p>
-                &copy; 2019 <strong><a href="https://github.com/ubnt-intrepid" target="_blank">@ubnt-intrepid</a></strong>.
-                Powered by <strong><a href="https://www.getzola.org" target="_blank">Zola</a></strong>.
-            </p>
+            <div class="column is-10 is-offset-1">
+                <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                    {% if paginator.previous %}
+                        <a class="button is-primary pagination-previous" href="{{ paginator.previous }}">&laquo; Previous</a>
+                    {% else %}
+                        <a class="button is-primary pagination-previous" disabled title="This is the first page">&laquo;Previous</a>
+                    {% endif %}
+                    <ul class="pagination-list">
+                        <li>Page {{ paginator.current_index }} of {{ paginator.number_pagers }}</li>
+                    </ul>
+                    {% if paginator.next %}
+                        <a class="button is-primary pagination-next" href="{{ paginator.next }}">Next &raquo;</a>
+                    {% else %}
+                        <a class="button is-primary pagination-next" disabled title="This is the last page">Next &raquo;</a>
+                    {% endif %}
+                </nav>
+            </div>
+
         </div>
-    </footer>
-    {% endblock footer %}
-
-    <script async type="text/javascript" src="/js/bulma.js"></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.9.1/js/OverlayScrollbars.min.js'></script>  
-
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // The first argument are the elements to which the plugin shall be initialized
-        // The second argument has to be at least a empty object or a object with your desired options
-        OverlayScrollbars(document.querySelectorAll("body"), { });
-    });
-    </script>
-
-</body>
-</html>
+    </section>
+</div>
+{% endblock content %}

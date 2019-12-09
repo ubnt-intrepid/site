@@ -47,14 +47,16 @@
                         {% endif %}
                         -->
 
+                        {% if config.extra.utterances %}
                         <script src="https://utteranc.es/client.js"
-                            repo="ubnt-intrepid/site"
-                            issue-term="pathname"
-                            label="utterances"
-                            theme="github-light"
-                            crossorigin="anonymous"
-                            async>
+                                repo="{{ config.extra.utterances.repo | safe }}"
+                                issue-term="{{ config.extra.utterances.issue_term | default(value="pathname") }}"
+                                {% if config.extra.utterances.issue_label %}label="{{ config.extra.utterances.issue_label }}"{% endif %}
+                                theme="{{ config.extra.utterances.theme | default(value="github-light") }}"
+                                crossorigin="anonymous"
+                                async>
                         </script>
+                        {% endif %}
                     </div>
                 </article>
             </div>
