@@ -1,5 +1,5 @@
 base_url = "https://ubnt-intrepid.netlify.com"
-title = "$TITLE"
+title = "missing documentation for life"
 description = """
 My blog for technical topics.
 """
@@ -16,8 +16,8 @@ taxonomies = [
 ]
 
 [extra]
-zulma_title = "$TITLE"
-zulma_brand = { text = "$TITLE" }
+zulma_title = "missing documentation for life"
+zulma_brand = { text = "missing documentation for life" }
 zulma_menu = [
   { name = "Home", url = "$BASE_URL" },
   #{ name = "About", url = "$BASE_URL/about" },
