@@ -1,7 +1,6 @@
 +++
 title = "Announcing polyfuse - A FUSE library for Rust -"
 date = 2019-12-10
-draft = true
 
 [taxonomies]
 tags = [ "rust", "fuse", "polyfuse", "async_await" ]
@@ -9,8 +8,6 @@ categories = [ "programming" ]
 +++
 
 [Rust Advent Calendar 2019](https://qiita.com/advent-calendar/2019/rust) 10日目の記事です。
-
-前回は [`@cipepser`](https://qiita.com/cipepser) さんの「["untitled"](https://qiita.com)」でした。
 
 本記事では、拙作の FUSE ライブラリである [`polyfuse`] を紹介します。
 
