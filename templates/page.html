@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
 
 {% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
 
@@ -21,6 +21,15 @@
                                         <span class="tag is-rounded">
                                             Posted on {{ page.date | date(format="%b %e, %Y") }}
                                         </span>
+                                        {% if page.taxonomies.categories %}
+                                        <span class="tag is-rounded">
+                                            Category:&nbsp;
+                                            {% for category in page.taxonomies.categories %}
+                                                {% if not loop.first %},&nbsp;{% endif %}
+                                                <a href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>
+                                            {% endfor %}
+                                        </span>
+                                        {% endif %}
                                         <span class="tag is-rounded">
                                             <a href="https://github.com/ubnt-intrepid/site/edit/master/content/{{ page.relative_path | safe }}">
                                                 Edit Request
@@ -35,7 +44,6 @@
                             </div>
                         </div>
 
-                        <!--
                         {% if page.taxonomies.tags %}
                         <div class="tags level-item">
                             {% for tag in page.taxonomies.tags %}
@@ -45,7 +53,6 @@
                             {% endfor %}
                         </div>
                         {% endif %}
-                        -->
 
                         {% if config.extra.utterances %}
                         <script src="https://utteranc.es/client.js"
