@@ -179,6 +179,364 @@ ls: cannot access '/tmp/emptyfs': Function not implemented
 
 プロセスに `Ctrl+C` を送信するか `fusermount -u <mountpoint>` を実行することでファイルシステムを終了することが出来ます。
 
+このままだと味気ないので、ルートディレクトリ直下にファイルが一つある読み込み専用なファイルシステムを作ってみます。
+まず、`Filesystem` の実装を次のように修正し、カーネルから送られてくるリクエストを処理できるようにします（`libc` や `futures` などは適宜 `Cargo.toml` に追記してください）。
+
+```rust
+use futures::io::AsyncWrite;
+use polyfuse::{Context, FileSystem, Operation};
+use std::io;
+
+struct Hello;
+
+#[polyfuse::async_trait]
+impl<T> Filesystem<T> for Hello {
+    async fn call<W: ?Sized>(&self, cx: &mut Context<'_, W>, op: Operation<'_, T>) -> io::Result<()>
+    where
+        W: AsyncWrite + Unpin + Send,
+        T: Send + 'async_trait,
+    {
+        match op {
+            _ => cx.reply_err(libc::ENOSYS).await,
+        }
+    }
+}
+```
+
+ルートディレクトリに対する `stat` と `readdir` の処理を記述します。
+`readdir` に対する応答は本来であれば `.` と `..` を含める必要がありますが、ここでは省略しています。
+
+```diff
++use polyfuse::reply::ReplyAttr;
+
++const ROOT_INO: u64 = 1;
+
+#[polyfuse::async_trait]
+impl<T> Filesystem<T> for Hello {
+    async fn call<W: ?Sized>(&self, cx: &mut Context<'_, W>, op: Operation<'_, T>) -> io::Result<()>
+    where
+        W: AsyncWrite + Unpin + Send,
+        T: Send + 'async_trait,
+    {
+        match op {
++           Operation::Getattr(op) => match op.ino() {
++               ROOT_INO => op.reply(cx, ReplyAttr::new(root_attr())).await,
++               _ => cx.reply_err(libc::ENOENT).await,
++           },
++
++           Operation::Readdir(op) => match op.ino() {
++               ROOT_INO => op.reply(cx, &[]).await,
++               _ => cx.reply_err(libc::ENOENT).await,
++           },
++
+            _ => cx.reply_err(libc::ENOSYS).await,
+        }
+    }
+}
+```
+
+```rust
+fn root_attr() -> FileAttr {
+    let mut attr = FileAttr::default();
+    attr.set_ino(ROOT_INO);
+    attr.set_nlink(2);
+    attr.set_mode(libc::S_IFDIR | 0o555);
+    attr.set_uid(unsafe { libc::getuid() });
+    attr.set_gid(unsafe { libc::getgid() });
+    attr
+}
+```
+
+次のように `stat` と `ls` の出力結果が得られる事を確認します。
+この時点では `readdir` の実装が適切ではないため、`ls` で表示される項目はありません。
+
+```shell-session
+$ stat /tmp/hello
+  File: /tmp/hello
+  Size: 0               Blocks: 0          IO Block: 4096   directory
+Device: 42h/66d Inode: 1           Links: 2
+Access: (0555/dr-xr-xr-x)  Uid: ( 1000/  archie)   Gid: ( 1000/  archie)
+Access: 1970-01-01 09:00:00.000000000 +0900
+Modify: 1970-01-01 09:00:00.000000000 +0900
+Change: 1970-01-01 09:00:00.000000000 +0900
+ Birth: -
+
+$ ls -al /tmp/hello
+total 0
+```
+
+次に、ルートディレクトリ直下にファイルを追加し、その内容を読み込めるようにします。
+今回は、次のように `hello.txt` という名前のファイルがルート直下にあると想定します。
+
+```
+/tmp/hello
+  └── hello.txt
+```
+
+必要なインポートと定数定義を行います。
+
+```rust
+use polyfuse::reply::ReplyEntry;
+use std::os::unix::ffi::OsStrExt;
+
+const HELLO_FILENAME: &str = "hello.txt";
+const HELLO_CONTENT: &str = "Hello, world!\n";
+const HELLO_INO: u64 = 2;
+```
+
+まず、`Readdir` の実装を次のように書き換えます。
+先ほどは `ROOT_INO` に対して空のデータを送信していましたが、今回は `op.offset()` と `op.size()` の指定する範囲に応じて適切なデータを送信します。
+オフセット値の扱いはファイルの追加・削除が絡んでくるとややこしくなるのでここでは説明を省略します（今回は3つのエントリに連続して番号を割り当てています）。
+
+```diff
+            Operation::Readdir(op) => match op.ino() {
++               ROOT_INO => {
++                   let entries = make_entries();
++                   let mut total_len = 0;
++                   let entries: Vec<&[u8]> = entries
++                       .iter()
++                       .map(|entry| entry.as_ref())
++                       .skip(op.offset() as usize)
++                       .take_while(|entry| {
++                           total_len += entry.len();
++                           total_len <= op.size() as usize
++                       })
++                       .collect();
++                   op.reply_vectored(cx, &entries[..]).await
++               }
++               HELLO_INO => cx.reply_err(libc::ENOTDIR).await,
+                _ => cx.reply_err(libc::ENOENT).await,
+            },
+```
+
+```rust
+use polyfuse::DirEntry;
+
+fn make_entries() -> Vec<DirEntry> {
+    vec![
+        DirEntry::dir(".", ROOT_INO, 1),
+        DirEntry::dir("..", ROOT_INO, 2),
+        DirEntry::file(HELLO_FILENAME, HELLO_INO, 3),
+    ]
+}
+```
+
+`hello.txt` に対して属性を取得出来るように `Getattr` のコールバックを修正します。
+また、`Readdir` によって返されたエントリの存在を確認するために `Lookup` リクエストが発行されるのでこれに対するコールバックも実装します。
+
+```diff
+
+#[polyfuse::async_trait]
+impl<T> Filesystem<T> for Hello {
+    async fn call<W: ?Sized>(&self, cx: &mut Context<'_, W>, op: Operation<'_, T>) -> io::Result<()>
+    where
+        W: AsyncWrite + Unpin + Send,
+        T: Send + 'async_trait,
+    {
+        match op {
+            Operation::Getattr(op) => match op.ino() {
+                ROOT_INO => op.reply(cx, ReplyAttr::new(root_attr())).await,
++               HELLO_INO => op.reply(cx, ReplyAttr::new(hello_attr())).await,
+                _ => cx.reply_err(libc::ENOENT).await,
+            },
++
++           Operation::Lookup(op) => match op.parent() {
++               ROOT_INO => {
++                   if op.name().as_bytes() == HELLO_FILENAME.as_bytes() {
++                       op.reply(cx, ReplyEntry::new(hello_attr())).await
++                   } else {
++                       cx.reply_err(libc::ENOENT).await
++                   }
++               }
++               HELLO_INO => cx.reply_err(libc::ENOTDIR).await,
++               _ => cx.reply_err(libc::ENOENT).await,
++           },
++
+```
+
+```rust
+fn hello_attr() -> FileAttr {
+    let mut attr = FileAttr::default();
+    attr.set_ino(HELLO_INO);
+    attr.set_nlink(1);
+    attr.set_size(HELLO_CONTENT.len() as u64);
+    attr.set_mode(libc::S_IFREG | 0o444);
+    attr.set_uid(unsafe { libc::getuid() });
+    attr.set_gid(unsafe { libc::getgid() });
+    attr
+}
+```
+
+最後に、`hello.txt` の内容を読み込むために `Read` の実装を追加します。
+
+```diff
++           Operation::Read(op) => match op.ino() {
++               ROOT_INO => cx.reply_err(libc::EISDIR).await,
++               HELLO_INO => {
++                   let offset = op.offset() as usize;
++                   if offset <= HELLO_CONTENT.len() {
++                       let size = op.size() as usize;
++                       let content = &HELLO_CONTENT.as_bytes()[offset..];
++                       let content = &content[..std::cmp::min(content.len(), size)];
++                       op.reply(cx, content).await
++                   } else {
++                       op.reply(cx, &[]).await
++                   }
++               }
++               _ => cx.reply_err(libc::ENOENT).await,
++           },
+```
+
+ファイルシステムを実行し、期待通りの出力結果が得られていることを確認します。
+
+```shell-session
+$ ls /tmp/hello
+total 0
+dr-xr-xr-x  2 archie archie   0 Jan  1  1970 .
+drwxrwxrwt 10 root   root   260 Dec  9 16:57 ..
+-r--r--r--  1 archie archie  14 Jan  1  1970 hello.txt
+
+$ stat /tmp/hello/hello.txt
+  File: /tmp/hello/hello.txt
+  Size: 14              Blocks: 0          IO Block: 4096   regular file
+Device: 42h/66d Inode: 2           Links: 1
+Access: (0444/-r--r--r--)  Uid: ( 1000/  archie)   Gid: ( 1000/  archie)
+Access: 1970-01-01 09:00:00.000000000 +0900
+Modify: 1970-01-01 09:00:00.000000000 +0900
+Change: 1970-01-01 09:00:00.000000000 +0900
+ Birth: -
+
+$ cat /tmp/hello/hello.txt
+Hello, world!
+```
+
+完成形は次のようになります。
+
+```rust
+use futures::io::AsyncWrite;
+use polyfuse::reply::{ReplyAttr, ReplyEntry};
+use polyfuse::{Context, DirEntry, FileAttr, Filesystem, Operation};
+use std::io;
+use std::os::unix::ffi::OsStrExt;
+
+const ROOT_INO: u64 = 1;
+
+const HELLO_FILENAME: &str = "hello.txt";
+const HELLO_CONTENT: &str = "Hello, world!\n";
+const HELLO_INO: u64 = 2;
+
+fn root_attr() -> FileAttr {
+    let mut attr = FileAttr::default();
+    attr.set_ino(ROOT_INO);
+    attr.set_nlink(2);
+    attr.set_mode(libc::S_IFDIR | 0o555);
+    attr.set_uid(unsafe { libc::getuid() });
+    attr.set_gid(unsafe { libc::getgid() });
+    attr
+}
+
+fn hello_attr() -> FileAttr {
+    let mut attr = FileAttr::default();
+    attr.set_ino(HELLO_INO);
+    attr.set_nlink(1);
+    attr.set_size(HELLO_CONTENT.len() as u64);
+    attr.set_mode(libc::S_IFREG | 0o444);
+    attr.set_uid(unsafe { libc::getuid() });
+    attr.set_gid(unsafe { libc::getgid() });
+    attr
+}
+
+fn make_entries() -> Vec<DirEntry> {
+    vec![
+        DirEntry::dir(".", ROOT_INO, 1),
+        DirEntry::dir("..", ROOT_INO, 2),
+        DirEntry::file(HELLO_FILENAME, HELLO_INO, 3),
+    ]
+}
+
+struct Hello;
+
+#[polyfuse::async_trait]
+impl<T> Filesystem<T> for Hello {
+    async fn call<W: ?Sized>(&self, cx: &mut Context<'_, W>, op: Operation<'_, T>) -> io::Result<()>
+    where
+        W: AsyncWrite + Unpin + Send,
+        T: Send + 'async_trait,
+    {
+        match op {
+            Operation::Lookup(op) => match op.parent() {
+                ROOT_INO => {
+                    if op.name().as_bytes() == HELLO_FILENAME.as_bytes() {
+                        op.reply(cx, ReplyEntry::new(hello_attr())).await
+                    } else {
+                        cx.reply_err(libc::ENOENT).await
+                    }
+                }
+                HELLO_INO => cx.reply_err(libc::ENOTDIR).await,
+                _ => cx.reply_err(libc::ENOENT).await,
+            },
+
+            Operation::Getattr(op) => match op.ino() {
+                ROOT_INO => op.reply(cx, ReplyAttr::new(root_attr())).await,
+                HELLO_INO => op.reply(cx, ReplyAttr::new(hello_attr())).await,
+                _ => cx.reply_err(libc::ENOENT).await,
+            },
+
+            Operation::Readdir(op) => match op.ino() {
+                ROOT_INO => {
+                    let entries = make_entries();
+                    let mut total_len = 0;
+                    let entries: Vec<&[u8]> = entries
+                        .iter()
+                        .map(|entry| entry.as_ref())
+                        .skip(op.offset() as usize)
+                        .take_while(|entry| {
+                            total_len += entry.len();
+                            total_len <= op.size() as usize
+                        })
+                        .collect();
+                    op.reply_vectored(cx, &entries[..]).await
+                }
+                HELLO_INO => cx.reply_err(libc::ENOTDIR).await,
+                _ => cx.reply_err(libc::ENOENT).await,
+            },
+
+            Operation::Read(op) => match op.ino() {
+                ROOT_INO => cx.reply_err(libc::EISDIR).await,
+                HELLO_INO => {
+                    let offset = op.offset() as usize;
+                    if offset <= HELLO_CONTENT.len() {
+                        let size = op.size() as usize;
+                        let content = &HELLO_CONTENT.as_bytes()[offset..];
+                        let content = &content[..std::cmp::min(content.len(), size)];
+                        op.reply(cx, content).await
+                    } else {
+                        op.reply(cx, &[]).await
+                    }
+                }
+                _ => cx.reply_err(libc::ENOENT).await,
+            },
+
+            _ => cx.reply_err(libc::ENOSYS).await,
+        }
+    }
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
+
+    let mountpoint = std::env::args_os()
+        .nth(1)
+        .map(std::path::PathBuf::from)
+        .ok_or_else(|| anyhow::anyhow!("missing mountpoint"))?;
+    anyhow::ensure!(mountpoint.is_dir(), "the mountpoint must be a directory",);
+
+    polyfuse_tokio::mount(Hello, &mountpoint, &[]).await?;
+    Ok(())
+}
+```
+
 リポジトリの [`examples/`](https://github.com/ubnt-intrepid/polyfuse/tree/master/examples) ディレクトリにサンプルのファイルシステムをいくつか公開しているので、そちらも併せて参照してください（数は少ないですが…）。
 
 # 今後の課題

@@ -12,10 +12,7 @@ async fn main() -> anyhow::Result<()> {
         .nth(1)
         .map(std::path::PathBuf::from)
         .ok_or_else(|| anyhow::anyhow!("missing mountpoint"))?;
-    anyhow::ensure!(
-        mountpoint.is_dir(),
-        "the mountpoint must be a directory",
-    );
+    anyhow::ensure!(mountpoint.is_dir(), "the mountpoint must be a directory",);
 
     polyfuse_tokio::mount(EmptyFS, &mountpoint, &[]).await?;
     Ok(())
