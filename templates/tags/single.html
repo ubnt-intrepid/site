@@ -17,7 +17,12 @@
 <div class="container">
     <section class="articles">
         <div class="column is-8 is-offset-2">
-            {{ macros::list_pages(pages=term.pages) }}
+            {% if paginator %}
+                {{ macros::list_pages(pages=paginator.pages) }}
+                {{ macros::paginate(paginator=paginator) }}
+            {% else %}
+                {{ macros::list_pages(pages=term.pages) }}
+            {% endif %}
         </div>
     </section>
 </div>

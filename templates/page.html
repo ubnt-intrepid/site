@@ -22,18 +22,6 @@
                                 {{ page.content | safe }}
                             </div>
 
-                            {% if page.taxonomies.tags %}
-                            <div class="container">
-                                <div class="tags level-item">
-                                    {% for tag in page.taxonomies.tags %}
-                                        <span class="tag is-info is-light">
-                                            <a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">#{{ tag }}</a>
-                                        </span>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
-
                             {% if config.extra.utterances %}
                             <script src="https://utteranc.es/client.js"
                                     repo="{{ config.extra.utterances.repo | safe }}"

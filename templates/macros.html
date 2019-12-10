@@ -21,6 +21,15 @@
                         </span>
                         {% endif %}
                     </div>
+                    {% if page.taxonomies.tags %}
+                    <div class="tags level-item">
+                        {% for tag in page.taxonomies.tags %}
+                            <span class="tag is-link is-light">
+                                <a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">#{{ tag }}</a>
+                            </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}            
                 </div>
             </div>
             <div class="content article-body">
@@ -34,15 +43,37 @@
     {% endfor %}
 {% endmacro list_pages %}
 
+{% macro paginate(paginator) %}
+<div class="column is-10 is-offset-1">
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        {% if paginator.previous %}
+            <a class="button is-primary is-light pagination-previous" href="{{ paginator.previous }}">&laquo; Previous</a>
+        {% else %}
+            <a class="button is-primary is-light pagination-previous" disabled title="This is the first page" style="visibility: hidden;">&laquo;Previous</a>
+        {% endif %}
+
+        <ul class="pagination-list">
+            <li>{{ paginator.current_index }}/{{ paginator.number_pagers }}</li>
+        </ul>
+
+        {% if paginator.next %}
+            <a class="button is-primary is-light pagination-next" href="{{ paginator.next }}">Next &raquo;</a>
+        {% else %}
+            <a class="button is-primary is-light pagination-next" disabled title="This is the last page" style="visibility: hidden;">Next &raquo;</a>
+        {% endif %}
+    </nav>
+</div>
+{% endmacro paginate %}
+
 {% macro list_taxonomies(terms) %}
     {% if terms %}
     <div class="list box">
         <div class="tags is-centered">
             {% for term in terms %}
-            <span class="tag is-medium">
-            <a href="{{ term.permalink | safe }}">
-                <span>#{{ term.name }} ({{ term.pages | length }})</span>
-            </a>
+            <span class="tag is-link is-light is-medium">
+                <a href="{{ term.permalink | safe }}">
+                    <span>#{{ term.name }} ({{ term.pages | length }})</span>
+                </a>
             </span>
             {% endfor %}
         </div>
@@ -92,6 +123,15 @@
                 </a>
             </span>
         </div>
+        {% if page.taxonomies.tags %}
+        <div class="tags level-item">
+            {% for tag in page.taxonomies.tags %}
+                <span class="tag is-link is-light">
+                    <a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">#{{ tag }}</a>
+                </span>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endmacro page_header %}
