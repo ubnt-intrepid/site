@@ -7,6 +7,20 @@
                     <a href="{{ page.permalink | safe }}">
                         <p class="title article-title">{{ page.title }}</p>
                     </a>
+                    <div class="tags has-addons level-item">
+                        <span class="tag is-rounded">
+                            <i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;{{ page.date | date(format="%b %e, %Y") }}
+                        </span>
+                        {% if page.taxonomies.categories %}
+                        <span class="tag is-rounded"">
+                            Category:&nbsp;
+                            {% for category in page.taxonomies.categories %}
+                                {% if not loop.first %},&nbsp;{% endif %}
+                                <a href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>
+                            {% endfor %}
+                        </span>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             <div class="content article-body">
@@ -35,3 +49,49 @@
     </div>
     {% endif %}
 {% endmacro list_taxonomies %}
+
+{% macro page_header(page) %}
+<div class="media">
+    <div class="media-content has-text-centered">
+        <a href="{{ page.permalink | safe }}">
+            <p class="title article-title">{{ page.title }}</p>
+        </a>
+        <div class="tags has-addons level-item">
+            <span class="tag is-rounded">
+                <i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;{{ page.date | date(format="%b %e, %Y") }}
+            </span>
+            {% if page.taxonomies.categories %}
+            <span class="tag is-rounded"">
+                Category:&nbsp;
+                {% for category in page.taxonomies.categories %}
+                    {% if not loop.first %},&nbsp;{% endif %}
+                    <a href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>
+                {% endfor %}
+            </span>
+            {% endif %}
+            <span class="tag is-rounded">
+                <a href="https://github.com/ubnt-intrepid/site/edit/master/content/{{ page.relative_path | safe }}">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    Edit
+                </a>
+            </span>
+            <span class="tag is-rounded">
+                <a href="https://twitter.com/intent/tweet?url={{ page.permalink }}&text={{ self::page_title() | trim | urlencode }}"
+                    target="_blank"
+                    title="Tweet">
+                    <i class="fa fa-twitter" aria-hidden="true"></i>
+                    Share
+                </a>
+            </span>
+            <span class="tag is-rounded">
+                <a href="http://b.hatena.ne.jp/add?mode=confirm&url={{ page.permalink | urlencode }}&t={{ self::page_title() | trim | urlencode }}"
+                    target="_blank"
+                    title="Bookmark">
+                    <i class="fa fa-hatena" aria-hidden="true"></i>
+                    Bookmark
+                </a>
+            </span>
+        </div>
+    </div>
+</div>
+{% endmacro page_header %}

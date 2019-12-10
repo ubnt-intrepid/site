@@ -28,7 +28,7 @@ FUSE のアーキテクチャは下図のようになります。
 FUSE はカーネル空間で動作し VFS との橋渡しを行う FUSE カーネルモジュール（図中右下にある緑色の四角）と、ユーザ空間で動作し実質的な処理を行う FUSE ファイルシステムデーモン（図中右上の点線で囲まれた箇所）とが連携することでファイルシステムとしての動作を実現します。
 FUSE カーネルモジュールとの接続の確立は、モジュールロード時に登録されるキャラクタデバイス `/dev/fuse` をオープンし `mount` システムコールを介してパラメータを指定することで行います（実際には、`mount` を呼び出す権限を持たない非特権ユーザに対応するために後述する回避策が取られます）。
 
-<div align="center">
+<div class="picture" align="center">
   <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/FUSE_structure.svg" alt="FUSE structure" />
   <p>
   <small>

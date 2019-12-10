@@ -31,5 +31,47 @@ html, body {
 
 .article-body {
     line-height: 1.7;
-    margin: 0 6rem;
+    margin: 2rem 4rem;
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: lighter;
+    }
+
+    .picture {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+}
+
+.footnote-definition {
+    padding-left: 2em;
+
+    &:first-of-type {
+        border-top: 1px dashed #b0ced3;
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+
+    sup {
+        &.footnote-definition-label {
+            font-size: 70%;
+            position: unset;
+            top: unset;
+
+            &::after {
+                content: '.';
+            }
+        }
+    }
+
+    p {
+        display: inline;
+        font-size: 80%;
+    }
+}
+
+.fa-hatena:before {
+    content: "B!";
+    font-family: Verdana;
+    font-weight: bold
 }

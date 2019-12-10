@@ -1,6 +1,11 @@
 {% extends "base.html" %}
+{% import "macros.html" as macros %}
 
-{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% macro page_title() %}
+    {{ page.title }} | {{ config.title }}
+{% endmacro page_title %}
+
+{% block title %}{{ self::page_title() }}{% endblock title %}
 
 {% block hero %}{% endblock hero %}
 
@@ -12,60 +17,34 @@
                 <article itemscope itemtype="http://schema.org/BlogPosting">
                     <div class="card article">
                         <div class="card-content">
-                            <div class="media">
-                                <div class="media-content has-text-centered">
-                                    <a href="{{ page.permalink | safe }}">
-                                        <p class="title article-title">{{ page.title }}</p>
-                                    </a>
-                                    <div class="tags has-addons level-item">
-                                        <span class="tag is-rounded">
-                                            Posted on {{ page.date | date(format="%b %e, %Y") }}
-                                        </span>
-                                        {% if page.taxonomies.categories %}
-                                        <span class="tag is-rounded">
-                                            Category:&nbsp;
-                                            {% for category in page.taxonomies.categories %}
-                                                {% if not loop.first %},&nbsp;{% endif %}
-                                                <a href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>
-                                            {% endfor %}
-                                        </span>
-                                        {% endif %}
-                                        <span class="tag is-rounded">
-                                            <a href="https://github.com/ubnt-intrepid/site/edit/master/content/{{ page.relative_path | safe }}">
-                                                Edit Request
-                                            </a>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-            
+                            {{ macros::page_header(page=page) }}
                             <div itemprop="articleBody" class="content article-body">
                                 {{ page.content | safe }}
                             </div>
-                        </div>
 
-                        {% if page.taxonomies.tags %}
-                        <div class="container">
-                            <div class="tags level-item">
-                                {% for tag in page.taxonomies.tags %}
-                                    <span class="tag is-info is-light">
-                                        <a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">#{{ tag }}</a>
-                                    </span>
-                                {% endfor %}
+                            {% if page.taxonomies.tags %}
+                            <div class="container">
+                                <div class="tags level-item">
+                                    {% for tag in page.taxonomies.tags %}
+                                        <span class="tag is-info is-light">
+                                            <a href="{{ get_taxonomy_url(kind="tags", name=tag) | safe }}">#{{ tag }}</a>
+                                        </span>
+                                    {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                        {% endif %}
+                            {% endif %}
 
-                        {% if config.extra.utterances %}
-                        <script src="https://utteranc.es/client.js"
-                                repo="{{ config.extra.utterances.repo | safe }}"
-                                issue-term="{{ config.extra.utterances.issue_term | default(value="pathname") }}"
-                                {% if config.extra.utterances.issue_label %}label="{{ config.extra.utterances.issue_label }}"{% endif %}
-                                theme="{{ config.extra.utterances.theme | default(value="github-light") }}"
-                                crossorigin="anonymous"
-                                async>
-                        </script>
-                        {% endif %}
+                            {% if config.extra.utterances %}
+                            <script src="https://utteranc.es/client.js"
+                                    repo="{{ config.extra.utterances.repo | safe }}"
+                                    issue-term="{{ config.extra.utterances.issue_term | default(value="pathname") }}"
+                                    {% if config.extra.utterances.issue_label %}label="{{ config.extra.utterances.issue_label }}"{% endif %}
+                                    theme="{{ config.extra.utterances.theme | default(value="github-light") }}"
+                                    crossorigin="anonymous"
+                                    async>
+                            </script>
+                            {% endif %}
+                        </div>
                     </div>
                 </article>
             </div>
