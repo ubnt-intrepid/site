@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros.html" as macros %}
 
 {% block title %}Tags | {{ config.title }}{% endblock title %}
 
@@ -16,19 +17,7 @@
 <div class="container has-text-centered">
     <div class="columns">
         <div class="column is-8 is-offset-2">
-            {% if terms %}
-            <div class="list box">
-                <div class="tags is-centered">
-                    {% for term in terms %}
-                    <span class="tag is-medium">
-                    <a href="{{ term.permalink | safe }}">
-                        <span>#{{ term.name }} ({{ term.pages | length }})</span>
-                    </a>
-                    </span>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
+            {{ macros::list_taxonomies(terms=terms) }}
         </div>
     </div>
 </div>

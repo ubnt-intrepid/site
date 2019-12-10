@@ -1,0 +1,37 @@
+{% macro list_pages(pages) %}
+    {% for page in pages %}
+    <div class="card article">
+        <div class="card-content">
+            <div class="media">
+                <div class="media-content has-text-centered">
+                    <a href="{{ page.permalink | safe }}">
+                        <p class="title article-title">{{ page.title }}</p>
+                    </a>
+                </div>
+            </div>
+            <div class="content article-body">
+                {{ page.summary | safe }}
+                <nav class="readmore">
+                    <a itemprop="url" href="{{ page.permalink | safe }}">Read More&nbsp;&raquo;</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endmacro list_pages %}
+
+{% macro list_taxonomies(terms) %}
+    {% if terms %}
+    <div class="list box">
+        <div class="tags is-centered">
+            {% for term in terms %}
+            <span class="tag is-medium">
+            <a href="{{ term.permalink | safe }}">
+                <span>#{{ term.name }} ({{ term.pages | length }})</span>
+            </a>
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+{% endmacro list_taxonomies %}

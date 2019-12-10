@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "macros.html" as macros %}
 
 {% block title %}Tag: {{ term.name }} | {{ config.title }}{% endblock title %}
 
@@ -16,25 +17,7 @@
 <div class="container">
     <section class="articles">
         <div class="column is-8 is-offset-2">
-            {% for page in term.pages %}
-            <div class="card article">
-                <div class="card-content">
-                    <div class="media">
-                        <div class="media-content has-text-centered">
-                            <a href="{{ page.permalink | safe }}">
-                                <p class="title article-title">{{ page.title }}</p>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="content article-body">
-                        {{ page.summary | safe }}
-                        <nav class="readmore">
-                            <a itemprop="url" href="{{ page.permalink | safe }}">Read More&nbsp;&raquo;</a>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
+            {{ macros::list_pages(pages=term.pages) }}
         </div>
     </section>
 </div>
