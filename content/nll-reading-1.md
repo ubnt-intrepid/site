@@ -4,7 +4,7 @@ date = 2017-12-03T23:46:22Z
 
 [taxonomies]
 tags = [ "rust", "nll" ]
-categories = [ "rust" ]
+categories = [ "programming" ]
 +++
 
 本記事は [Rust Internal Advent Calendar 2017][adc] 第3日目の記事です．
