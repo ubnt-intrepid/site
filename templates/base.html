@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{{ config.title }}{% endblock title %}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.9.1/css/OverlayScrollbars.min.css'>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <!-- Bulma Version 0.8.x-->
     <link rel="stylesheet" href="https://unpkg.com/bulma@0.8.0/css/bulma.min.css" />
+    {% if config.extra.bulmaswatch_theme %}
+    <link rel="stylesheet" href="https://jenil.github.io/bulmaswatch/{{ config.extra.bulmaswatch_theme }}/bulmaswatch.min.css" />
+    {% endif %}
     <link rel="stylesheet" href="/blog.css" />
 </head>
 
@@ -59,18 +59,7 @@
             </p>
         </div>
     </footer>
-</div>
 
-<script async type="text/javascript" src="/js/bulma.js"></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/overlayscrollbars/1.9.1/js/OverlayScrollbars.min.js'></script>  
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // The first argument are the elements to which the plugin shall be initialized
-    // The second argument has to be at least a empty object or a object with your desired options
-    OverlayScrollbars(document.querySelectorAll("body"), { });
-});
-</script>
-
+    <script async type="text/javascript" src="/js/bulma.js"></script>
 </body>
 </html>

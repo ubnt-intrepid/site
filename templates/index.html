@@ -5,12 +5,15 @@
 {% endblock nav_bland %}
 
 {% block header %}
-<section class="hero is-light">
+<section class="hero">
     <div class="hero-body has-text-centered">
         <div class="container">
             <a href="/">
                 <h1 class="title">{{ config.title }}</h1>
             </a>
+            {% if config.description %}
+            <h2 class="subtitle">{{ config.description }}</h2>
+            {% endif %}
         </div>
     </div>
 </section>
