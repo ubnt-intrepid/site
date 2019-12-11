@@ -36,7 +36,16 @@ html, body {
 
 .article-body {
     line-height: 1.7;
-    margin: 2rem 4rem;
+
+    // mobile
+    @media(min-width: 770px) {
+        margin: 2rem 2rem;
+    }
+
+    // desktop
+    @media(min-width: 1024px) {
+        margin: 2rem 4rem;
+    }
 
     h1, h2, h3, h4, h5, h6 {
         font-weight: lighter;

@@ -12,13 +12,14 @@
                             <i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;{{ page.date | date(format="%b %e, %Y") }}
                         </span>
                         {% if page.taxonomies.categories %}
+                        {% for category in page.taxonomies.categories %}
                         <span class="tag is-rounded"">
-                            Category:&nbsp;
-                            {% for category in page.taxonomies.categories %}
-                                {% if not loop.first %},&nbsp;{% endif %}
-                                <a href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>
-                            {% endfor %}
+                            <a href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">
+                                <i class="fa fa-folder" aria-hidden="true"></i>
+                                {{ category }}
+                            </a>
                         </span>
+                        {% endfor %}
                         {% endif %}
                     </div>
                     {% if page.taxonomies.tags %}
@@ -92,15 +93,16 @@
                 <i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;{{ page.date | date(format="%b %e, %Y") }}
             </span>
             {% if page.taxonomies.categories %}
+            {% for category in page.taxonomies.categories %}
             <span class="tag is-rounded">
-                Category:&nbsp;
-                {% for category in page.taxonomies.categories %}
-                    {% if not loop.first %},&nbsp;{% endif %}
-                    <a href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">{{ category }}</a>
-                {% endfor %}
+                <a href="{{ get_taxonomy_url(kind="categories", name=category) | safe }}">
+                    <i class="fa fa-folder" aria-hidden="true"></i>
+                    {{ category }}
+                </a>
             </span>
+            {% endfor %}
             {% endif %}
-            <span class="tag is-rounded">
+            <span class="tag is-rounded is-hidden-mobile">
                 <a href="https://github.com/ubnt-intrepid/site/edit/master/content/{{ page.relative_path | safe }}">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     Edit
@@ -111,7 +113,7 @@
                     target="_blank"
                     title="Tweet">
                     <i class="fa fa-twitter" aria-hidden="true"></i>
-                    Share
+                    <span class="is-hidden-mobile">Share</span>
                 </a>
             </span>
             <span class="tag is-rounded">
@@ -119,7 +121,7 @@
                     target="_blank"
                     title="Bookmark">
                     <i class="fa fa-hatena" aria-hidden="true"></i>
-                    Bookmark
+                    <span class="is-hidden-mobile">Bookmark</span>
                 </a>
             </span>
         </div>
