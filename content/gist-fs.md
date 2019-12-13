@@ -1,5 +1,5 @@
 +++
-title = "polyfuse で Gist as filesystem を実装する (1)"
+title = "polyfuse で Gist as filesystem を実装する"
 date = 2019-12-14
 draft = true
 
@@ -62,12 +62,3 @@ Gist の内容は [REST API](https://developer.github.com/v3/gists/#get-a-single
 
 ファイルの追加・削除は出来なくはないと思いますが、そこまで考えてしまうと書き込み対象のファイルが（外的要因で）削除され存在しないときにカーネルへの通知が必要になってしまい面倒なので、今回は対象外とします。
 良いパフォーマンスになるため、余裕があれば対応したいと思います。
-
-# Gist クライアントの実装
-
-TODO
-
-# ファイルシステム
-
-a
-
