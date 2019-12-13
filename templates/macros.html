@@ -137,3 +137,32 @@
     </div>
 </div>
 {% endmacro page_header %}
+
+{% macro utterances(config) %}
+<div class="container" id="utterances-container">
+    <div class="columns" id="utterances-control" style="margin-top: 4rem;">
+        <button class="button column is-10 is-offset-1" id="utterances-button">Show comments</button>
+    </div>
+    <script type="text/javascript" id="utterances-load-script">
+    document.addEventListener('DOMContentLoaded', function(e) {
+        var button = document.getElementById('utterances-button');
+        button.onclick = function(e) {
+            var script = document.createElement('script');
+            script.src = "https://utteranc.es/client.js";
+            script.async = true;
+            script.crossOrigin = "anonymout";
+            script.setAttribute("repo", "{{ config.repo | safe }}");
+            script.setAttribute("issue-term", "{{ config.issue_term | default(value='pathname') }}");
+            {% if config.issue_label %}script.setAttribute("label", "{{ config.issue_label }}");{% endif %}
+            script.setAttribute("theme", "{{ config.theme | default(value='github-light') }}");
+
+            var container = document.getElementById('utterances-container');
+            container.appendChild(script);
+
+            document.getElementById('utterances-control').remove();
+            document.getElementById('utterances-load-script').remove();
+        }                                    
+    });
+    </script>
+</div>
+{% endmacro utterances %}
