@@ -17,14 +17,16 @@ categories = [ "programming" ]
 
 元記事のプラグインシステムでは、プラグインのインスタンスを `Box<dyn Plugin>` に変換した上でローダ側に転送し、ローダ側は受け取った `Box<dyn Plugin>` のインスタンスをそのまま用いています。
 
-```rust:プラグイン側
+```rust
+// プラグイン側
 #[no_mangle]
 pub unsafe extern "C" fn load_plugin() -> Box<dyn Plugin> {
     Box::new(PluginAdd::default()) // (1)
 }
 ```
 
-```rust:ローダ側
+```rust
+// ローダ側
 let plugin: Box<dyn Plugin> = unsafe {
     let load_plugin: Symbol<unsafe extern "C" fn() -> Box<dyn Plugin>> =
         lib.get(b"load_plugin")?;
@@ -39,7 +41,8 @@ println!("1 {} 2 = {}", plugin.operator(), plugin.calc(1, 2));
 
 上の方法でトレイトオブジェクトを扱うことは（コンパイルエラーを生じないため）一見問題ないように見えます。しかし、`load_plugin` の戻り値型を `Box` にしてしまっているせいで所有権がプラグインとローダ間で移動し、`(1)` において**プラグイン側の**アロケータを用いて確保されたヒープ領域のメモリが `(2)` において**ローダ側の**アロケータを用いて解放されます。双方が異なるアロケータを用いていた場合、メモリの解放が上手くいく保証はありません。プラグイン・ローダ側の両方でアロケータを共通なものにしてしまえば良い気もしますが、その場合プラグインシステム内で使用されるアロケータが今回のような用途で安全にメモリを解放できることを保証する必要があります。いずれにせよ `Box<T>` は FFI 境界を超えることを想定されていない（はず）ため、オブジェクトの転送は `Box::into_raw`/`Box::from_raw` を用いて raw pointer に変換した状態で行い、使用後のプラグインのインスタンスはプラグイン側に行うようにした方が安全です（これで問題が解決されたのかというとそういうわけではなく、drop 時に `release_plugin` のシンボル解決の失敗でリソースリークしないような対策を取る必要があります）。
 
-```rust:プラグイン側
+```rust
+// プラグイン側
 #[no_mangle]
 pub unsafe extern "C" fn load_plugin() -> *mut dyn Plugin {
     let plugin: Box<dyn Plugin> = Box::new(PluginAdd::default());
@@ -113,7 +116,6 @@ pub struct LoadPluginResult {
 `load_plugin` の実行部分は元システムとほぼ同じですが、戻り値である fat pointer は自作の型であるため、直接 `ptr` と `vtable`  の値を保持します。また、先ほど説明した `version` フィールドの値がローダ側と一致しているかを確認し、バージョンの差異による vtable レイアウトのミスマッチを防止しています。
 
 ```rust
-
 struct PluginProxy {
     #[allow(dead_code)]
     lib: Library,
