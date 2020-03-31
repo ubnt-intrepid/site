@@ -7,6 +7,8 @@ tags = [ "rust", "proc-macro", "qiita" ]
 categories = [ "programming" ]
 +++
 
+<!-- more -->
+
 Rust 1.30 から安定化して使えるようになった function-style の手続き的マクロだが、残念ながら次のように式 (expression) として展開される用途に用いることはできない（安定化されていないためコンパイルエラーとなる [^1]）。
 
 ```rust

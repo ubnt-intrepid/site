@@ -7,6 +7,8 @@ tags = [ "blog", "zola" ]
 categories = [ "general" ]
 +++
 
+<!-- more -->
+
 ブログの静的サイトジェネレータを [`zola`] に変更した。
 当面は[旧ブログ](https://ubnt-intrepid.github.io/blog)を残しつつ、適当なタイミングで旧サイトのページをリダイレクトに置き換えていく。
 

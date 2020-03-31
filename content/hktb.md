@@ -7,6 +7,8 @@ tags = [ "rust", "hktb", "tips", "qiita" ]
 categories = [ "programming" ]
 +++
 
+<!-- more -->
+
 # 背景: HRTB
 
 次のようなライフタイムパラメータをひとつ受け取るトレイトを考える。

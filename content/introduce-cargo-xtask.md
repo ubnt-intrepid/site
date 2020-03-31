@@ -7,6 +7,8 @@ tags = [ "rust", "cargo", "cargo-xtask", "qiita" ]
 categories = [ "programming" ]
 +++
 
+<!-- more -->
+
 Rust のパッケージマネージャ兼ビルドツールである `cargo` には、[`npm-scripts`](https://docs.npmjs.com/misc/scripts) のようにプロジェクト固有のタスクを定義する機能は（少なくとも完全には）提供されていません。[`.cargo/config` にエイリアスを登録することで](https://doc.rust-lang.org/cargo/reference/config.html#configuration-keys)プロジェクト固有のサブコマンドを追加することはできますが、あくまでサブコマンドの簡略化であり、任意のスクリプトを実行するようにはできていません。そのため、多くの Rust プロジェクトでは `make` や `cargo-make` などの外部で提供されるタスクランナーを併用しているのが現状だと思います。
 
 本記事では、外部ツールに頼らないタスク定義の仕組みとして、matklad 氏の提案している [`cargo-xtask`] という枠組みを紹介します。

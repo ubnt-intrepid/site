@@ -7,6 +7,8 @@ tags = [ "rust", "qiita" ]
 categories = [ "programming" ]
 +++
 
+<!-- more -->
+
 @dalance 氏の[記事](https://qiita.com/dalance/items/1593b56ad3744c469643)で紹介されているプラグインシステムの抱える、相互運用性まわりの問題点を解消した仕組みを考えてみました。プラグインシステム自体の動機や、提供される機能の詳細については元記事を参照してください。
 
 成果物: https://github.com/ubnt-intrepid/rust-plugin-example
