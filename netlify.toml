@@ -1,6 +1,8 @@
 [build]
-publish = "public"
-command = "zola build"
+publish = "out"
+command = "npm run deploy"
 
-[build.environment]
-ZOLA_VERSION = "0.10.0"
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
