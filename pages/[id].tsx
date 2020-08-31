@@ -55,7 +55,7 @@ export const getStaticPaths: GetStaticPaths = async () => (
 const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
     const permalink = `${baseUrl}/${id}/`;
     const pageTitle = `${title} - ${siteTitle}`;
-    const editRequestUrl = `${siteRepoUrl}/edit/master/posts/${id}.md`;
+    const sourceUrl = `${siteRepoUrl}/blob/master/posts/${id}.md`;
 
     return (
         <>
@@ -86,26 +86,6 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                                         &nbsp;<Date dateString={date} />
                                                     </span>
 
-                                                    {taxonomies.categories ? (
-                                                        taxonomies.categories.map(category => (
-                                                            <span className="tag is-rounded is-hidden-mobile" key={category}>
-                                                                <Link href={`/categories/${category}`} >
-                                                                    <a>
-                                                                        <i className="fas fa-folder" aria-hidden="true"></i>
-                                                                        {` ${category}`}
-                                                                    </a>    
-                                                                </Link>
-                                                            </span>
-                                                        ))
-                                                    ) : null}
-
-                                                    <span className="tag is-rounded is-hidden-mobile">
-                                                        <a href={editRequestUrl}>
-                                                            <i className="far fa-file" aria-hidden="true"></i>
-                                                            {' Source'}
-                                                        </a>
-                                                    </span>
-
                                                     <span className="tag is-rounded">
                                                         <a href={`https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`}
                                                             target="_blank"
@@ -120,22 +100,44 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                                             target="_blank"
                                                             title="Bookmark">
                                                             <i className="fa fa-hatena" aria-hidden="true"></i>
-                                                            <span className="is-hidden-mobile">Bookmark</span>
+                                                            <span className="is-hidden-mobile">{' Bookmark'}</span>
+                                                        </a>
+                                                    </span>
+
+                                                    <span className="tag is-rounded">
+                                                        <a href={sourceUrl}>
+                                                            <i className="fab fa-github" aria-hidden="true"></i>
+                                                            <span className="is-hidden-mobile">{' Source'}</span>
                                                         </a>
                                                     </span>
                                                 </div>
 
-                                                { taxonomies.tags ? (
-                                                    <div className="tags level-item">
-                                                        {taxonomies.tags.map(tag => (
-                                                            <span className="tag is-link is-light">
-                                                                <Link href={`/tags/${tag}`}>
-                                                                    <a>{`#${tag}`}</a>
+                                                <div className="tags level-item">
+                                                    { taxonomies.categories ? (
+                                                        taxonomies.categories.map(category => (
+                                                            <span className="tag is-link is-light" key={category}>
+                                                                <Link href={`/categories/${category}`} >
+                                                                    <a>
+                                                                        <i className="fas fa-folder"></i>
+                                                                        {` ${category}`}
+                                                                    </a>    
                                                                 </Link>
                                                             </span>
-                                                        ))}
-                                                    </div>
-                                                ) : null }
+                                                        ))
+                                                    ) : null }
+                                                    { taxonomies.tags ? (
+                                                        taxonomies.tags.map(tag => (
+                                                            <span className="tag is-link is-light">
+                                                                <Link href={`/tags/${tag}`}>
+                                                                    <a>
+                                                                        <i className="fas fa-tag"></i>
+                                                                        {` ${tag}`}
+                                                                    </a>
+                                                                </Link>
+                                                            </span>
+                                                        ))
+                                                    ) : null }
+                                                </div>
                                             </div>
                                         </div>
 
