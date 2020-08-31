@@ -3,10 +3,9 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import Utterances from '../components/Utterances'
 import Date from '../components/Date'
 
-import { baseUrl, siteTitle, siteRepoUrl } from '../lib/config'
+import { baseUrl, siteTitle, siteRepo, siteRepoUrl } from '../lib/config'
 import { loadPost, getPostIds, Taxonomies } from '../lib/posts'
 
 import remark from 'remark'
@@ -142,14 +141,29 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                         </div>
 
                                         <div className="content article-body" dangerouslySetInnerHTML={{ __html: contentHtml }} />
-
-                                        <Utterances />
                                     </div>
                                 </div>
                             </article>
                         </div>
                     </div>
                 </section>
+
+                <section className="container" ref={elem => {
+                    if (!elem) {
+                        return;
+                    }
+
+                    const script = document.createElement('script');
+                    script.src = "https://utteranc.es/client.js";
+                    script.async = true;
+                    script.crossOrigin = "anonymous";
+                    script.setAttribute("repo", siteRepo);
+                    script.setAttribute("issue-term", "pathname");
+                    script.setAttribute("theme", "github-light");
+
+                    elem.appendChild(script);
+                }} />
+
             </main>
 
             <Footer />
