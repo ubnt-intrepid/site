@@ -4,8 +4,9 @@ import Link from 'next/link'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Date from '../components/Date'
+import Utterances from '../components/Utterances'
 
-import { baseUrl, siteTitle, siteRepo, siteRepoUrl } from '../config'
+import { baseUrl, siteTitle, siteRepoUrl } from '../config'
 import { loadPost, getPostIds, Taxonomies } from '../posts'
 
 import remark from 'remark'
@@ -25,7 +26,6 @@ type Props = {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const id = params.id as string
     const { title, date, taxonomies, contentRaw } = loadPost(id)
-    // FIXME: sanitize generated HTML
     const contentHtml = await remark()
         .use(footnotes, { inlineNotes: true })
         .use(remark2rehype)
@@ -148,21 +148,7 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                     </div>
                 </section>
 
-                <section className="container" ref={elem => {
-                    if (!elem) {
-                        return;
-                    }
-
-                    const script = document.createElement('script');
-                    script.src = "https://utteranc.es/client.js";
-                    script.async = true;
-                    script.crossOrigin = "anonymous";
-                    script.setAttribute("repo", siteRepo);
-                    script.setAttribute("issue-term", "pathname");
-                    script.setAttribute("theme", "github-light");
-
-                    elem.appendChild(script);
-                }} />
+                <Utterances />
 
             </main>
 
