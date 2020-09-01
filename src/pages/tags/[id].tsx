@@ -4,31 +4,32 @@ import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import PostList from '../../components/PostList'
+import { TagIcon } from '../../components/icons'
 
-import { PostMetadata, getPostsMetadata } from '../../lib/posts'
+import { PostMetadata, getPostsMetadata } from '../../posts'
 
 type Props = {
-    categoryName: string
+    tagName: string
     posts: PostMetadata[]
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-    const categoryName = params.id as string;
+    const tagName = params.id as string;
     const posts = getPostsMetadata()
-        .filter(post => post.taxonomies.categories.includes(categoryName));
+        .filter(post => post.taxonomies.tags.includes(tagName));
     return {
         props: {
-            categoryName,
+            tagName,
             posts,
         } as Props
     }
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const categories = getPostsMetadata()
-        .map(post => post.taxonomies.categories)
+    const tags = getPostsMetadata()
+        .map(post => post.taxonomies.tags)
         .reduce((acc, val) => acc.concat(val), []);
-    const paths = Array.from(new Set(categories))
+    const paths = Array.from(new Set(tags))
         .sort()
         .map(id => ({ params: { id }}));
     return {
@@ -37,10 +38,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
     }
 }
 
-const CategoryPage = ({ categoryName, posts }: Props) => (
+const TagPage = ({ tagName, posts }: Props) => (
     <>
         <Head>
-            <title>{`Category - ${categoryName}`}</title>
+            <title>{`Tag - ${tagName}`}</title>
         </Head>
 
         <Header />
@@ -51,7 +52,9 @@ const CategoryPage = ({ categoryName, posts }: Props) => (
                     <div className="container">
                         <Link href="/">
                             <a>
-                                <h1 className="title">{`Category - ${categoryName}`}</h1>
+                                <h1 className="title">
+                                    <TagIcon />{` ${tagName}`}
+                                </h1>
                             </a>
                         </Link>
                     </div>
@@ -65,4 +68,4 @@ const CategoryPage = ({ categoryName, posts }: Props) => (
     </>
 )
 
-export default CategoryPage
+export default TagPage

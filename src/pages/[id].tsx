@@ -4,9 +4,11 @@ import Link from 'next/link'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Date from '../components/Date'
+import Utterances from '../components/Utterances'
+import { CalendarIcon, CategoryIcon, TagIcon, GitHubIcon, BookmarkIcon, TwitterIcon } from '../components/icons'
 
-import { baseUrl, siteTitle, siteRepo, siteRepoUrl } from '../lib/config'
-import { loadPost, getPostIds, Taxonomies } from '../lib/posts'
+import { baseUrl, siteTitle, siteRepoUrl } from '../config'
+import { loadPost, getPostIds, Taxonomies } from '../posts'
 
 import remark from 'remark'
 import footnotes from 'remark-footnotes'
@@ -25,7 +27,6 @@ type Props = {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const id = params.id as string
     const { title, date, taxonomies, contentRaw } = loadPost(id)
-    // FIXME: sanitize generated HTML
     const contentHtml = await remark()
         .use(footnotes, { inlineNotes: true })
         .use(remark2rehype)
@@ -81,15 +82,14 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
 
                                                 <div className="tags has-addons level-item">
                                                     <span className="tag is-rounded">
-                                                        <i className="far fa-calendar" aria-hidden="true"></i>
-                                                        &nbsp;<Date dateString={date} />
+                                                        <CalendarIcon />&nbsp;<Date dateString={date} />
                                                     </span>
 
                                                     <span className="tag is-rounded">
                                                         <a href={`https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`}
                                                             target="_blank"
                                                             title="Tweet">
-                                                            <i className="fab fa-twitter" aria-hidden="true"></i>
+                                                            <TwitterIcon />
                                                             <span className="is-hidden-mobile">{' Share'}</span>
                                                         </a>
                                                     </span>
@@ -98,14 +98,14 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                                         <a href={`http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`}
                                                             target="_blank"
                                                             title="Bookmark">
-                                                            <i className="fa fa-hatena" aria-hidden="true"></i>
+                                                            <BookmarkIcon />
                                                             <span className="is-hidden-mobile">{' Bookmark'}</span>
                                                         </a>
                                                     </span>
 
                                                     <span className="tag is-rounded">
                                                         <a href={sourceUrl}>
-                                                            <i className="fab fa-github" aria-hidden="true"></i>
+                                                            <GitHubIcon />
                                                             <span className="is-hidden-mobile">{' Source'}</span>
                                                         </a>
                                                     </span>
@@ -116,22 +116,16 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                                         taxonomies.categories.map(category => (
                                                             <span className="tag is-link is-light" key={category}>
                                                                 <Link href={`/categories/${category}`} >
-                                                                    <a>
-                                                                        <i className="fas fa-folder"></i>
-                                                                        {` ${category}`}
-                                                                    </a>    
+                                                                    <a><CategoryIcon />{` ${category}`}</a>    
                                                                 </Link>
                                                             </span>
                                                         ))
                                                     ) : null }
                                                     { taxonomies.tags ? (
                                                         taxonomies.tags.map(tag => (
-                                                            <span className="tag is-link is-light">
+                                                            <span className="tag is-link is-light" key={tag}>
                                                                 <Link href={`/tags/${tag}`}>
-                                                                    <a>
-                                                                        <i className="fas fa-tag"></i>
-                                                                        {` ${tag}`}
-                                                                    </a>
+                                                                    <a><TagIcon />{` ${tag}`}</a>
                                                                 </Link>
                                                             </span>
                                                         ))
@@ -148,21 +142,7 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                     </div>
                 </section>
 
-                <section className="container" ref={elem => {
-                    if (!elem) {
-                        return;
-                    }
-
-                    const script = document.createElement('script');
-                    script.src = "https://utteranc.es/client.js";
-                    script.async = true;
-                    script.crossOrigin = "anonymous";
-                    script.setAttribute("repo", siteRepo);
-                    script.setAttribute("issue-term", "pathname");
-                    script.setAttribute("theme", "github-light");
-
-                    elem.appendChild(script);
-                }} />
+                <Utterances />
 
             </main>
 

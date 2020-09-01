@@ -5,8 +5,8 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import PostList from '../components/PostList'
 
-import { siteTitle, siteDescription } from '../lib/config'
-import { getPostsMetadata, PostMetadata } from '../lib/posts'
+import { siteTitle, siteDescription } from '../config'
+import { getPostsMetadata, PostMetadata } from '../posts'
 
 type Props = {
     posts: PostMetadata[]

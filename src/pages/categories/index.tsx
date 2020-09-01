@@ -3,10 +3,11 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
+import { CategoryIcon } from '../../components/icons'
 
-import { siteTitle } from '../../lib/config'
-import { getPostsMetadata } from '../../lib/posts'
-import { collectCounts } from '../../lib/util'
+import { siteTitle } from '../../config'
+import { getPostsMetadata } from '../../posts'
+import { collectCounts } from '../../util'
 
 type Props = {
     categories: {
@@ -51,7 +52,8 @@ const CategoriesPage = ({ categories }: Props) => (
                                     <span className="tag is-link is-light is-medium">
                                         <Link href={`/categories/${name}`}>
                                             <a>
-                                                <span>{`#${name} (${count})`}</span>
+                                                <CategoryIcon />
+                                                <span>{` ${name} (${count})`}</span>
                                             </a>
                                         </Link>
                                     </span>
