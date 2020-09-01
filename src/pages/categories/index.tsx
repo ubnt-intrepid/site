@@ -34,36 +34,23 @@ const CategoriesPage = ({ categories }: Props) => (
 
         <Header />
 
-        <section className="hero">
-            <div className="hero-body has-text-centered">
-                <div className="container">
-                    <h1 className="title">Categories</h1>
-                </div>
-            </div>
-        </section>
+        <main>
+            <h1>Categories</h1>
 
-        <main className="container">
-            <div className="container has-text-centered">
-                <div className="columns">
-                    <div className="column is-8 is-offset-2">
-                        <div className="list box">
-                            <div className="tags is-centered">
-                                {categories.map(({ name, count }) => (
-                                    <span className="tag is-link is-light is-medium">
-                                        <Link href={`/categories/${name}`}>
-                                            <a>
-                                                <CategoryIcon />
-                                                <span>{` ${name} (${count})`}</span>
-                                            </a>
-                                        </Link>
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ul>
+                { categories.map(({ name, count }) => (
+                    <li key={name}>
+                        <Link href={`/categories/${name}`}>
+                            <a>
+                                <CategoryIcon />
+                                <span>{` ${name} (${count})`}</span>
+                            </a>
+                        </Link>
+                    </li>
+                )) }
+            </ul>
         </main>
+
         <Footer />
     </>
 )

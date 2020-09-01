@@ -46,21 +46,8 @@ const CategoryPage = ({ categoryName, posts }: Props) => (
 
         <Header />
 
-        <main className="container">
-            <section className="hero">
-                <div className="hero-body has-text-centered">
-                    <div className="container">
-                        <Link href="/">
-                            <a>
-                                <h1 className="title">
-                                    <CategoryIcon />{` ${categoryName}`}
-                                </h1>
-                            </a>
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
+        <main>
+            <h1><CategoryIcon />{` ${categoryName}`}</h1>
             <PostList posts={posts} />
         </main>
 

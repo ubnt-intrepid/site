@@ -7,25 +7,21 @@ export type Props = {
 }
 
 const PostList = ({ posts }: Props) => (
-    <section className="articles">
-        <div className="column is-8 is-offset-2">
-            <ul>
-                {posts.map(({ id, date, title }) => {
-                    return (
-                        <li key={id}>
-                            <Link href="/[id]" as={`/${id}`}>
-                                <a>{title}</a>
-                            </Link>
-                            {' - '}
-                            <span>
-                                <Date dateString={date} />
-                            </span>
-                        </li>
-                    );
-                })}
-            </ul>
-        </div>
-    </section>
+    <ul>
+        { posts.map(({ id, date, title }) => {
+            return (
+                <li key={id}>
+                    <Link href="/[id]" as={`/${id}`}>
+                        <a>{title}</a>
+                    </Link>
+                    {' - '}
+                    <span>
+                        <Date dateString={date} />
+                    </span>
+                </li>
+            );
+        }) }
+    </ul>
 );
 
 export default PostList

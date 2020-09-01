@@ -27,19 +27,14 @@ const IndexPage = ({ posts }: Props) => {
 
             <Header hideSiteTitle={true} />
 
-            <main className="container">
-                <section className="hero">
-                    <div className="hero-body has-text-centered">
-                        <div className="container">
-                            <Link href="/">
-                                <a>
-                                    <h1 className="title">{siteTitle}</h1>
-                                </a>
-                            </Link>
-                            <h2 className="subtitle">{siteDescription}</h2>
-                        </div>
-                    </div>
-                </section>
+            <main>
+                <h1>
+                    <Link href="/">
+                        <a>{siteTitle}</a>
+                    </Link>
+                </h1>
+
+                <h2>{siteDescription}</h2>
 
                 <PostList posts={posts} />
             </main>

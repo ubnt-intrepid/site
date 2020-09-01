@@ -34,36 +34,23 @@ const TagsPage = ({ tags }: Props) => (
 
         <Header />
 
-        <section className="hero">
-            <div className="hero-body has-text-centered">
-                <div className="container">
-                    <h1 className="title">Tags</h1>
-                </div>
-            </div>
-        </section>
+        <main>
+            <h1>Tags</h1>
 
-        <main className="container">
-            <div className="container has-text-centered">
-                <div className="columns">
-                    <div className="column is-8 is-offset-2">
-                        <div className="list box">
-                            <div className="tags is-centered">
-                                {tags.map(({ name, count }) => (
-                                    <span className="tag is-link is-light is-medium">
-                                        <Link href={`/tags/${name}`}>
-                                            <a>
-                                                <TagIcon />
-                                                <span>{` ${name} (${count})`}</span>
-                                            </a>
-                                        </Link>
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ul>
+                { tags.map(({ name, count }) => (
+                    <li key={name}>
+                        <Link href={`/tags/${name}`}>
+                            <a>
+                                <TagIcon />
+                                <span>{` ${name} (${count})`}</span>
+                            </a>
+                        </Link>
+                    </li>
+                )) }
+            </ul>
         </main>
+
         <Footer />
     </>
 )

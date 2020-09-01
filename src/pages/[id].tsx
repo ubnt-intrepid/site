@@ -55,7 +55,12 @@ export const getStaticPaths: GetStaticPaths = async () => (
 const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
     const permalink = `${baseUrl}/${id}/`;
     const pageTitle = `${title} - ${siteTitle}`;
+    const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
+    const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
     const sourceUrl = `${siteRepoUrl}/blob/master/posts/${id}.md`;
+
+    const categories = taxonomies.categories ?? [];
+    const tags = taxonomies.tags ?? [];
 
     return (
         <>
@@ -65,82 +70,55 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
 
             <Header />
 
-            <main className="container">
-                <section className="container">
-                    <div className="columns is-desktop">
-                        <div className="column is-10-desktop is-offset-1-desktop">
-                            <article>
-                                <div className="card article">
-                                    <div className="card-content">
-                                        <div className="media">
-                                            <div className="media-content has-text-centered">
-                                                <Link href={`/${id}`}>
-                                                    <a>
-                                                        <p className="title article-title">{title}</p>
-                                                    </a>
-                                                </Link>
+            <main>
+                <article>
+                    <header>
+                        <h1>
+                            <Link href={`/${id}`}>
+                                <a>
+                                    <p className="title article-title">{title}</p>
+                                </a>
+                            </Link>
+                        </h1>
 
-                                                <div className="tags has-addons level-item">
-                                                    <span className="tag is-rounded">
-                                                        <CalendarIcon />&nbsp;<Date dateString={date} />
-                                                    </span>
+                        <ul>
+                            <li>
+                                <CalendarIcon />&nbsp;<Date dateString={date} />
+                            </li>
 
-                                                    <span className="tag is-rounded">
-                                                        <a href={`https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`}
-                                                            target="_blank"
-                                                            title="Tweet">
-                                                            <TwitterIcon />
-                                                            <span className="is-hidden-mobile">{' Share'}</span>
-                                                        </a>
-                                                    </span>
+                            <li>
+                                <a href={tweetUrl} target="_blank" title="Tweet"><TwitterIcon />{' Share'}</a>
+                            </li>
 
-                                                    <span className="tag is-rounded">
-                                                        <a href={`http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`}
-                                                            target="_blank"
-                                                            title="Bookmark">
-                                                            <BookmarkIcon />
-                                                            <span className="is-hidden-mobile">{' Bookmark'}</span>
-                                                        </a>
-                                                    </span>
+                            <li>
+                                <a href={bookmarkUrl} target="_blank" title="Bookmark"><BookmarkIcon />{' Bookmark'}</a>
+                            </li>
 
-                                                    <span className="tag is-rounded">
-                                                        <a href={sourceUrl}>
-                                                            <GitHubIcon />
-                                                            <span className="is-hidden-mobile">{' Source'}</span>
-                                                        </a>
-                                                    </span>
-                                                </div>
+                            <li>
+                                <a href={sourceUrl} target="_blank" title="Source"><GitHubIcon />{' Source'}</a>
+                            </li>
 
-                                                <div className="tags level-item">
-                                                    { taxonomies.categories ? (
-                                                        taxonomies.categories.map(category => (
-                                                            <span className="tag is-link is-light" key={category}>
-                                                                <Link href={`/categories/${category}`} >
-                                                                    <a><CategoryIcon />{` ${category}`}</a>    
-                                                                </Link>
-                                                            </span>
-                                                        ))
-                                                    ) : null }
-                                                    { taxonomies.tags ? (
-                                                        taxonomies.tags.map(tag => (
-                                                            <span className="tag is-link is-light" key={tag}>
-                                                                <Link href={`/tags/${tag}`}>
-                                                                    <a><TagIcon />{` ${tag}`}</a>
-                                                                </Link>
-                                                            </span>
-                                                        ))
-                                                    ) : null }
-                                                </div>
-                                            </div>
-                                        </div>
+                            { categories.map(category => (
+                                <li key={category}>
+                                    <Link href={`/categories/${category}`} >
+                                        <a><CategoryIcon />{` ${category}`}</a>    
+                                    </Link>
+                                </li>
+                              )) }
 
-                                        <div className="content article-body" dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-                </section>
+                            { tags.map(tag => (
+                                <li key={tag}>
+                                    <Link href={`/tags/${tag}`}>
+                                        <a><TagIcon />{` ${tag}`}</a>
+                                    </Link>
+                                </li>
+                              )) }
+
+                        </ul>
+                    </header>
+
+                    <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                </article>
 
                 <Utterances />
 
