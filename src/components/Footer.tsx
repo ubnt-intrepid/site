@@ -1,4 +1,4 @@
-import { authorName, authorUrl } from '../lib/config'
+import { authorName, authorUrl } from '../config'
 
 export type Props = {}
 

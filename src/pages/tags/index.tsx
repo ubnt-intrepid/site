@@ -4,9 +4,9 @@ import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 
-import { siteTitle } from '../../lib/config'
-import { getPostsMetadata } from '../../lib/posts'
-import { collectCounts } from '../../lib/util'
+import { siteTitle } from '../../config'
+import { getPostsMetadata } from '../../posts'
+import { collectCounts } from '../../util'
 
 type Props = {
     tags: {

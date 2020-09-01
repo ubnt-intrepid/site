@@ -5,7 +5,7 @@ import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import PostList from '../../components/PostList'
 
-import { PostMetadata, getPostsMetadata } from '../../lib/posts'
+import { PostMetadata, getPostsMetadata } from '../../posts'
 
 type Props = {
     tagName: string

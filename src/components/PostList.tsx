@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Date from './Date'
-import { PostMetadata } from '../lib/posts'
+import { PostMetadata } from '../posts'
 
 export type Props = {
     posts: PostMetadata[]

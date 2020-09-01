@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { siteTitle } from '../lib/config'
+import { siteTitle } from '../config'
 
 export type Props = {
     hideSiteTitle?: boolean

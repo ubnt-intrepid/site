@@ -5,8 +5,8 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Date from '../components/Date'
 
-import { baseUrl, siteTitle, siteRepo, siteRepoUrl } from '../lib/config'
-import { loadPost, getPostIds, Taxonomies } from '../lib/posts'
+import { baseUrl, siteTitle, siteRepo, siteRepoUrl } from '../config'
+import { loadPost, getPostIds, Taxonomies } from '../posts'
 
 import remark from 'remark'
 import footnotes from 'remark-footnotes'
