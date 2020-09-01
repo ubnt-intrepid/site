@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+
+pre {
+    margin: 0 !important;
+    margin-bottom: 1rem !important;
+    padding: 0 !important;
+}
+
+.hljs {
+    padding: 0.8rem 1.2rem !important;
+}
+
+.fa-hatena:before {
+    content: "B!";
+    font-family: Verdana;
+    font-weight: bold;
+}
+
+@tailwind utilities;
