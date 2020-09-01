@@ -5,6 +5,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Date from '../components/Date'
 import Utterances from '../components/Utterances'
+import { CalendarIcon, CategoryIcon, TagIcon, GitHubIcon, BookmarkIcon, TwitterIcon } from '../components/icons'
 
 import { baseUrl, siteTitle, siteRepoUrl } from '../config'
 import { loadPost, getPostIds, Taxonomies } from '../posts'
@@ -81,15 +82,14 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
 
                                                 <div className="tags has-addons level-item">
                                                     <span className="tag is-rounded">
-                                                        <i className="far fa-calendar" aria-hidden="true"></i>
-                                                        &nbsp;<Date dateString={date} />
+                                                        <CalendarIcon />&nbsp;<Date dateString={date} />
                                                     </span>
 
                                                     <span className="tag is-rounded">
                                                         <a href={`https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`}
                                                             target="_blank"
                                                             title="Tweet">
-                                                            <i className="fab fa-twitter" aria-hidden="true"></i>
+                                                            <TwitterIcon />
                                                             <span className="is-hidden-mobile">{' Share'}</span>
                                                         </a>
                                                     </span>
@@ -98,14 +98,14 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                                         <a href={`http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`}
                                                             target="_blank"
                                                             title="Bookmark">
-                                                            <i className="fa fa-hatena" aria-hidden="true"></i>
+                                                            <BookmarkIcon />
                                                             <span className="is-hidden-mobile">{' Bookmark'}</span>
                                                         </a>
                                                     </span>
 
                                                     <span className="tag is-rounded">
                                                         <a href={sourceUrl}>
-                                                            <i className="fab fa-github" aria-hidden="true"></i>
+                                                            <GitHubIcon />
                                                             <span className="is-hidden-mobile">{' Source'}</span>
                                                         </a>
                                                     </span>
@@ -116,10 +116,7 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                                         taxonomies.categories.map(category => (
                                                             <span className="tag is-link is-light" key={category}>
                                                                 <Link href={`/categories/${category}`} >
-                                                                    <a>
-                                                                        <i className="fas fa-folder"></i>
-                                                                        {` ${category}`}
-                                                                    </a>    
+                                                                    <a><CategoryIcon />{` ${category}`}</a>    
                                                                 </Link>
                                                             </span>
                                                         ))
@@ -128,10 +125,7 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                                         taxonomies.tags.map(tag => (
                                                             <span className="tag is-link is-light" key={tag}>
                                                                 <Link href={`/tags/${tag}`}>
-                                                                    <a>
-                                                                        <i className="fas fa-tag"></i>
-                                                                        {` ${tag}`}
-                                                                    </a>
+                                                                    <a><TagIcon />{` ${tag}`}</a>
                                                                 </Link>
                                                             </span>
                                                         ))

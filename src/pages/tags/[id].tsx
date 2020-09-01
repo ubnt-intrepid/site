@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import PostList from '../../components/PostList'
+import { TagIcon } from '../../components/icons'
 
 import { PostMetadata, getPostsMetadata } from '../../posts'
 
@@ -51,7 +52,9 @@ const TagPage = ({ tagName, posts }: Props) => (
                     <div className="container">
                         <Link href="/">
                             <a>
-                                <h1 className="title">{`Tag - ${tagName}`}</h1>
+                                <h1 className="title">
+                                    <TagIcon />{` ${tagName}`}
+                                </h1>
                             </a>
                         </Link>
                     </div>

@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
+import { TagIcon } from '../../components/icons'
 
 import { siteTitle } from '../../config'
 import { getPostsMetadata } from '../../posts'
@@ -51,7 +52,8 @@ const TagsPage = ({ tags }: Props) => (
                                     <span className="tag is-link is-light is-medium">
                                         <Link href={`/tags/${name}`}>
                                             <a>
-                                                <span>{`#${name} (${count})`}</span>
+                                                <TagIcon />
+                                                <span>{` ${name} (${count})`}</span>
                                             </a>
                                         </Link>
                                     </span>
