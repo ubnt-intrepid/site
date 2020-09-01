@@ -126,7 +126,7 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                                                     ) : null }
                                                     { taxonomies.tags ? (
                                                         taxonomies.tags.map(tag => (
-                                                            <span className="tag is-link is-light">
+                                                            <span className="tag is-link is-light" key={tag}>
                                                                 <Link href={`/tags/${tag}`}>
                                                                     <a>
                                                                         <i className="fas fa-tag"></i>
