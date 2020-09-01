@@ -1,8 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
+import Layout from '../components/Layout'
 import Date from '../components/Date'
 import Utterances from '../components/Utterances'
 import { CalendarIcon, CategoryIcon, TagIcon, GitHubIcon, BookmarkIcon, TwitterIcon } from '../components/icons'
@@ -63,69 +62,61 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
     const tags = taxonomies.tags ?? [];
 
     return (
-        <>
+        <Layout>
             <Head>
                 <title>{pageTitle}</title>
             </Head>
 
-            <Header />
+            <div className="hero">
+                <h1 className="title">
+                    <Link href={`/${id}`}>
+                        <a>{title}</a>
+                    </Link>
+                </h1>
 
-            <main>
-                <article>
-                    <header>
-                        <h1>
-                            <Link href={`/${id}`}>
-                                <a>
-                                    <p className="title article-title">{title}</p>
-                                </a>
-                            </Link>
-                        </h1>
+                <div className="mt-2">
+                    <span>
+                        <CalendarIcon />&nbsp;<Date dateString={date} />
+                    </span>
+                    { categories.map(category => (
+                    <span key={category} className="ml-3">
+                        <Link href={`/categories/${category}`} >
+                            <a><CategoryIcon />{` ${category}`}</a>    
+                        </Link>
+                    </span>
+                    )) }
+                </div>
 
-                        <ul>
-                            <li>
-                                <CalendarIcon />&nbsp;<Date dateString={date} />
-                            </li>
+                <div className="mt-4">
+                    <span className="mx-2">
+                        <a href={tweetUrl} target="_blank" title="Tweet"><TwitterIcon />{' Share'}</a>
+                    </span>
 
-                            <li>
-                                <a href={tweetUrl} target="_blank" title="Tweet"><TwitterIcon />{' Share'}</a>
-                            </li>
+                    <span className="mx-2">
+                        <a href={bookmarkUrl} target="_blank" title="Bookmark"><BookmarkIcon />{' Bookmark'}</a>
+                    </span>
 
-                            <li>
-                                <a href={bookmarkUrl} target="_blank" title="Bookmark"><BookmarkIcon />{' Bookmark'}</a>
-                            </li>
+                    <span className="mx-2">
+                        <a href={sourceUrl} target="_blank" title="Source"><GitHubIcon />{' Source'}</a>
+                    </span>
+                </div>
+            </div>
 
-                            <li>
-                                <a href={sourceUrl} target="_blank" title="Source"><GitHubIcon />{' Source'}</a>
-                            </li>
+            <div className="mx-auto text-center py-1 bg-gray-200">
+                { tags.map(tag => (
+                    <span key={tag} className="mx-2">
+                        <Link href={`/tags/${tag}`}>
+                            <a><TagIcon />{` ${tag}`}</a>
+                        </Link>
+                    </span>
+                    )) }
+            </div>
 
-                            { categories.map(category => (
-                                <li key={category}>
-                                    <Link href={`/categories/${category}`} >
-                                        <a><CategoryIcon />{` ${category}`}</a>    
-                                    </Link>
-                                </li>
-                              )) }
+            <div className="container mx-auto px-4 py-6 article-body"
+                dangerouslySetInnerHTML={{ __html: contentHtml }} />
 
-                            { tags.map(tag => (
-                                <li key={tag}>
-                                    <Link href={`/tags/${tag}`}>
-                                        <a><TagIcon />{` ${tag}`}</a>
-                                    </Link>
-                                </li>
-                              )) }
-
-                        </ul>
-                    </header>
-
-                    <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                </article>
-
-                <Utterances />
-
-            </main>
-
-            <Footer />
-        </>
+            <Utterances />
+        </Layout>
     );
 }
 

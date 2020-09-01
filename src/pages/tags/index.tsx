@@ -1,8 +1,7 @@
 import { GetStaticProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import Header from '../../components/Header'
-import Footer from '../../components/Footer'
+import Layout from '../../components/Layout'
 import { TagIcon } from '../../components/icons'
 
 import { siteTitle } from '../../config'
@@ -27,32 +26,28 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const TagsPage = ({ tags }: Props) => (
-    <>
+    <Layout>
         <Head>
             <title>{`Tags - ${siteTitle}`}</title>
         </Head>
 
-        <Header />
+        <div className="hero">
+            <h1 className="title">Tags</h1>
+        </div>
 
-        <main>
-            <h1>Tags</h1>
-
-            <ul>
-                { tags.map(({ name, count }) => (
-                    <li key={name}>
-                        <Link href={`/tags/${name}`}>
-                            <a>
-                                <TagIcon />
-                                <span>{` ${name} (${count})`}</span>
-                            </a>
-                        </Link>
-                    </li>
-                )) }
-            </ul>
-        </main>
-
-        <Footer />
-    </>
-)
+        <ul className="container mx-auto px-8 py-6">
+            { tags.map(({ name, count }) => (
+                <li key={name}>
+                    <Link href={`/tags/${name}`}>
+                        <a className="no-underline hover:underline text-blue-500">
+                            <TagIcon />
+                            <span>{` ${name} (${count})`}</span>
+                        </a>
+                    </Link>
+                </li>
+            )) }
+        </ul>
+    </Layout>
+);
 
 export default TagsPage
