@@ -12,6 +12,7 @@ import { loadPost, getPostIds, Taxonomies } from '../posts'
 import remark from 'remark'
 import footnotes from 'remark-footnotes'
 import remark2rehype from 'remark-rehype'
+import raw from 'rehype-raw'
 import highlight from 'rehype-highlight'
 import html from 'rehype-stringify'
 
@@ -28,7 +29,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     const { title, date, taxonomies, contentRaw } = loadPost(id)
     const contentHtml = await remark()
         .use(footnotes, { inlineNotes: true })
-        .use(remark2rehype)
+        .use(remark2rehype, { allowDangerousHtml: true })
+        .use(raw)
         .use(highlight, { ignoreMissing: true })
         .use(html)
         .process(contentRaw)
