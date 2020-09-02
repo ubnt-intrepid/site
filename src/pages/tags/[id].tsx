@@ -1,11 +1,10 @@
 import type { GetStaticProps, GetStaticPaths } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import Header from '../../components/Header'
-import Footer from '../../components/Footer'
-import PostList from '../../components/PostList'
+import Layout from '../../components/Layout'
 import { TagIcon } from '../../components/icons'
 
+import { siteTitle } from '../../config'
 import { PostMetadata, getPostsMetadata } from '../../posts'
 
 type Props = {
@@ -39,33 +38,29 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 const TagPage = ({ tagName, posts }: Props) => (
-    <>
+    <Layout>
         <Head>
-            <title>{`Tag - ${tagName}`}</title>
+            <title>{`Tag: ${tagName} - ${siteTitle}`}</title>
         </Head>
 
-        <Header />
+        <div className="hero">
+            <h1 className="title">
+                <TagIcon />{` ${tagName}`}
+            </h1>
+        </div>
 
-        <main className="container">
-            <section className="hero">
-                <div className="hero-body has-text-centered">
-                    <div className="container">
-                        <Link href="/">
-                            <a>
-                                <h1 className="title">
-                                    <TagIcon />{` ${tagName}`}
-                                </h1>
-                            </a>
+        <ul className="container mx-auto px-8 py-6">
+            { posts.map(({ id, date, title }) => {
+                return (
+                    <li key={id}>
+                        <Link href="/[id]" as={`/${id}`}>
+                            <a className="no-underline hover:underline text-blue-500">{title}</a>
                         </Link>
-                    </div>
-                </div>
-            </section>
-
-            <PostList posts={posts} />
-        </main>
-
-        <Footer />
-    </>
+                    </li>
+                );
+            }) }
+        </ul>
+    </Layout>
 )
 
 export default TagPage

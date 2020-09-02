@@ -1,8 +1,7 @@
 import { GetStaticProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import Header from '../../components/Header'
-import Footer from '../../components/Footer'
+import Layout from '../../components/Layout'
 import { CategoryIcon } from '../../components/icons'
 
 import { siteTitle } from '../../config'
@@ -27,45 +26,28 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const CategoriesPage = ({ categories }: Props) => (
-    <>
+    <Layout>
         <Head>
             <title>{`Categories - ${siteTitle}`}</title>
         </Head>
 
-        <Header />
+        <div className="hero">
+            <h1 className="title">Categories</h1>
+        </div>
 
-        <section className="hero">
-            <div className="hero-body has-text-centered">
-                <div className="container">
-                    <h1 className="title">Categories</h1>
-                </div>
-            </div>
-        </section>
-
-        <main className="container">
-            <div className="container has-text-centered">
-                <div className="columns">
-                    <div className="column is-8 is-offset-2">
-                        <div className="list box">
-                            <div className="tags is-centered">
-                                {categories.map(({ name, count }) => (
-                                    <span className="tag is-link is-light is-medium">
-                                        <Link href={`/categories/${name}`}>
-                                            <a>
-                                                <CategoryIcon />
-                                                <span>{` ${name} (${count})`}</span>
-                                            </a>
-                                        </Link>
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <Footer />
-    </>
+        <ul className="container mx-auto px-8 py-6">
+            { categories.map(({ name, count }) => (
+                <li key={name}>
+                    <Link href={`/categories/${name}`}>
+                        <a className="no-underline hover:underline text-blue-500">
+                            <CategoryIcon />
+                            <span>{` ${name} (${count})`}</span>
+                        </a>
+                    </Link>
+                </li>
+            )) }
+        </ul>
+    </Layout>
 )
 
 export default CategoriesPage

@@ -5,7 +5,7 @@ export type Props = {
 }
 
 const Date = ({ dateString }: Props) => (
-    <time dateTime={dateString}>{format(parseISO(dateString), 'LLLL d, yyyy')}</time>
+    <time dateTime={dateString}>{format(parseISO(dateString), 'yyyy/MM/dd')}</time>
 )
 
 export default Date

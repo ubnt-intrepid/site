@@ -1,8 +1,7 @@
 import { GetStaticProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import Header from '../../components/Header'
-import Footer from '../../components/Footer'
+import Layout from '../../components/Layout'
 import { TagIcon } from '../../components/icons'
 
 import { siteTitle } from '../../config'
@@ -27,45 +26,28 @@ export const getStaticProps: GetStaticProps = async () => {
 }
 
 const TagsPage = ({ tags }: Props) => (
-    <>
+    <Layout>
         <Head>
             <title>{`Tags - ${siteTitle}`}</title>
         </Head>
 
-        <Header />
+        <div className="hero">
+            <h1 className="title">Tags</h1>
+        </div>
 
-        <section className="hero">
-            <div className="hero-body has-text-centered">
-                <div className="container">
-                    <h1 className="title">Tags</h1>
-                </div>
-            </div>
-        </section>
-
-        <main className="container">
-            <div className="container has-text-centered">
-                <div className="columns">
-                    <div className="column is-8 is-offset-2">
-                        <div className="list box">
-                            <div className="tags is-centered">
-                                {tags.map(({ name, count }) => (
-                                    <span className="tag is-link is-light is-medium">
-                                        <Link href={`/tags/${name}`}>
-                                            <a>
-                                                <TagIcon />
-                                                <span>{` ${name} (${count})`}</span>
-                                            </a>
-                                        </Link>
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <Footer />
-    </>
-)
+        <ul className="container mx-auto px-8 py-6">
+            { tags.map(({ name, count }) => (
+                <li key={name}>
+                    <Link href={`/tags/${name}`}>
+                        <a className="no-underline hover:underline text-blue-500">
+                            <TagIcon />
+                            <span>{` ${name} (${count})`}</span>
+                        </a>
+                    </Link>
+                </li>
+            )) }
+        </ul>
+    </Layout>
+);
 
 export default TagsPage

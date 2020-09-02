@@ -1,8 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
+import Layout from '../components/Layout'
 import Date from '../components/Date'
 import Utterances from '../components/Utterances'
 import { CalendarIcon, CategoryIcon, TagIcon, GitHubIcon, BookmarkIcon, TwitterIcon } from '../components/icons'
@@ -55,99 +54,69 @@ export const getStaticPaths: GetStaticPaths = async () => (
 const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
     const permalink = `${baseUrl}/${id}/`;
     const pageTitle = `${title} - ${siteTitle}`;
+    const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
+    const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
     const sourceUrl = `${siteRepoUrl}/blob/master/posts/${id}.md`;
 
+    const categories = taxonomies.categories ?? [];
+    const tags = taxonomies.tags ?? [];
+
     return (
-        <>
+        <Layout>
             <Head>
                 <title>{pageTitle}</title>
             </Head>
 
-            <Header />
+            <div className="hero">
+                <h1 className="title">
+                    <Link href={`/${id}`}>
+                        <a>{title}</a>
+                    </Link>
+                </h1>
 
-            <main className="container">
-                <section className="container">
-                    <div className="columns is-desktop">
-                        <div className="column is-10-desktop is-offset-1-desktop">
-                            <article>
-                                <div className="card article">
-                                    <div className="card-content">
-                                        <div className="media">
-                                            <div className="media-content has-text-centered">
-                                                <Link href={`/${id}`}>
-                                                    <a>
-                                                        <p className="title article-title">{title}</p>
-                                                    </a>
-                                                </Link>
+                <div className="mt-2">
+                    <span>
+                        <CalendarIcon />&nbsp;<Date dateString={date} />
+                    </span>
+                    { categories.map(category => (
+                    <span key={category} className="ml-3">
+                        <Link href={`/categories/${category}`} >
+                            <a><CategoryIcon />{` ${category}`}</a>    
+                        </Link>
+                    </span>
+                    )) }
+                </div>
 
-                                                <div className="tags has-addons level-item">
-                                                    <span className="tag is-rounded">
-                                                        <CalendarIcon />&nbsp;<Date dateString={date} />
-                                                    </span>
+                <div className="mt-4">
+                    <span className="mx-2">
+                        <a href={tweetUrl} target="_blank" title="Tweet"><TwitterIcon />{' Share'}</a>
+                    </span>
 
-                                                    <span className="tag is-rounded">
-                                                        <a href={`https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`}
-                                                            target="_blank"
-                                                            title="Tweet">
-                                                            <TwitterIcon />
-                                                            <span className="is-hidden-mobile">{' Share'}</span>
-                                                        </a>
-                                                    </span>
+                    <span className="mx-2">
+                        <a href={bookmarkUrl} target="_blank" title="Bookmark"><BookmarkIcon />{' Bookmark'}</a>
+                    </span>
 
-                                                    <span className="tag is-rounded">
-                                                        <a href={`http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`}
-                                                            target="_blank"
-                                                            title="Bookmark">
-                                                            <BookmarkIcon />
-                                                            <span className="is-hidden-mobile">{' Bookmark'}</span>
-                                                        </a>
-                                                    </span>
+                    <span className="mx-2">
+                        <a href={sourceUrl} target="_blank" title="Source"><GitHubIcon />{' Source'}</a>
+                    </span>
+                </div>
+            </div>
 
-                                                    <span className="tag is-rounded">
-                                                        <a href={sourceUrl}>
-                                                            <GitHubIcon />
-                                                            <span className="is-hidden-mobile">{' Source'}</span>
-                                                        </a>
-                                                    </span>
-                                                </div>
+            <div className="mx-auto text-center py-1 bg-gray-200">
+                { tags.map(tag => (
+                    <span key={tag} className="mx-2">
+                        <Link href={`/tags/${tag}`}>
+                            <a><TagIcon />{` ${tag}`}</a>
+                        </Link>
+                    </span>
+                    )) }
+            </div>
 
-                                                <div className="tags level-item">
-                                                    { taxonomies.categories ? (
-                                                        taxonomies.categories.map(category => (
-                                                            <span className="tag is-link is-light" key={category}>
-                                                                <Link href={`/categories/${category}`} >
-                                                                    <a><CategoryIcon />{` ${category}`}</a>    
-                                                                </Link>
-                                                            </span>
-                                                        ))
-                                                    ) : null }
-                                                    { taxonomies.tags ? (
-                                                        taxonomies.tags.map(tag => (
-                                                            <span className="tag is-link is-light" key={tag}>
-                                                                <Link href={`/tags/${tag}`}>
-                                                                    <a><TagIcon />{` ${tag}`}</a>
-                                                                </Link>
-                                                            </span>
-                                                        ))
-                                                    ) : null }
-                                                </div>
-                                            </div>
-                                        </div>
+            <div className="container mx-auto px-4 py-6 article-body"
+                dangerouslySetInnerHTML={{ __html: contentHtml }} />
 
-                                        <div className="content article-body" dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-                </section>
-
-                <Utterances />
-
-            </main>
-
-            <Footer />
-        </>
+            <Utterances />
+        </Layout>
     );
 }
 

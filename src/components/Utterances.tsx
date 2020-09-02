@@ -5,7 +5,7 @@ const Utterances = () => {
     const [initialized, setInitialized] = useState(false);
 
     return (
-        <section className="container" ref={elem => {
+        <section ref={elem => {
             if (!elem) {
                 return;
             }
