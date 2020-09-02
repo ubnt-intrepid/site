@@ -40,6 +40,18 @@
     hr {
         @apply mx-20 my-10;
     }
+
+    figure {
+        @apply text-center;
+
+        img {
+            @apply block mx-auto;
+        }
+
+        figcaption {
+            @apply text-sm;
+        }
+    }
 }
 
 @tailwind utilities;

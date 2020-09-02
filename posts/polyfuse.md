@@ -28,16 +28,14 @@ FUSE のアーキテクチャは下図のようになります。
 FUSE はカーネル空間で動作し VFS との橋渡しを行う FUSE カーネルモジュール（図中右下にある緑色の四角）と、ユーザ空間で動作し実質的な処理を行う FUSE ファイルシステムデーモン（図中右上の点線で囲まれた箇所）とが連携することでファイルシステムとしての動作を実現します。
 FUSE カーネルモジュールとの接続の確立は、モジュールロード時に登録されるキャラクタデバイス `/dev/fuse` をオープンし `mount` システムコールを介してパラメータを指定することで行います（実際には、`mount` を呼び出す権限を持たない非特権ユーザに対応するために後述する回避策が取られます）。
 
-<div class="picture" align="center">
+<figure>
   <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/FUSE_structure.svg" alt="FUSE structure" />
-  <p>
-  <small>
+  <figcaption>
     <a href="https://en.wikipedia.org/wiki/Filesystem_in_Userspace#/media/File:FUSE_structure.svg">FUSE structure.svg</a>
     @<a href="https://commons.wikimedia.org/wiki/User:Sven">Sven</a>
     (<a href="https://creativecommons.org/licenses/by-sa/3.0/">Licensed under CC BY-SA 3.0</a>)
-  </small>
-  </p>
-</div>
+  </figcaption>
+</figure>
 
 プロセス（図中左上の四角）がシステムコールを呼び出す、カーネルがページキャッシュやディレクトリエントリキャッシュを更新するなどの理由で VFS に要求が発行されると、FUSE カーネルモジュールは FUSE ファイルシステムに対するリクエストを作成し、それをキューの末尾に追加します。
 FUSE ファイルシステムデーモンは、キューに蓄えられたリクエストを先ほどオープンした `/dev/fuse` を `read`/`readv` することで逐次取り出し、それらに対する処理を実行します。
