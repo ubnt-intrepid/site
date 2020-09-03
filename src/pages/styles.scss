@@ -19,37 +19,58 @@
     }
 }
 
-.article-body {
-    h1, h2, h3, h4, h5, h6 {
-        @apply text-xl font-bold mt-4 mb-2;
-    }
+.article {
+    @apply mx-auto;
 
-    h1 { @apply text-3xl; }
-    h2 { @apply text-2xl; }
-
-    p { @apply my-2; }
-
-    a { @apply no-underline text-blue-500; }
-    a:hover { @apply underline; }
-
-    ul { @apply list-inside list-disc; }
-    ol { @apply list-inside list-decimal; }
-
-    pre { @apply my-2 border-2 border-solid; }
-
-    hr {
-        @apply mx-20 my-10;
-    }
-
-    figure {
-        @apply text-center;
-
-        img {
-            @apply block mx-auto;
+    > .article-body {
+        @apply px-4 py-6;
+    
+        h1, h2, h3, h4, h5, h6 {
+            @apply text-xl mt-4 mb-3;
         }
+    
+        h1 { @apply text-3xl; }
+        h2 { @apply text-2xl; }
+    
+        p { @apply my-2; }
+    
+        a { @apply no-underline text-blue-500; }
+        a:hover { @apply underline; }
+    
+        ul { @apply list-inside list-disc; }
+        ol { @apply list-inside list-decimal; }
+    
+        pre { @apply my-2 border-2 border-solid; }
+    
+        hr {
+            @apply mx-20 my-10;
+        }
+    
+        figure {
+            @apply text-center;
+    
+            img {
+                @apply block mx-auto;
+            }
+    
+            figcaption {
+                @apply text-sm;
+            }
+        }
+    }
 
-        figcaption {
-            @apply text-sm;
+    > .article-footer {
+        @apply flex justify-between text-center text-sm;
+    
+        .card {
+            @apply inline-block p-2;
+
+            a {
+                @apply no-underline text-blue-500;
+            }
+            a:hover {
+                @apply underline;
+            }
         }
     }
 }

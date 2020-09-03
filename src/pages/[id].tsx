@@ -75,49 +75,52 @@ const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
                         <a>{title}</a>
                     </Link>
                 </h1>
+                <p className="mt-3">
+                    <CalendarIcon />&nbsp;<Date dateString={date} />
+                </p>
+            </div>
 
-                <div className="mt-2">
+            <div className="container article">
+                <div className="article-body" dangerouslySetInnerHTML={{ __html: contentHtml }} />
+
+                <div className="article-footer">
                     <span>
-                        <CalendarIcon />&nbsp;<Date dateString={date} />
+                        { categories.map(category => (
+                            <span className="card" key={category}>
+                                <Link href={`/categories/${category}`} >
+                                    <a><CategoryIcon />{` ${category}`}</a>    
+                                </Link>
+                            </span>
+                        )) }
+
+                        { tags.map(tag => (
+                            <span className="card" key={tag}>
+                                <Link href={`/tags/${tag}`}>
+                                    <a><TagIcon />{` ${tag}`}</a>
+                                </Link>
+                            </span>
+                        )) }
                     </span>
-                    { categories.map(category => (
-                    <span key={category} className="ml-3">
-                        <Link href={`/categories/${category}`} >
-                            <a><CategoryIcon />{` ${category}`}</a>    
-                        </Link>
+
+                    <span>
+                        <span className="card">
+                            <a href={tweetUrl} target="_blank" title="Tweet"><TwitterIcon /></a>
+                        </span>
+
+                        <span className="card">
+                            <a href={bookmarkUrl} target="_blank" title="Bookmark"><BookmarkIcon /></a>
+                        </span>
+
+                        <span className="card">
+                            <a href={sourceUrl} target="_blank" title="Source"><GitHubIcon /></a>
+                        </span>
                     </span>
-                    )) }
                 </div>
 
-                <div className="mt-4">
-                    <span className="mx-2">
-                        <a href={tweetUrl} target="_blank" title="Tweet"><TwitterIcon />{' Share'}</a>
-                    </span>
-
-                    <span className="mx-2">
-                        <a href={bookmarkUrl} target="_blank" title="Bookmark"><BookmarkIcon />{' Bookmark'}</a>
-                    </span>
-
-                    <span className="mx-2">
-                        <a href={sourceUrl} target="_blank" title="Source"><GitHubIcon />{' Source'}</a>
-                    </span>
+                <div>
+                    <Utterances />
                 </div>
             </div>
-
-            <div className="mx-auto text-center py-1 bg-gray-200">
-                { tags.map(tag => (
-                    <span key={tag} className="mx-2">
-                        <Link href={`/tags/${tag}`}>
-                            <a><TagIcon />{` ${tag}`}</a>
-                        </Link>
-                    </span>
-                    )) }
-            </div>
-
-            <div className="container mx-auto px-4 py-6 article-body"
-                dangerouslySetInnerHTML={{ __html: contentHtml }} />
-
-            <Utterances />
         </Layout>
     );
 }
