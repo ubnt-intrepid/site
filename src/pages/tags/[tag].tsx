@@ -4,18 +4,19 @@ import Link from 'next/link'
 import Layout from '../../components/Layout'
 import { TagIcon } from '../../components/icons'
 
-import { siteTitle } from '../../config'
-import { PostMetadata, getPostsMetadata } from '../../posts'
+import { siteTitle, siteDescription } from '../../config'
+import { getPosts } from '../../posts'
 
 type Props = {
     tagName: string
-    posts: PostMetadata[]
+    posts: { id: string; title: string }[]
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-    const tagName = params.id as string;
-    const posts = getPostsMetadata()
-        .filter(post => post.taxonomies.tags.includes(tagName));
+    const tagName = params.tag as string;
+    const posts = getPosts()
+        .filter(post => post.tags.includes(tagName))
+        .map(post => ({ id: post.id, title: post.title }));
     return {
         props: {
             tagName,
@@ -25,12 +26,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const tags = getPostsMetadata()
-        .map(post => post.taxonomies.tags)
+    const tags = getPosts()
+        .map(post => post.tags)
         .reduce((acc, val) => acc.concat(val), []);
     const paths = Array.from(new Set(tags))
         .sort()
-        .map(id => ({ params: { id }}));
+        .map(tag => ({ params: { tag }}));
     return {
         paths,
         fallback: false,
@@ -45,12 +46,12 @@ const TagPage = ({ tagName, posts }: Props) => (
 
         <div className="hero">
             <h1 className="title">
-                <TagIcon />{` ${tagName}`}
+                <span><TagIcon />{` ${tagName}`}</span>
             </h1>
         </div>
 
         <ul className="container mx-auto px-8 py-6">
-            { posts.map(({ id, date, title }) => {
+            { posts.map(({ id, title }) => {
                 return (
                     <li key={id}>
                         <Link href="/[id]" as={`/${id}`}>
@@ -61,6 +62,6 @@ const TagPage = ({ tagName, posts }: Props) => (
             }) }
         </ul>
     </Layout>
-)
+);
 
 export default TagPage

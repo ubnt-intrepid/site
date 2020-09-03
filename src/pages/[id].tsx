@@ -7,26 +7,28 @@ import Utterances from '../components/Utterances'
 import { CalendarIcon, CategoryIcon, TagIcon, GitHubIcon, BookmarkIcon, TwitterIcon } from '../components/icons'
 
 import { baseUrl, siteTitle, siteRepoUrl } from '../config'
-import { loadPost, getPostIds, processMarkdown, Taxonomies } from '../posts'
+import { getPosts } from '../posts'
 
 type Props = {
     id: string
     title?: string
     date?: string
-    taxonomies?: Taxonomies
+    tags?: string[]
+    categories?: string[]
     contentHtml: string
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
+    const posts = getPosts()
     const id = params.id as string
-    const { title, date, taxonomies, contentRaw } = loadPost(id)
-    const contentHtml = await processMarkdown(contentRaw);
+    const { title, date, tags, categories, contentHtml } = posts.find(post => post.id === id)
     return {
         props: {
             id,
             title,
             date,
-            taxonomies,
+            tags,
+            categories,
             contentHtml,
         } as Props
     }
@@ -34,20 +36,17 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 export const getStaticPaths: GetStaticPaths = async () => (
     {
-        paths: getPostIds().map(id => ({ params: { id } })),
+        paths: getPosts().map(post => ({ params: { id: post.id } })),
         fallback: false,
     }
 )
 
-const PostPage = ({ id, title, date, taxonomies, contentHtml }: Props) => {
+const PostPage = ({ id, title, date, tags, categories, contentHtml }: Props) => {
     const permalink = `${baseUrl}/${id}/`;
     const pageTitle = `${title} - ${siteTitle}`;
     const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
     const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
     const sourceUrl = `${siteRepoUrl}/blob/master/posts/${id}.md`;
-
-    const categories = taxonomies.categories ?? [];
-    const tags = taxonomies.tags ?? [];
 
     return (
         <Layout>
