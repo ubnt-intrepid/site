@@ -7,14 +7,7 @@ import Utterances from '../components/Utterances'
 import { CalendarIcon, CategoryIcon, TagIcon, GitHubIcon, BookmarkIcon, TwitterIcon } from '../components/icons'
 
 import { baseUrl, siteTitle, siteRepoUrl } from '../config'
-import { loadPost, getPostIds, Taxonomies } from '../posts'
-
-import remark from 'remark'
-import footnotes from 'remark-footnotes'
-import remark2rehype from 'remark-rehype'
-import raw from 'rehype-raw'
-import highlight from 'rehype-highlight'
-import html from 'rehype-stringify'
+import { loadPost, getPostIds, processMarkdown, Taxonomies } from '../posts'
 
 type Props = {
     id: string
@@ -27,14 +20,7 @@ type Props = {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const id = params.id as string
     const { title, date, taxonomies, contentRaw } = loadPost(id)
-    const contentHtml = await remark()
-        .use(footnotes, { inlineNotes: true })
-        .use(remark2rehype, { allowDangerousHtml: true })
-        .use(raw)
-        .use(highlight, { ignoreMissing: true })
-        .use(html)
-        .process(contentRaw)
-        .then(processedContent => processedContent.toString())
+    const contentHtml = await processMarkdown(contentRaw);
     return {
         props: {
             id,
