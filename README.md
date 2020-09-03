@@ -1,18 +1,24 @@
-# My page
+# missing documentation for life
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/70bf3e0b-a4d4-4a48-8299-7b0679795442/deploy-status)](https://app.netlify.com/sites/ubnt-intrepid/deploys)
 
+My blog for technical topics.
+
 ## Requirements
 
-* [zola](https://github.com/getzola/zola)
+* Node.js (10.0 or later)
 * Inspiration for writing
 
-## Usage
+## Development
 
 ```shell-session
-$ zola serve
+$ npm install
+$ npm run dev
 ```
 
-## Acknowledgements
+## Deployment
 
-* The original theme of this blog is based on [the blog theme](https://github.com/BulmaTemplates/bulma-templates/blob/master/templates/blog.html) in [Free Bulma Templates](https://bulmatemplates.github.io/bulma-templates/).
+```shell-session
+$ npm run deploy
+$ /path/to/deploy ./out/ $DEST
+```
