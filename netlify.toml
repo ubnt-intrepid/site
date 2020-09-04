@@ -6,3 +6,6 @@ command = "npm run deploy"
 from = "/*"
 to = "/index.html"
 status = 200
+
+[[plugins]]
+package = "netlify-plugin-cache-nextjs"
