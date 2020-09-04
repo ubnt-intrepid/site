@@ -14,11 +14,12 @@ type Props = {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-    const posts = getPosts()
-        .map(({ slug, title }) => ({ slug, title }))
-
+    const posts = await getPosts()
     return {
-        props: { posts } as Props
+        props: {
+            posts: posts
+                .map(({ slug, title }) => ({ slug, title })),
+        } as Props
     }
 }
 

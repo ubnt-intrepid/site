@@ -17,17 +17,20 @@ type Props = {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const categoryName = params.category as string;
-    const posts = getPosts()
-        .filter(post => post.categories.includes(categoryName))
-        .map(({ slug, title }) => ({ slug, title }));
+    const posts = await getPosts()
 
     return {
-        props: { categoryName, posts } as Props
+        props: {
+            categoryName,
+            posts: posts.filter(post => post.categories.includes(categoryName))
+                .map(({ slug, title }) => ({ slug, title })),
+        } as Props
     }
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const categories = getPosts()
+    const posts = await getPosts()
+    const categories = posts
         .map(post => post.categories)
         .reduce((acc, val) => acc.concat(val), []);
     const paths = Array.from(new Set(categories))

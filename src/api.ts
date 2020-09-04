@@ -1,4 +1,4 @@
-import fs from 'fs'
+import { promises as fs } from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 import toml from 'toml'
@@ -14,21 +14,22 @@ export type Post = {
 
 const postsDirectory = path.join(process.cwd(), '_posts')
 
-export const getPostSlugs = () => (
-    fs.readdirSync(postsDirectory)
-        .map(slug => slug.replace(/\.md$/, ''))
-)
-
-export const getPosts = () => {
-    const slugs = getPostSlugs()
-    const posts = slugs.map(slug => getPostBySlug(slug))
-        .sort((a, b) => a.date > b.date ? 1 : -1)
-    return posts
+export const getPostSlugs = async () => {
+    const rawSlugs = await fs.readdir(postsDirectory)
+    return rawSlugs.map(slug => slug.replace(/\.md$/, ''))
 }
 
-export const getPostBySlug = (slug: string) => {
+export const getPosts = async () => {
+    const slugs = await getPostSlugs()
+    const posts = await Promise.all(
+        slugs.map(async slug => await getPostBySlug(slug))
+    )
+    return posts.sort((a, b) => a.date > b.date ? 1 : -1)
+}
+
+export const getPostBySlug = async (slug: string) => {
     const fullPath = path.join(postsDirectory, `${slug}.md`)
-    const fileContents = fs.readFileSync(fullPath, 'utf8')
+    const fileContents = await fs.readFile(fullPath, 'utf8')
 
     const { data, content } = matter(fileContents, {
         language: 'toml',

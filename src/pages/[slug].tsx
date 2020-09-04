@@ -21,7 +21,7 @@ type Props = {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const slug = params.slug as string
-    const { title, date, tags, categories, content } = getPostBySlug(slug)
+    const { title, date, tags, categories, content } = await getPostBySlug(slug)
     const contentHtml = await markdownToHtml(content)
 
     return {
@@ -36,12 +36,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     }
 }
 
-export const getStaticPaths: GetStaticPaths = async () => (
-    {
-        paths: getPostSlugs().map(slug => ({ params: { slug } })),
+export const getStaticPaths: GetStaticPaths = async () => {
+    const posts = await getPostSlugs()
+    return {
+        paths: posts.map(slug => ({ params: { slug } })),
         fallback: false,
     }
-)
+}
 
 const PostPage = ({ slug, title, date, tags, categories, contentHtml }: Props) => {
     const permalink = `${baseUrl}/${slug}/`;

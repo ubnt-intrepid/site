@@ -16,8 +16,9 @@ type Props = {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
+    const posts = await getPosts()
     const tags = collectCounts(
-        getPosts()
+        posts
             .reduce((acc, post) => acc.concat(post.tags), [])
     );
     return {
