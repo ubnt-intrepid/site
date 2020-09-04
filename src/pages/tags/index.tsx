@@ -5,7 +5,7 @@ import Layout from '../../components/Layout'
 import { TagIcon } from '../../components/icons'
 
 import { siteTitle } from '../../config'
-import { getPostsMetadata } from '../../posts'
+import { getPosts } from '../../posts'
 import { collectCounts } from '../../util'
 
 type Props = {
@@ -17,8 +17,8 @@ type Props = {
 
 export const getStaticProps: GetStaticProps = async () => {
     const tags = collectCounts(
-        getPostsMetadata()
-            .reduce((acc, post) => acc.concat(post.taxonomies.tags), [])
+        getPosts()
+            .reduce((acc, post) => acc.concat(post.tags), [])
     );
     return {
         props: { tags } as Props

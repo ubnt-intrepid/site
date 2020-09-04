@@ -2,19 +2,20 @@ import { GetStaticProps } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import Layout from '../components/Layout'
-import Date from '../components/Date'
 
 import { siteTitle, siteDescription } from '../config'
-import { getPostsMetadata, PostMetadata } from '../posts'
-import { CalendarIcon } from '../components/icons'
+import { getPosts } from '../posts'
 
 type Props = {
-    posts: PostMetadata[]
+    posts: { id: string; title: string }[]
 }
 
 export const getStaticProps: GetStaticProps = async () => (
     {
-        props: { posts: getPostsMetadata() } as Props
+        props: {
+            posts: getPosts()
+                .map(post => ({ id: post.id, title: post.title }))
+        } as Props
     }
 )
 

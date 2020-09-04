@@ -4,33 +4,34 @@ import Link from 'next/link'
 import Layout from '../../components/Layout'
 import { CategoryIcon } from '../../components/icons'
 
-import { siteTitle } from '../../config'
-import { PostMetadata, getPostsMetadata } from '../../posts'
+import { siteTitle, siteDescription } from '../../config'
+import { getPosts } from '../../posts'
 
 type Props = {
     categoryName: string
-    posts: PostMetadata[]
+    posts: { id: string; title: string }[]
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-    const categoryName = params.id as string;
-    const posts = getPostsMetadata()
-        .filter(post => post.taxonomies.categories.includes(categoryName));
+    const categoryName = params.category as string;
+    const posts = getPosts()
+        .filter(post => post.categories.includes(categoryName))
+        .map(post => ({ id: post.id, title: post.title }));
     return {
         props: {
             categoryName,
-            posts,
+            posts
         } as Props
     }
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    const categories = getPostsMetadata()
-        .map(post => post.taxonomies.categories)
+    const categories = getPosts()
+        .map(post => post.categories)
         .reduce((acc, val) => acc.concat(val), []);
     const paths = Array.from(new Set(categories))
         .sort()
-        .map(id => ({ params: { id }}));
+        .map(category => ({ params: { category }}));
     return {
         paths,
         fallback: false,
@@ -45,18 +46,17 @@ const CategoryPage = ({ categoryName, posts }: Props) => (
 
         <div className="hero">
             <h1 className="title">
-                <CategoryIcon />{` ${categoryName}`}
+                <span><CategoryIcon />{` ${categoryName}`}</span>
             </h1>
         </div>
 
         <ul className="container mx-auto px-8 py-6">
-            { posts.map(({ id, date, title }) => {
+            { posts.map(({ id, title }) => {
                 return (
                     <li key={id}>
                         <Link href="/[id]" as={`/${id}`}>
                             <a className="no-underline hover:underline text-blue-500">{title}</a>
                         </Link>
-                        {' - '}
                     </li>
                 );
             }) }
