@@ -4,24 +4,25 @@ import Link from 'next/link'
 import Layout from '../../components/Layout'
 import { TagIcon } from '../../components/icons'
 
-import { siteTitle, siteDescription } from '../../config'
-import { getPosts } from '../../posts'
+import { siteTitle, siteDescription } from '../../constants'
+import { getPosts } from '../../api'
 
 type Props = {
     tagName: string
-    posts: { id: string; title: string }[]
+    posts: {
+        slug: string
+        title: string
+    }[]
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const tagName = params.tag as string;
     const posts = getPosts()
         .filter(post => post.tags.includes(tagName))
-        .map(post => ({ id: post.id, title: post.title }));
+        .map(({ slug, title }) => ({ slug, title }));
+
     return {
-        props: {
-            tagName,
-            posts,
-        } as Props
+        props: { tagName, posts } as Props
     }
 }
 
@@ -51,10 +52,10 @@ const TagPage = ({ tagName, posts }: Props) => (
         </div>
 
         <ul className="container mx-auto px-8 py-6">
-            { posts.map(({ id, title }) => {
+            { posts.map(({ slug, title }) => {
                 return (
-                    <li key={id}>
-                        <Link href="/[id]" as={`/${id}`}>
+                    <li key={slug}>
+                        <Link href="/[slug]" as={`/${slug}`}>
                             <a className="no-underline hover:underline text-blue-500">{title}</a>
                         </Link>
                     </li>

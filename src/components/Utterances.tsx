@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { siteRepo } from '../config'
+import { siteRepo } from '../constants'
 
 const Utterances = () => {
     const [initialized, setInitialized] = useState(false);

@@ -3,21 +3,24 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Layout from '../components/Layout'
 
-import { siteTitle, siteDescription } from '../config'
-import { getPosts } from '../posts'
+import { siteTitle, siteDescription } from '../constants'
+import { getPosts } from '../api'
 
 type Props = {
-    posts: { id: string; title: string }[]
+    posts: {
+        slug: string
+        title: string
+    }[]
 }
 
-export const getStaticProps: GetStaticProps = async () => (
-    {
-        props: {
-            posts: getPosts()
-                .map(post => ({ id: post.id, title: post.title }))
-        } as Props
+export const getStaticProps: GetStaticProps = async () => {
+    const posts = getPosts()
+        .map(({ slug, title }) => ({ slug, title }))
+
+    return {
+        props: { posts } as Props
     }
-)
+}
 
 const IndexPage = ({ posts }: Props) => (
     <Layout hideSiteTitle>
@@ -35,10 +38,10 @@ const IndexPage = ({ posts }: Props) => (
         </div>
 
         <ul className="container mx-auto px-8 py-6">
-            { posts.map(({ id, title }) => {
+            { posts.map(({ slug, title }) => {
                 return (
-                    <li key={id}>
-                        <Link href="/[id]" as={`/${id}`}>
+                    <li key={slug}>
+                        <Link href="/[slug]" as={`/${slug}`}>
                             <a className="no-underline hover:underline text-blue-500">{title}</a>
                         </Link>
                     </li>

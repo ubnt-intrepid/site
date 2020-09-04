@@ -6,11 +6,12 @@ import Date from '../components/Date'
 import Utterances from '../components/Utterances'
 import { CalendarIcon, CategoryIcon, TagIcon, GitHubIcon, BookmarkIcon, TwitterIcon } from '../components/icons'
 
-import { baseUrl, siteTitle, siteRepoUrl } from '../config'
-import { getPosts } from '../posts'
+import { baseUrl, siteTitle, siteRepoUrl } from '../constants'
+import { getPostSlugs, getPostBySlug } from '../api'
+import markdownToHtml from '../markdownToHtml'
 
 type Props = {
-    id: string
+    slug: string
     title?: string
     date?: string
     tags?: string[]
@@ -19,12 +20,13 @@ type Props = {
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-    const posts = getPosts()
-    const id = params.id as string
-    const { title, date, tags, categories, contentHtml } = posts.find(post => post.id === id)
+    const slug = params.slug as string
+    const { title, date, tags, categories, content } = getPostBySlug(slug)
+    const contentHtml = await markdownToHtml(content)
+
     return {
         props: {
-            id,
+            slug,
             title,
             date,
             tags,
@@ -36,17 +38,17 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 export const getStaticPaths: GetStaticPaths = async () => (
     {
-        paths: getPosts().map(post => ({ params: { id: post.id } })),
+        paths: getPostSlugs().map(slug => ({ params: { slug } })),
         fallback: false,
     }
 )
 
-const PostPage = ({ id, title, date, tags, categories, contentHtml }: Props) => {
-    const permalink = `${baseUrl}/${id}/`;
+const PostPage = ({ slug, title, date, tags, categories, contentHtml }: Props) => {
+    const permalink = `${baseUrl}/${slug}/`;
     const pageTitle = `${title} - ${siteTitle}`;
     const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
     const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
-    const sourceUrl = `${siteRepoUrl}/blob/master/posts/${id}.md`;
+    const sourceUrl = `${siteRepoUrl}/blob/master/posts/${slug}.md`;
 
     return (
         <Layout>
@@ -56,7 +58,7 @@ const PostPage = ({ id, title, date, tags, categories, contentHtml }: Props) => 
 
             <div className="hero">
                 <h1 className="title">
-                    <Link href={`/${id}`}>
+                    <Link href={`/${slug}`}>
                         <a>{title}</a>
                     </Link>
                 </h1>

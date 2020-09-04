@@ -4,9 +4,9 @@ import Link from 'next/link'
 import Layout from '../../components/Layout'
 import { CategoryIcon } from '../../components/icons'
 
-import { siteTitle } from '../../config'
-import { getPosts } from '../../posts'
-import { collectCounts } from '../../util'
+import { siteTitle } from '../../constants'
+import { getPosts } from '../../api'
+import collectCounts from '../../collectCounts'
 
 type Props = {
     categories: {

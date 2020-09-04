@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { authorName, authorUrl, siteTitle } from '../config'
+import { authorName, authorUrl, siteTitle } from '../constants'
 
 export type Props = {
     children?: React.ReactNode
