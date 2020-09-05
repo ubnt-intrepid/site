@@ -24,7 +24,7 @@ export const getPosts = async () => {
     const posts = await Promise.all(
         slugs.map(async slug => await getPostBySlug(slug))
     )
-    return posts.sort((a, b) => a.date > b.date ? 1 : -1)
+    return posts.sort((a, b) => a.date < b.date ? 1 : -1)
 }
 
 export const getPostBySlug = async (slug: string) => {
