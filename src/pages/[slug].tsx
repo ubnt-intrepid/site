@@ -6,7 +6,7 @@ import Date from '../components/Date'
 import Utterances from '../components/Utterances'
 import { CalendarIcon, CategoryIcon, TagIcon, GitHubIcon, BookmarkIcon, TwitterIcon } from '../components/icons'
 
-import { baseUrl, siteTitle, siteRepoUrl } from '../constants'
+import { baseUrl, siteTitle, siteRepoUrl, authorTwitterName } from '../constants'
 import { getPostSlugs, getPostBySlug } from '../api'
 import markdownToHtml from '../markdownToHtml'
 
@@ -55,6 +55,9 @@ const PostPage = ({ slug, title, date, tags, categories, contentHtml }: Props) =
         <Layout>
             <Head>
                 <title>{pageTitle}</title>
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:site" content={authorTwitterName} />
+                <meta name="og:url" content={permalink} />
             </Head>
 
             <div className="hero">
