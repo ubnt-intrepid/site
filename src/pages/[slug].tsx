@@ -55,9 +55,11 @@ const PostPage = ({ slug, title, date, tags, categories, contentHtml }: Props) =
         <Layout>
             <Head>
                 <title>{pageTitle}</title>
+                <meta name="og:title" content={pageTitle} />
+                <meta name="og:type" content="article" />
+                <meta name="og:url" content={permalink} />
                 <meta name="twitter:card" content="summary" />
                 <meta name="twitter:site" content={authorTwitterName} />
-                <meta name="og:url" content={permalink} />
             </Head>
 
             <div className="hero">
