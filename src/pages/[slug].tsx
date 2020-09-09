@@ -49,7 +49,7 @@ const PostPage = ({ slug, title, date, tags, categories, contentHtml }: Props) =
     const pageTitle = `${title} - ${siteTitle}`;
     const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
     const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
-    const sourceUrl = `${siteRepoUrl}/blob/master/posts/${slug}.md`;
+    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${slug}.md`;
 
     return (
         <Layout>
