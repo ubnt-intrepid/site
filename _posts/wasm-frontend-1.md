@@ -45,9 +45,7 @@ $ cargo new --lib seed-rs-getting-started
 $ cd $_
 ```
 
-<span class="px-2 py-1 rounded text-sm bg-gray-200"><code>Cargo.toml</code></span>
-
-```toml
+```toml Cargo.toml
 [package]
 name = "wasm-bindgen-getting-started"
 version = "0.0.0"
@@ -69,9 +67,7 @@ features = [
 
 単純な例として、Wasm モジュールをロードしたらブラウザのデバッグコンソールにメッセージを表示するだけのアプリケーションを作ってみます。`#[wasm_bindgen(start)]` を指定することで、モジュールがロードされた時のエントリポイントを指定することが出来ます。
 
-<span class="px-2 py-1 rounded text-sm bg-gray-200"><code>src/lib.rs</code></span>
-
-```rust
+```rust src/lib.rs
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
@@ -114,9 +110,7 @@ wasm_bindgen_getting_started.js
 最後に、生成された WebAssembly を HTML 側で読み込み、期待通りの実行が出来ているかどうか確認します。
 適当な HTTP サーバで `dist/` を開き、ブラウザのデバッグコンソールに `Hello, from Rust!` と表示されていることを確認します。
 
-<span class="px-2 py-1 rounded text-sm bg-gray-200"><code>dist/index.html</code></span>
-
-```html
+```html dist/index.html
 <!DOCTYPE html>
 <html>
 <head>
@@ -142,9 +136,7 @@ $ python3 -m http.server -d dist/
 `web-sys` を用いて、WebAssembly 側から DOM を操作してみます。
 まず、DOM 関連のバインディングを有効化するために `web-sys` の feature flag を次のように書き換えます（ついでに使用しない `"console"` を削除します）。
 
-<span class="px-2 py-1 rounded text-sm bg-gray-200"><code>Cargo.toml</code></span>
-
-```diff
+```diff Cargo.toml
 [dependencies.web-sys]
 version = "0.3"
 features = [
@@ -160,9 +152,7 @@ features = [
 WebAssembly 側のコードは次のようになります。
 基本的には JavaScript で提供されている API と同じような使い勝手で用いることが出来るようになっていますが、camelCase/snake_case やエラーの取り扱いなど若干異なるので注意する必要があります。
 
-<span class="px-2 py-1 rounded text-sm bg-gray-200"><code>src/lib.rs</code></span>
-
-```rust
+```rust src/lib.rs
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(start)]
@@ -179,9 +169,7 @@ pub fn main() -> Result<(), JsValue> {
 
 HTML 側には、WebAssembly 側からアクセスするための `<div>` 要素を追加しておきます。
 
-<span class="px-2 py-1 rounded text-sm bg-gray-200"><code>dist/index.html</code></span>
-
-```diff
+```diff dist/index.html
 <body>
 +    <div id="app"></div>
 +
