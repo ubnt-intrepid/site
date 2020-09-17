@@ -38,6 +38,7 @@
     "toml": "^3.0.0",
     "typescript": "^4.0.2",
     "unified": "^9.2.0",
-    "unist-builder": "^2.0.3"
+    "unist-builder": "^2.0.3",
+    "zenn-cli": "^0.1.21"
   }
 }
