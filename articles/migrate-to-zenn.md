@@ -6,3 +6,4 @@ topics: ["rust"]
 published: false
 ---
 
+test
