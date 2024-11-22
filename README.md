@@ -19,6 +19,6 @@ $ npm run dev
 ## Deployment
 
 ```shell-session
-$ npm run deploy
+$ npm run build
 $ /path/to/deploy ./out/ $DEST
 ```
