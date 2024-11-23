@@ -25,19 +25,13 @@ const RootLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
                     crossOrigin="anonymous" />
             </head>
             <body>
-                <div className="flex flex-col min-h-screen">
-                    <Header />
-
+                <Header />
+                <main>
                     {children}
-
-                    <footer className="bg-gray-200">
-                        <p className="text-center text-xs p-2">
-                            &copy; 2019-2024 <strong>
-                                <a href={authorUrl}>{authorName}</a>
-                            </strong>
-                        </p>
-                    </footer>
-                </div>
+                </main>
+                <footer>
+                    <p>&copy; 2019-2024 <strong><a href={authorUrl}>{authorName}</a></strong></p>
+                </footer>
             </body>
         </html>
     )

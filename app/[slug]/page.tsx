@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { baseUrl, siteRepoUrl, siteTitle } from '../../src/consts'
 import { getPostBySlug, getPostSlugs, markdownToHtml } from '../../src/lib'
 import Utterances from '../components/Utterances'
+import Headline from '../components/Headline'
 
 export type Params = {
     slug: string
@@ -35,10 +36,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${slug}.md`;    const content = await markdownToHtml(rawContent)
     return (
         <>
-            <div className='hero'>
-                <h1 className='title'>
-                    <Link href={`/${slug}`}>{title}</Link>
-                </h1>
+            <Headline title={title ?? ""} href={`/${slug}`}>
                 <p className='mt-3'>
                     <i className='far fa-calendar' aria-hidden />
                     &nbsp;
@@ -46,10 +44,12 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                         {formattedDate}
                     </time>
                 </p>
-            </div>
-            <div className='container article'>
+            </Headline>
+
+            <div className='article'>
                 <div className='article-body'
                     dangerouslySetInnerHTML={{ __html: content }} />
+
                 <div className='article-footer'>
                     <span>
                         { categories.map(category => (
@@ -94,11 +94,8 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                         </span>
                     </span>
                 </div>
-
-                <div>
-                    <Utterances />
-                </div>
             </div>
+            <Utterances />
         </>
     )
 }

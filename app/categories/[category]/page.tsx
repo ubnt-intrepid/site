@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { getPosts } from '@/lib'
+import Headline from '../../components/Headline'
 
 export type Params = {
     category: string
@@ -28,21 +29,18 @@ const Category = async ({ params }: { params: Promise<Params> }) => {
     const posts = (await getPosts()).filter(post => post.categories ? post.categories.includes(category) : false)
     return (
         <>
-            <div className='hero'>
-                <h1 className='title'>
-                    <span>
-                        <i className='fas fa-folder' aria-hidden />
-                        &nbsp;
-                        {category}
-                    </span>                    
-                </h1>
-            </div>
-
-            <ul>
+            <Headline title={
+                <span>
+                    <i className='fas fa-folder' aria-hidden />
+                    &nbsp;
+                    {category}
+                </span>
+            } />
+            <ul className='entries'>
                 { posts.map(({ slug, title }) => {
                     return (
                         <li key={slug}>
-                            <Link href="/[slug]" as={`/${slug}`} className='no-underline hover:underline text-blue-500'>
+                            <Link href="/[slug]" as={`/${slug}`}>
                                 {title}
                             </Link>
                         </li>

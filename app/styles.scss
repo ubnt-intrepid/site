@@ -2,7 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
-.hero {
+body {
+    @apply flex flex-col min-h-screen;
+}
+
+header {
+    @apply flex items-center justify-between py-2 bg-gray-200;
+
+    .title {
+        @apply px-2;
+    }
+    
+    nav {
+        ul {
+            @apply inline-flex items-center;
+            li {
+                @apply px-2 md:px-4;
+            }
+        }
+    }
+}
+
+main {
+    @apply flex-grow;
+}
+
+footer {
+    @apply bg-gray-200;
+    p {
+        @apply text-center text-xs p-2;
+    }
+}
+
+.headline {
     @apply text-center py-8 bg-gray-400;
 
     .title {
@@ -15,7 +47,7 @@
 }
 
 .article {
-    @apply mx-auto;
+    @apply container mx-auto;
 
     > .article-body {
         @apply px-4 py-6;
@@ -92,6 +124,13 @@
             }
         }
     }
+}
+
+.entries {
+    @apply container mx-auto px-8 py-6;
+
+    a { @apply no-underline text-blue-500; }
+    a:hover { @apply underline; }
 }
 
 .fa-hatena:before {
