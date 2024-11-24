@@ -1,8 +1,10 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
-import { collectCounts, getPosts } from '../../src/lib'
-import Headline from '../components/Headline'
+import Headline from '@/components/Headline'
+import { Folder } from '@/components/icons'
+import { getPosts } from '@/lib/api'
+import { collectCounts } from '@/lib/utils'
 
 export const metadata: Metadata = {
     title: 'Categories',
@@ -22,9 +24,7 @@ const Categories: React.FC = async () => {
                 { categories.map(({ name, count }) => (
                     <li key={name}>
                         <Link href={`/categories/${name}`}>
-                            <i className='fas fa-folder' aria-hidden />
-                            &nbsp;
-                            <span>{`${name} (${count})`}</span>
+                            <Folder /> <span>{`${name} (${count})`}</span>
                         </Link>
                     </li>
                 ))}

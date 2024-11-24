@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { siteRepo } from '@/consts'
+import { siteRepo } from '@/config'
 
 const Utterances: React.FC = () => {
     const [initialized, setInitialized] = useState(false)

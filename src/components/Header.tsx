@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import React from "react"
-import { siteTitle } from '../../src/consts'
+import { siteTitle } from '@/config'
 
 const Header: React.FC = () => {
     const pathname = usePathname()

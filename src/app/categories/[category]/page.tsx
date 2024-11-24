@@ -1,7 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
-import { getPosts } from '@/lib'
-import Headline from '../../components/Headline'
+import Headline from '@/components/Headline'
+import { Folder } from '@/components/icons'
+import { getPosts } from '@/lib/api'
 
 export type Params = {
     category: string
@@ -29,13 +30,7 @@ const Category = async ({ params }: { params: Promise<Params> }) => {
     const posts = (await getPosts()).filter(post => post.categories ? post.categories.includes(category) : false)
     return (
         <>
-            <Headline title={
-                <span>
-                    <i className='fas fa-folder' aria-hidden />
-                    &nbsp;
-                    {category}
-                </span>
-            } />
+            <Headline title={<span><Folder /> {category}</span>} />
             <ul className='entries'>
                 { posts.map(({ slug, title }) => {
                     return (

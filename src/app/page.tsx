@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import React from 'react'
-import Headline from './components/Headline'
-import { siteTitle, siteDescription } from '../src/consts'
-import { getPosts } from '../src/lib'
+import Headline from '@/components/Headline'
+import { siteDescription, siteTitle } from '@/config'
+import { getPosts } from '@/lib/api'
 
 const IndexPage: React.FC = async () => {
     const rawPosts = await getPosts()

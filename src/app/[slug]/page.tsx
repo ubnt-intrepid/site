@@ -1,10 +1,12 @@
-import { parseISO, format } from 'date-fns'
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { baseUrl, siteRepoUrl, siteTitle } from '../../src/consts'
-import { getPostBySlug, getPostSlugs, markdownToHtml } from '../../src/lib'
-import Utterances from '../components/Utterances'
-import Headline from '../components/Headline'
+import FormattedDate from '@/components/FormattedDate'
+import Headline from '@/components/Headline'
+import Utterances from '@/components/Utterances'
+import { Calendar, Folder, GitHub, Hatena, Tag, Twitter } from '@/components/icons'
+import { baseUrl, siteRepoUrl, siteTitle } from '@/config'
+import { getPostBySlug, getPostSlugs } from '@/lib/api'
+import markdownToHtml from '@/lib/markdownToHtml'
 
 export type Params = {
     slug: string
@@ -26,23 +28,19 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }) 
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const { slug } = await params
     const { title, date, tags: rawTags, categories: rawCategories, rawContent } = await getPostBySlug(slug)
-    const formattedDate = date ? format(parseISO(date), 'yyyy/MM/dd') : null
     const tags = rawTags ?? []
     const categories = rawCategories ?? []
     const permalink = `${baseUrl}/${slug}/`;
     const pageTitle = `${title} - ${siteTitle}`;
     const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
     const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
-    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${slug}.md`;    const content = await markdownToHtml(rawContent)
+    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${slug}.md`;
+    const content = await markdownToHtml(rawContent)
     return (
         <>
             <Headline title={title ?? ""} href={`/${slug}`}>
                 <p className='mt-3'>
-                    <i className='far fa-calendar' aria-hidden />
-                    &nbsp;
-                     <time dateTime={date}>
-                        {formattedDate}
-                    </time>
+                    <Calendar /> <FormattedDate date={date} />
                 </p>
             </Headline>
 
@@ -55,9 +53,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                         { categories.map(category => (
                             <span className='card' key={category}>
                                 <Link href={`/categories/${category}`}>
-                                    <i className='fas fa-folder' aria-hidden />
-                                    &nbsp;
-                                    {category}
+                                    <Folder /> {category}
                                 </Link>
                             </span>
                         ))}
@@ -66,9 +62,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                         { tags.map(tag => (
                             <span className='card' key={tag}>
                                 <Link href={`/tags/${tag}`}>
-                                <i className='fas fa-tag' aria-hidden />
-                                    &nbsp;
-                                    {tag}
+                                    <Tag /> {tag}
                                 </Link>
                             </span>
                         ))}
@@ -77,19 +71,19 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                     <span>
                         <span className='card'>
                             <a href={tweetUrl} target='_blank' title='Tweet'>
-                                <i className='fab fa-twitter' aria-hidden/>
+                                <Twitter />
                             </a>
                         </span>
 
                         <span className='card'>
                             <a href={bookmarkUrl} target='_blank' title='Bookmark'>
-                                <i className='fab fa-hatena' aria-hidden/>
+                                <Hatena />
                             </a>
                         </span>
 
                         <span className='card'>
                             <a href={sourceUrl} target='_blank' title='Source'>
-                                <i className='fab fa-github' aria-hidden/>
+                                <GitHub />
                             </a>
                         </span>
                     </span>
