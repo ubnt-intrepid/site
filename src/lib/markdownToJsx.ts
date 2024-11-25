@@ -1,3 +1,4 @@
+import * as prod from 'react/jsx-runtime'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkDirective from 'remark-directive'
@@ -7,7 +8,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeKatex from 'rehype-katex'
-import rehypeStringify from 'rehype-stringify'
+import rehypeReact from 'rehype-react'
 import { Handlers } from 'mdast-util-to-hast'
 import { Code } from 'mdast'
 import { Element, Properties } from 'hast'
@@ -42,7 +43,7 @@ const remarkCalloutDirectives = () => {
     }
 }
 
-const markdownToHtml = async (rawContent: string) => {
+const markdownToJsx = async (rawContent: string) => {
     const parsed = await unified()
         .use(remarkParse, { fragment: true })
         .use(remarkDirective)
@@ -107,9 +108,13 @@ const markdownToHtml = async (rawContent: string) => {
         .use(rehypeRaw)
         .use(rehypeHighlight)
         .use(rehypeKatex)
-        .use(rehypeStringify)
+        .use(rehypeReact, {
+            Fragment: prod.Fragment,
+            jsx: prod.jsx,
+            jsxs: prod.jsxs
+        })
         .process(rawContent)
-    return parsed.toString()
+    return parsed.result
 }
 
-export default markdownToHtml
+export default markdownToJsx

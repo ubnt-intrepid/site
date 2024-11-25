@@ -6,7 +6,7 @@ import Utterances from '@/components/Utterances'
 import { Calendar, Folder, GitHub, Hatena, Tag, Twitter } from '@/components/icons'
 import { baseUrl, siteRepoUrl, siteTitle } from '@/config'
 import { getPosts } from '@/lib/api'
-import markdownToHtml from '@/lib/markdownToHtml'
+import markdownToJsx from '@/lib/markdownToJsx'
 
 export type Params = {
     slug: string
@@ -37,7 +37,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
     const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
     const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${slug}.md`;
-    const content = await markdownToHtml(rawContent ?? "")
+    const content = await markdownToJsx(rawContent ?? "")
     return (
         <>
             <Headline title={title ?? ""} href={`/${slug}`}>
@@ -47,8 +47,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
             </Headline>
 
             <div className='article'>
-                <div className='article-body'
-                    dangerouslySetInnerHTML={{ __html: content }} />
+                <div className='article-body'>{content}</div>
 
                 <div className='article-footer'>
                     <span>
