@@ -1,7 +1,9 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import React from 'react'
-import { codeToHtml } from 'shiki'
+import React, { Fragment } from 'react'
+import { jsx, jsxs } from 'react/jsx-runtime'
+import { codeToHast } from 'shiki'
+import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import FormattedDate from '@/components/FormattedDate'
 import Headline from '@/components/Headline'
 import Utterances from '@/components/Utterances'
@@ -45,16 +47,25 @@ const canonicalizeLanguageName = (lang?: string) => {
 }
 
 const CodeBlock: React.FC<CodeBlockProps> = async ({ lang, title, content }) => {
-    const html = await codeToHtml(content ?? '', {
+    const hast = await codeToHast(content ?? '', {
         lang: canonicalizeLanguageName(lang),
         theme: 'vitesse-light',
     })
-    return (
-        <div className='code-block'>
-            { title ? <span className='title'>{title}</span> : null}
-            <div dangerouslySetInnerHTML={{ __html: html }} />
-        </div>
-    )
+    return toJsxRuntime(hast, {
+        Fragment,
+        jsx,
+        jsxs,
+        components: {
+            pre: props => {
+                return (
+                    <div className='code-block'>
+                        { title ? <span className='title'>{title}</span> : null}
+                        <pre {...props} />
+                    </div>
+                )
+            }
+        }
+    })
 }
 
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
