@@ -17,7 +17,7 @@ categories = [ "programming" ]
 
 指定する URL は自由ですが、通常は [docs.rs](https://docs.rs) で生成されるドキュメントのリンクを貼っておくのが良いでしょう。
 
-```rust:src/lib.rs
+```rust src/lib.rs
 #![doc(html_root_url = "https://docs.rs/finchers/0.13.2")]
 // ...
 ```
@@ -75,7 +75,7 @@ Markdown ファイル内の Rust コードブロックのテストを実行す�
 
 `cargo test` 実行時に `.git/hooks` へ自動的に hook をインストールしてくれるクレートです（[作者の @Linda_pp 氏による解説記事](https://rhysd.hatenablog.com/entry/2018/10/08/205041)）。`[dev-dependencies]` に依存関係を追加しておくだけで有効化することが出来るので、共同で開発しているプロジェクトに予防接種として追加しておくと良さそうです。
 
-```toml:Cargo.toml
+```toml Cargo.toml
 [dev-dependencies]
 cargo-husky = "1"
 ```

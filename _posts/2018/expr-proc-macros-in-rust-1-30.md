@@ -58,7 +58,7 @@ let dsl = {
 
 上記の制約のもと、式として展開される手続き的マクロを実際に定義するための手順を具体的に説明する。まず、マクロの本体である手続き的マクロ側の実装は次のような見た目になる。
 
-```rust:proc-macro側
+```rust proc-macro側
 #[proc_macro]
 pub fn sql_impl(input: TokenStream) -> TokenStream {
     // 生成されたトークン列
@@ -77,7 +77,7 @@ pub fn sql_impl(input: TokenStream) -> TokenStream {
 次に、ユーザに露出する公開用のマクロを次のように定義する。
 ここで `local_inner_macros` という見慣れないものが `#[macro_export]` に付随しているが、これはマクロの内部で別のマクロを呼び出している場合に `use` 形式でのインポートを可能にするための仕組みである（説明は省略）。
 
-```rust:公開側
+```rust 公開側
 // sql_codegen_impl で定義した手続き的マクロを
 // クレートの「ルート」に再エクスポートする
 extern crate codegen_impl;
@@ -102,7 +102,7 @@ macro_rules! sql {
 
 なお、`edition = "2018"` が有効化されていれば次のようにクレート内の別マクロを `$crate` を用いて指定できるようになる。
 
-```rust:
+```rust
 #[doc(hidden)]
 pub extern crate sql_codegen_impl as imp;
 
@@ -120,7 +120,7 @@ macro_rules! sql {
 
 これで次のように式形式の（手続き的）マクロを提供することが出来る。
 
-```rust:usage
+```rust usage
 extern crate sql_codegen;
 
 fn main() {
@@ -167,4 +167,4 @@ macro_rules! sql {
         Dummy::call($($arg),*)
     }};
 }
-
+```

@@ -68,11 +68,11 @@ fn main() -> tsukuyomi_server::Result<()> {
 
 サーバを起動し、`http://127.0.0.1:4000` へのリクエストに対し所望のレスポンスが返されることを確認します。
 
-```shell-session:run_server
+```shell-session run_server
 $ cargo run
 ```
 
-```shell-session:client
+```shell-session client
 $ curl http://127.0.0.1:4000
 Hello, world.
 ```

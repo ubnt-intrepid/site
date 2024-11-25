@@ -52,7 +52,7 @@ $ cargo add tsukuyomi@0.2
 
 動作確認のため，まずはシンプルな Web アプリケーションを作ります。ソースコードは以下の通りです。（ルーティング関連の API は `tsukuyomi-juniper` により隠蔽されているため，今回は説明を省略します。興味のある方は API ドキュメントや公式リポジトリのサンプルコードなどを参照してください…）
 
-```rust:src/main.rs
+```rust src/main.rs
 extern crate tsukuyomi;
 
 use tsukuyomi::{App, Input, Handler};
@@ -77,11 +77,11 @@ fn main() -> tsukuyomi::AppResult<()> {
 
 プロジェクトを実行し，正しくレスポンスが返ってくれば動作確認は完了です。デフォルトでは，アドレスは `127.0.0.1:4000` に設定されています。
 
-```shell-session:server
+```shell-session server
 $ cargo run
 ```
 
-```shell-session:client
+```shell-session client
 $ curl -i http://127.0.0.1:4000/
 HTTP/1.1 200 OK
 ...
@@ -99,7 +99,7 @@ $ cargo add juniper@0.9 tsukuyomi-juniper@0.1
 
 ソースコードは次のようになります。ここでは，`Query` のみを持つシンプルな GraphQL サーバを想定しています。
 
-```rust:src/main.rs
+```rust src/main.rs
 extern crate tsukuyomi;
 #[macro_use]
 extern crate juniper;
@@ -144,18 +144,18 @@ fn main() -> tsukuyomi::AppResult<()> {
 
 ビルドに成功したらサーバを起動し，次のクエリを用いて動作確認を行います。
 
-```graphql:test-query
+```graphql test-query
 { apiVersion }
 ```
 
 HTTP を介して GraphQL のリクエストを送信するためには，`GET` か `POST` のいずれかの形式を用いる必要があります（詳細は[こちらのドキュメント](https://graphql.org/learn/serving-over-http/)などを参照してください）。今回の場合，以下のいずれかの方法でクエリを送信する必要があります。波括弧（`{`, `}`）を直接クエリ文字列に指定することはできないため，使用する HTTP クライアントに応じた方法を用いて GraphQL のクエリをエンコードする必要がある点に注意してください。
 
-```http:get-request
+```http get-request
 GET /graphql?query=%7BapiVersion%7D HTTP/1.1
 Host: 127.0.0.1:4000
 ```
 
-```http:post-request
+```http post-request
 POST /graphql HTTP/1.1
 Host: 127.0.0.1:4000
 Content-Type: application/json
@@ -168,7 +168,7 @@ Content-Type: application/json
 
 上のようなリクエストに対し，次のようなレスポンスが返ってくれば動作確認は完了です。
 
-```http:query-result
+```http query-result
 HTTP/1.1 200 OK
 Content-Type: application/json
 ...
@@ -189,7 +189,7 @@ GraphQL サーバのひな形は出来上がったので，あとはゴリゴリ
 
 まず，スキーマ定義で時刻型と UUID を扱いたいので次のように依存関係を更新します。`failure` は必須ではないですが
 
-```toml:Cargo.toml
+```toml Cargo.toml
 [dependencies]
 ...
 failure = "0.1.1"
@@ -201,7 +201,7 @@ uuid = { version = "0.5.1", features = ["v4"] }
 
 [^1]: [こちら](https://github.com/haikyuu/graphql-todo-list/blob/master/api/presentation/schema.js)をベースにしました。
 
-```graphql:schema
+```graphql schema
 type TimeStamp {} # = chrono::DateTime<chrono::Utc>
 type Uuid {} # = uuid::Uuid
 
@@ -251,7 +251,7 @@ schema {
 
 上のスキーマを愚直に Rust コードに書き下すと次のようになりました。状況にもよりますが，基本的には単純な読み替えをしていけばスキーマを Rust コードに書き下すことが可能です。フィールド名は Juniper 側で自動的に `snake_case` から `camelCase` に変換されるので，基本的には Rust の流儀で名前を付けていきます。
 
-```rust:src/schema.rs
+```rust src/schema.rs
 use chrono::{DateTime, Utc};
 use juniper::{FieldResult, RootNode};
 use uuid::Uuid;
@@ -338,7 +338,7 @@ pub fn create_schema() -> Schema {
 
 上のコード内で使用されている `Context` は，GraphQL オブジェクト内でアクセス可能なコンテキスト情報（DBのコネクションプールや認証情報など）を格納した型です。本来であれば diesel などと組み合わせて真面目にデータベースとやり取りするべきなのでしょうが，今回は横着して簡単な実装にしました。コンテキスト値はリクエスト間で共有されるため，`RwLock` を用いて排他制御を行っています。
 
-```rust:src/context.rs
+```rust src/context.rs
 use juniper;
 use std::sync::RwLock;
 use uuid::Uuid;

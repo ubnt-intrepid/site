@@ -17,7 +17,7 @@ categories = [ "programming" ]
 
 バージョン番号を書き換える対象となるファイルは、次のように `Cargo.toml` 内のメタデータとして指定します。このあたりの使用は `cargo-release` で用いられていたものを参考にしました。
 
-```toml:Cargo.toml
+```toml Cargo.toml
 # package.metadata.version-sync.replacements という配列にバージョン番号を同期させたいターゲットを指定する（長い）。
 [[package.metadata.version-sync.replacements]]
 file = "README.md" # `CARGO_MANIFEST_DIR` からの相対パスを指定する
@@ -53,12 +53,12 @@ $ cargo version-sync [--verbose]
 ## `cargo test` との連携
 `cargo test` 実行時にバージョン番号の更新が行われているかを確認する方法です。後述する Git のカスタムフックと組み合わせることで、バージョン番号が更新されていない変更を誤ってコミット・マージしてしまうミスを防ぐことが出来ます。
 
-```toml:Cargo.toml
+```toml Cargo.toml
 [dev-dependencies]
 cargo-version-sync = { version = "0.0.1", default-features = false }
 ```
 
-```rust:tests/version_sync.rs
+```rust tests/version_sync.rs
 extern crate cargo_version_sync;
 
 #[test]
@@ -71,7 +71,7 @@ fn test_version_sync() {
 
 Git のカスタムフックを用いてコミット前にバージョン番号の更新を確認する方法です。ちょうど [`cargo-husky`](https://crates.io/crates/cargo-husky`) という便利なクレートがあるので、これを併用してフックスクリプトのインストールを自動化してしまいます。
 
-```toml:Cargo.toml
+```toml Cargo.toml
 [dev-dependencies.cargo-husky]
 version = "1"
 default-features = false
@@ -80,7 +80,7 @@ features = ["user-hooks"]
 
 `cargo version-sync` には `--check` というオプションが用意されており、これをつけて実行することでバージョン番号が全て更新されているかどうかをシェルスクリプト内で確認することが出来ます。例として、`cargo-fmt` によるフォーマットチェックと併用したスクリプトは次のようになります。
 
-```sh:.cargo-husky/hooks/pre-commit
+```sh .cargo-husky/hooks/pre-commit
 #!/bin/bash
 
 set -e

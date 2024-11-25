@@ -134,7 +134,7 @@ $ cargo xtask script install-git-hooks
 
 必要であれば、追加のエイリアスを定義してタイプ量を削減させるのも良いかもしれません。
 
-```diff:.cargo/config
+```diff .cargo/config
 [alias]
 xtask = "run --manifest-path ./xtask/Cargo.toml --"
 +xscript = "xtask script"

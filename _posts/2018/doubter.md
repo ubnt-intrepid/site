@@ -66,12 +66,12 @@ mod docs {
 `doubter` は Markdown ファイルをコメントとして展開するため、それをテストとして実行するためのクレートを別途用意する必要があります。`target/` を共有するため、テスト対象のクレートの `Cargo.toml` を編集し、追加したクレートを `[workspace.members]` に追加しておきます。
 
 
-```shell-session:create-doctest-crate
+```shell-session create-doctest-crate
 $ cargo new --lib testcrates/test_markdown_files
 $ edit Cargo.toml
 ```
 
-```toml:Cargo.toml
+```toml Cargo.toml
 ...
 
 [workspace]
@@ -82,7 +82,7 @@ members = [
 
 テスト用のクレートの依存関係に `doubter` とテスト対象のクレートを追加し、`src/lib.rs` を編集してテスト対象となる Markdown ファイルへの（`src/lib.rs` の属するクレートの `Cargo.toml` が置かれた場所から見た）相対パスを記述していきます。
 
-```toml:testcrates/test_markdown_files/Cargo.toml
+```toml testcrates/test_markdown_files/Cargo.toml
 [dependencies]
 doubter = "0.0.3"
 
@@ -90,7 +90,7 @@ doubter = "0.0.3"
 foo = { path = "../.." }
 ```
 
-```rust:testcrates/test_markdown_files/src/lib.rs
+```rust testcrates/test_markdown_files/src/lib.rs
 #[macro_use]
 extern crate doubter;
 

@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import React from 'react'
+import { codeToHtml } from 'shiki'
 import FormattedDate from '@/components/FormattedDate'
 import Headline from '@/components/Headline'
 import Utterances from '@/components/Utterances'
@@ -26,6 +28,35 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }) 
     } satisfies Metadata
 }
 
+type CodeBlockProps = {
+    lang?: string
+    title?: string
+    content?: string
+}
+
+const canonicalizeLanguageName = (lang?: string) => {
+    if (!lang) {
+        return 'txt'
+    }
+    if (lang === 'shell-session' || lang === 'command') {
+        return 'shellsession'
+    }
+    return lang
+}
+
+const CodeBlock: React.FC<CodeBlockProps> = async ({ lang, title, content }) => {
+    const html = await codeToHtml(content ?? '', {
+        lang: canonicalizeLanguageName(lang),
+        theme: 'vitesse-light',
+    })
+    return (
+        <div className='code-block'>
+            { title ? <span className='title'>{title}</span> : null}
+            <div dangerouslySetInnerHTML={{ __html: html }} />
+        </div>
+    )
+}
+
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const { slug } = await params
     const posts = await getPosts()
@@ -37,7 +68,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
     const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
     const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${slug}.md`;
-    const content = await markdownToJsx(rawContent ?? "")
+    const content = await markdownToJsx(rawContent ?? "", CodeBlock)
     return (
         <>
             <Headline title={title ?? ""} href={`/${slug}`}>
