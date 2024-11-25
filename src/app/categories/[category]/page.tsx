@@ -1,5 +1,4 @@
 import React from 'react'
-import Link from 'next/link'
 import Headline from '@/components/Headline'
 import { Folder } from '@/components/icons'
 import { getPosts } from '@/lib/api'
