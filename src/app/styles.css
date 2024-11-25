@@ -7,7 +7,7 @@ body {
 }
 
 header {
-    @apply flex items-center justify-between py-2 bg-gray-200;
+    @apply flex items-center justify-between py-2 bg-orange-800 text-orange-200;
 
     .title {
         @apply px-2;
@@ -28,14 +28,14 @@ main {
 }
 
 footer {
-    @apply bg-gray-200;
+    @apply bg-orange-100 text-orange-800;
     p {
         @apply text-center text-xs p-2;
     }
 }
 
 .headline {
-    @apply text-center py-8 bg-gray-400;
+    @apply text-center py-8 bg-orange-400 text-orange-50;
 
     .title {
         @apply text-3xl;
@@ -66,7 +66,7 @@ footer {
         h1 { @apply text-3xl; }
         h2 { @apply text-2xl; }
 
-        a { @apply no-underline text-blue-500 }
+        a { @apply no-underline text-orange-600 }
         a:hover { @apply underline }
 
         ul, ol {
@@ -117,7 +117,7 @@ footer {
             @apply inline-block p-2;
 
             a {
-                @apply no-underline text-blue-500;
+                @apply no-underline text-orange-600;
             }
             a:hover {
                 @apply underline;
@@ -129,7 +129,7 @@ footer {
 .entries {
     @apply container mx-auto px-8 py-6;
 
-    a { @apply no-underline text-blue-500; }
+    a { @apply no-underline text-orange-600; }
     a:hover { @apply underline; }
 }
 

@@ -4,7 +4,7 @@ import Header from '@/components/Header'
 import { authorName, authorUrl, siteTitle } from '@/config'
 
 import '@fortawesome/fontawesome-free/css/all.css'
-import 'highlight.js/styles/atom-one-light.css'
+import 'highlight.js/styles/base16/atelier-plateau-light.css'
 import './styles.css'
 
 export const metadata: Metadata = {
