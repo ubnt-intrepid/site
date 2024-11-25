@@ -25,6 +25,7 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
+    "glob": "^11.0.0",
     "gray-matter": "^4.0.3",
     "mdast-util-to-hast": "^13.2.0",
     "postcss": "^8",

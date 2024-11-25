@@ -5,7 +5,7 @@ import Headline from '@/components/Headline'
 import Utterances from '@/components/Utterances'
 import { Calendar, Folder, GitHub, Hatena, Tag, Twitter } from '@/components/icons'
 import { baseUrl, siteRepoUrl, siteTitle } from '@/config'
-import { getPostBySlug, getPostSlugs } from '@/lib/api'
+import { getPosts } from '@/lib/api'
 import markdownToHtml from '@/lib/markdownToHtml'
 
 export type Params = {
@@ -13,13 +13,14 @@ export type Params = {
 }
 
 export const generateStaticParams = async () => {
-    const posts = await getPostSlugs()
-    return posts.map(slug => ({ slug })) satisfies Params[] as Params[]
+    const posts = await getPosts()
+    return posts.map(({ slug }) => ({ slug })) satisfies Params[] as Params[]
 }
 
 export const generateMetadata = async ({ params }: { params: Promise<Params> }) => {
     const { slug } = await params
-    const { title } = await getPostBySlug(slug)
+    const posts = await getPosts()
+    const { title } = posts.find(post => post.slug == slug) ?? {}
     return {
         title,
     } satisfies Metadata
@@ -27,7 +28,8 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }) 
 
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const { slug } = await params
-    const { title, date, tags: rawTags, categories: rawCategories, rawContent } = await getPostBySlug(slug)
+    const posts = await getPosts()
+    const { title, date, tags: rawTags, categories: rawCategories, rawContent } = posts.find(post => post.slug === slug) ?? {}
     const tags = rawTags ?? []
     const categories = rawCategories ?? []
     const permalink = `${baseUrl}/${slug}/`;
@@ -35,7 +37,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
     const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
     const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${slug}.md`;
-    const content = await markdownToHtml(rawContent)
+    const content = await markdownToHtml(rawContent ?? "")
     return (
         <>
             <Headline title={title ?? ""} href={`/${slug}`}>

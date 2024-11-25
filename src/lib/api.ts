@@ -1,12 +1,13 @@
 import fs from 'fs/promises'
 import path from 'path'
+import { glob } from 'glob'
 import matter from 'gray-matter'
 import toml from 'toml'
 
 const postsDir = path.join(process.cwd(), '_posts')
 
 export type Post = {
-    slug: string 
+    slug: string
     title?: string 
     date?: string
     tags?: string[]
@@ -14,18 +15,19 @@ export type Post = {
     rawContent: string
 }
 
-export const getPostSlugs = async () => {
-    const rawSlugs = await fs.readdir(postsDir)
-    const slugs = rawSlugs.map(slug => slug.replace(/\.md$/, ''))
-    return slugs
-}
-
 export const getPosts = async () => {
-    const slugs = await getPostSlugs()
-    const posts = await Promise.all(
-        slugs.map(async slug => await getPostBySlug(slug))
-    )
-    return posts.sort((a, b) => {
+    const postPaths = await glob(postsDir + '/**/*.md')
+    const posts: Post[] = []
+    for (const filePath of postPaths) {
+        const post = await readPost(filePath)
+        if (posts.findIndex(p => p.slug === post.slug) != -1) {
+            console.warn(`Ignored due to conflicting the slug: ${path.relative(postsDir, filePath)}`)
+            continue
+        }
+        posts.push(post)
+    }
+
+    posts.sort((a, b) => {
         if (!a.date) {
             return -1
         }
@@ -34,11 +36,12 @@ export const getPosts = async () => {
         }
         return a.date < b.date ? 1 : -1
     })
+
+    return posts
 }
 
-export const getPostBySlug = async (slug: string) => {
-    const fullPath = path.join(postsDir, `${slug}.md`)
-    const fileContents = await fs.readFile(fullPath, 'utf8')
+const readPost = async (filePath: string) => {
+    const fileContents = await fs.readFile(filePath, 'utf8')
 
     const { data, content: rawContent } = matter(fileContents, {
         language: 'toml',
@@ -53,12 +56,14 @@ export const getPostBySlug = async (slug: string) => {
         }
     })
     const {
+        slug: rawSlug,
         title,
         date,
         tags: rawTags,
         categories: rawCategories,
         taxonomies,
     } = data as {
+        slug?: string
         title?: string
         date?: string 
         tags?: string[]
@@ -68,6 +73,7 @@ export const getPostBySlug = async (slug: string) => {
             categories?: string[]
         }
     }
+    const slug = rawSlug ?? path.basename(filePath).replace(/\.md$/, '')
     let tags = rawTags ?? []
     let categories = rawCategories ?? []
     if (taxonomies) {
