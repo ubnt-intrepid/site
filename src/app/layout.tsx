@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import React, { ReactNode } from 'react'
 import Header from '@/components/Header'
-import { authorName, authorUrl, siteTitle } from '@/config'
+import { authorName, authorUrl, baseUrl, siteDescription, siteTitle } from '@/config'
 
 import '@fortawesome/fontawesome-free/css/all.css'
 import 'highlight.js/styles/base16/atelier-plateau-light.css'
@@ -11,7 +11,16 @@ export const metadata: Metadata = {
     title: {
         template: `%s - ${siteTitle}`,
         default: siteTitle,
-    }
+    },
+    description: siteDescription,
+    authors: [
+        { name: authorName, url: authorUrl }
+    ],
+    openGraph: {
+        type: "website",
+        url: baseUrl,
+        images: '/image.png',
+    },
 }
 
 const RootLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
