@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     openGraph: {
         type: "website",
         url: baseUrl,
-        images: '/image.png',
+        images: `${baseUrl}/image.png`,
     },
 }
 
