@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Headline from '@/components/Headline'
 import { Folder } from '@/components/icons'
 import { getPosts } from '@/lib/api'
+import PostList from '@/components/PostList'
 
 export type Params = {
     category: string
@@ -31,17 +32,7 @@ const Category = async ({ params }: { params: Promise<Params> }) => {
     return (
         <>
             <Headline title={<span><Folder /> {category}</span>} />
-            <ul className='entries'>
-                { posts.map(({ slug, title }) => {
-                    return (
-                        <li key={slug}>
-                            <Link href="/[slug]" as={`/${slug}`}>
-                                {title}
-                            </Link>
-                        </li>
-                    )
-                })}
-            </ul>
+            <PostList posts={posts} />
         </>
     )
 }

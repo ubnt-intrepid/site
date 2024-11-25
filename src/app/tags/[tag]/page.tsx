@@ -1,6 +1,6 @@
 import React from 'react'
-import Link from 'next/link'
 import Headline from '@/components/Headline'
+import PostList from '@/components/PostList'
 import { Tag as TagIcon } from '@/components/icons'
 import { getPosts } from '@/lib/api'
 
@@ -31,18 +31,7 @@ const Tag = async ({ params }: { params: Promise<Params> }) => {
     return (
         <>
             <Headline title={<span><TagIcon /> {tag}</span>} />
-
-            <ul className='entries'>
-                { posts.map(({ slug, title }) => {
-                    return (
-                        <li key={slug}>
-                            <Link href="/[slug]" as={`/${slug}`}>
-                                {title}
-                            </Link>
-                        </li>
-                    )
-                })}
-            </ul>
+            <PostList posts={posts} />
         </>
     )
 }
