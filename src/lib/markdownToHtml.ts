@@ -1,5 +1,6 @@
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
+import remarkDirective from 'remark-directive'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import remarkRehype from 'remark-rehype'
@@ -10,10 +11,42 @@ import rehypeStringify from 'rehype-stringify'
 import { Handlers } from 'mdast-util-to-hast'
 import { Code } from 'mdast'
 import { Element, Properties } from 'hast'
+import { h } from 'hastscript'
+import { visit } from 'unist-util-visit'
+
+const remarkCalloutDirectives = () => {
+    return (tree: any) => {
+        visit(tree, (node) => {
+            if (
+                node.type !== 'containerDirective' &&
+                node.type !== 'leafDirective' &&
+                node.type !== 'textDirective'
+            ) {
+                return
+            }
+
+            if (node.name !== 'callout') {
+                return
+            }
+
+            const data = node.data || (node.data = {})
+            const tagName = node.type === 'textDirective' ? 'span' : 'div'
+
+            const attributes = node.attributes || {}
+            const className = attributes.className || (attributes.className = [])
+            className.push('callout')
+
+            data.hName = tagName
+            data.hProperties = h(tagName, attributes).properties
+        })
+    }
+}
 
 const markdownToHtml = async (rawContent: string) => {
     const parsed = await unified()
         .use(remarkParse, { fragment: true })
+        .use(remarkDirective)
+        .use(remarkCalloutDirectives)
         .use(remarkGfm)
         .use(remarkMath)
         .use(remarkRehype, {

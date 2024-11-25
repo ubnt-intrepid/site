@@ -103,10 +103,14 @@ footer {
             }
         }
 
-        backquote {
+        blockquote {
             @apply mx-4 px-4 py-2 rounded-sm text-sm;
-            @apply bg-gray-100 shadow-md;
-            @apply border-l-4 border-gray-800;
+            @apply bg-orange-50;
+            @apply border-l-2 border-orange-800;
+        }
+
+        .callout {
+            @apply bg-orange-50 px-5 py-3 my-10 rounded relative;
         }
     }
 
