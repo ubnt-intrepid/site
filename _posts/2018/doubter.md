@@ -1,8 +1,6 @@
 +++
 title = "Markdown 内の Rust コードをテストするためのクレートを作った"
 date = "2018-10-11"
-
-[taxonomies]
 tags = [ "rust", "doctest", "announce", "qiita" ]
 categories = [ "programming" ]
 +++

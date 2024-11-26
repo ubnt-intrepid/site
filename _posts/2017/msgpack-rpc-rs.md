@@ -1,8 +1,6 @@
 +++
 title = "Tokioで1チャンネル双方向通信可能なMessagePack-RPCのライブラリを作った"
 date = "2017-12-20"
-
-[taxonomies]
 tags = [ "rust", "tokio", "announce", "qiita" ]
 categories = [ "programming" ]
 +++

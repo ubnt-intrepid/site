@@ -1,8 +1,6 @@
 +++
 title = "Twitterシェアのフォームにタイトルを挿入する"
 date = "2017-10-06T00:08:37Z"
-
-[taxonomies]
 tags = [ "hexo" ]
 categories = [ "general" ]
 +++

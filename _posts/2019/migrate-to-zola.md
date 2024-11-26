@@ -1,8 +1,6 @@
 +++
 title = "Zolaに移行した"
 date = "2019-12-01"
-
-[taxonomies]
 tags = [ "blog", "zola" ]
 categories = [ "general" ]
 +++

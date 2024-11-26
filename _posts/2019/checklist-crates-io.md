@@ -1,8 +1,6 @@
 +++
 title = "crates.io でクレートを公開する際に気をつけることリスト"
 date = "2019-12-02"
-
-[taxonomies]
 tags = [ "rust", "crates.io", "qiita" ]
 categories = [ "programming" ]
 +++

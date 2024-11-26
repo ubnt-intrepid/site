@@ -1,8 +1,6 @@
 +++
 title = "Rust のマクロ・構文拡張，および Macros 2.0 について"
 date = "2017-12-10T19:07:51Z"
-
-[taxonomies]
 tags = [ "rust", "advent calendar", "macros" ]
 categories = [ "programming" ]
 +++

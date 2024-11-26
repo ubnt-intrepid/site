@@ -1,8 +1,6 @@
 +++
 title = "Rust のフロントエンド開発に入門する (2)"
 date = "2020-09-10T17:42:51+09:00"
-
-[taxonomies]
 tags = ["wasm", "webpack"]
 categories = ["programming"]
 +++

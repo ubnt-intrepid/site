@@ -1,8 +1,6 @@
 +++
 title = "Rust の文字列フォーマット回り (1)"
 date = "2017-10-05T11:55:39Z"
-
-[taxonomies]
 tags = [ "rust", "programming" ]
 categories = [ "programming" ]
 +++

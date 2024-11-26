@@ -1,8 +1,6 @@
 +++
 title = "cargo でドキュメント生成とサーバ起動を行うコマンドを作った"
 date = "2018-08-24"
-
-[taxonomies]
 tags = [ "rust", "announce", "qiita" ]
 categories = [ "programming" ]
 +++

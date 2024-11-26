@@ -1,8 +1,6 @@
 +++
 title = "非同期処理で書き込むメモリを（ちゃんと）守るためのエトセトラ (2)"
 date = "2020-06-10T02:48:34"
-
-[taxonomies]
 tags = ["rust", "futures"]
 categories = ["programming"]
 +++

@@ -1,8 +1,6 @@
 +++
 title = "コンパイル時にツイートするマクロ"
 date = "2017-10-20T22:37:29Z"
-
-[taxonomies]
 tags = [ "rust", "programming", "hobby" ]
 categories = [ "programming" ]
 +++

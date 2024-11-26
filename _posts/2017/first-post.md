@@ -1,8 +1,6 @@
 +++
 title = "立ち上げました"
 date = "2017-10-05"
-
-[taxonomies]
 tags = [ "hexo" ]
 categories = [ "general" ]
 +++

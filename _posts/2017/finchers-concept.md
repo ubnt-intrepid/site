@@ -1,8 +1,6 @@
 +++
 title = "Finchers の設計思想、およびサンプル"
 date = "2017-12-20"
-
-[taxonomies]
 tags = [ "rust", "qiita" ]
 categories = [ "programming" ]
 +++

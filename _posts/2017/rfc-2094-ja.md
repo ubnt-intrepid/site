@@ -1,8 +1,6 @@
 +++
 title = "RFC 2094 (non-lexical lifetime) の非公式訳"
 date = "2017-12-01T00:00:00Z"
-
-[taxonomies]
 tags = [ "rust", "rfc", "nll" ]
 categories = [ "programming" ]
 +++

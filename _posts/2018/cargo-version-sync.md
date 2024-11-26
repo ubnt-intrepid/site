@@ -1,8 +1,6 @@
 +++
 title = "cargo-version-sync の紹介"
 date = "2018-10-30"
-
-[taxonomies]
 tags = [ "rust", "announce", "qiita" ]
 categories = [ "programming" ]
 +++

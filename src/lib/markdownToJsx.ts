@@ -59,7 +59,7 @@ const mdCodeBlockHandler = (state: State, node: Code) => {
     return result
 }
 
-const markdownToJsx = async (rawContent: string, codeBlockComponent: any) => {
+const markdownToJsx = async (content: string, codeBlockComponent: any) => {
     const parsed = await unified()
         .use(remarkParse, { fragment: true })
         .use(remarkDirective)
@@ -80,7 +80,7 @@ const markdownToJsx = async (rawContent: string, codeBlockComponent: any) => {
                 'my-code-block': (props: any) => codeBlockComponent(props),
             } as Partial<Components>,
         })
-        .process(rawContent)
+        .process(content)
     return parsed.result
 }
 

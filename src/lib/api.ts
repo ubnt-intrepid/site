@@ -11,9 +11,9 @@ export type Post = {
     mdPath: string
     title?: string 
     date?: string
-    tags?: string[]
-    categories?: string[]
-    rawContent: string
+    tags: string[]
+    categories: string[]
+    content: string
 }
 
 export const getPosts = async () => {
@@ -46,7 +46,16 @@ export const getPosts = async () => {
 const readPost = async (filePath: string) => {
     const fileContents = await fs.readFile(filePath, 'utf8')
 
-    const { data, content: rawContent } = matter(fileContents, {
+    const { data, content }: {
+        data: {
+            slug?: string
+            title?: string
+            date?: string 
+            tags?: string[]
+            categories?: string[]
+        }
+        content: string
+    } = matter(fileContents, {
         language: 'toml',
         delimiters: '+++',
         engines: {
@@ -58,38 +67,13 @@ const readPost = async (filePath: string) => {
             }
         }
     })
-    const {
-        slug: rawSlug,
-        title,
-        date,
-        tags: rawTags,
-        categories: rawCategories,
-        taxonomies,
-    } = data as {
-        slug?: string
-        title?: string
-        date?: string 
-        tags?: string[]
-        categories?: string[]
-        taxonomies?: {
-            tags?: string[]
-            categories?: string[]
-        }
-    }
-    const slug = rawSlug ?? path.basename(filePath).replace(/\.md$/, '')
-    let tags = rawTags ?? []
-    let categories = rawCategories ?? []
-    if (taxonomies) {
-        tags = tags.concat(taxonomies.tags ?? [])
-        categories = categories.concat(taxonomies.categories ?? [])
-    }
 
     return {
-        slug,
-        title,
-        date,
-        tags,
-        categories,
-        rawContent
+        slug: data.slug ?? path.basename(filePath).replace(/\.md$/, ''),
+        title: data.title,
+        date: data.date,
+        tags: data.tags ?? [],
+        categories: data.categories ?? [],
+        content
     } as Post
 }

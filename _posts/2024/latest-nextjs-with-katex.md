@@ -1,8 +1,6 @@
 +++
 title = "Next.js の更新 + KaTeX の有効化"
 date = "2024-11-23T12:49:06+09:00"
-
-[taxonomies]
 categories = [ "general" ]
 tags = [ "blog" ]
 +++

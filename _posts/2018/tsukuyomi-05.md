@@ -1,8 +1,6 @@
 +++
 title = "Tsukuyomi 0.5 -Yet Another Web Framework for Rust-"
 date = "2018-12-22"
-
-[taxonomies]
 tags = [ "rust", "announce", "qiita" ]
 categories = [ "programming" ]
 +++

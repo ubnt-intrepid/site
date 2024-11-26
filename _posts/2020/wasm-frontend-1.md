@@ -1,10 +1,8 @@
 +++
 title = "Rust のフロントエンド開発に入門する (1)"
 date = "2020-09-07T20:23:43+09:00"
-
-[taxonomies]
-tags = ["rust", "wasm", "wasm-bindgen"]
-categories = ["programming"]
+tags = [ "rust", "wasm", "wasm-bindgen" ]
+categories = [ "programming" ]
 +++
 
 Rust/WebAssembly によるフロントエンド開発がだいぶ楽になってそうだったので、今更ですが入門したいと思います。

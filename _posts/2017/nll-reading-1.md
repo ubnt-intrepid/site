@@ -1,8 +1,6 @@
 +++
 title = "NLLのソースコードを読む (1)"
 date = "2017-12-03T23:46:22Z"
-
-[taxonomies]
 tags = [ "rust", "nll" ]
 categories = [ "programming" ]
 +++

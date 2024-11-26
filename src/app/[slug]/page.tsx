@@ -71,11 +71,16 @@ const CodeBlock: React.FC<CodeBlockProps> = async ({ lang, title, content }) => 
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const { slug } = await params
     const posts = await getPosts()
-    const { title, date, tags: rawTags, categories: rawCategories, rawContent, mdPath } = posts.find(post => post.slug === slug) ?? {}
-    const tags = rawTags ?? []
-    const categories = rawCategories ?? []
+    const post = posts.find(post => post.slug === slug)
+    if (!post) {
+        return (
+            <div>Failed to get post</div>
+        )
+    }
+    const { title, date, tags, categories, content: rawContent, mdPath } = post
     const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${mdPath}`;
     const content = await markdownToJsx(rawContent ?? "", CodeBlock)
+
     return (
         <>
             <Headline title={title ?? ""} href={`/${slug}`}>

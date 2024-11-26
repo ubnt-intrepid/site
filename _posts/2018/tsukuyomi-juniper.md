@@ -1,8 +1,6 @@
 +++
 title = "Tsukuyomi + Juniper で GraphQL サーバを作る"
 date = "2018-07-11"
-
-[taxonomies]
 tags = [ "rust", "graphql", "juniper", "qiita" ]
 categories = [ "programming" ]
 +++

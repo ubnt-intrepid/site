@@ -1,8 +1,6 @@
 +++
 title = "Announcing polyfuse - A FUSE library for Rust -"
 date = "2019-12-10"
-
-[taxonomies]
 tags = [ "rust", "fuse", "polyfuse", "async_await", "advent calendar" ]
 categories = [ "programming" ]
 +++

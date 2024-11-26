@@ -1,8 +1,6 @@
 +++
 title = "cargo で npm-scripts 的なことをする"
 date = "2019-11-20"
-
-[taxonomies]
 tags = [ "rust", "cargo", "cargo-xtask", "qiita" ]
 categories = [ "programming" ]
 +++

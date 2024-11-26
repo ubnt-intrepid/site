@@ -1,8 +1,6 @@
 +++
 title = "ジェネレータと Pin/Unpin まとめ"
 date = "2018-03-31"
-
-[taxonomies]
 tags = [ "rust", "qiita" ]
 categories = [ "programming" ]
 +++
