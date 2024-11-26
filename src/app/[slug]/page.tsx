@@ -6,7 +6,7 @@ import { codeToHast } from 'shiki'
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import FormattedDate from '@/components/FormattedDate'
 import Headline from '@/components/Headline'
-import Utterances from '@/components/Utterances'
+import Comments from '@/components/Comments'
 import { Calendar, Folder, GitHub, Hatena, Tag, Twitter } from '@/components/icons'
 import { baseUrl, siteRepoUrl, siteTitle } from '@/config'
 import { getPosts } from '@/lib/api'
@@ -132,7 +132,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                     </span>
                 </div>
             </div>
-            <Utterances />
+            <Comments />
         </>
     )
 }

@@ -129,6 +129,10 @@ footer {
     }
 }
 
+.comments {
+    @apply container mx-auto mt-12 mb-auto;
+}
+
 .entries {
     @apply container mx-auto px-8 py-6;
 
