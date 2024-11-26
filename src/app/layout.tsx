@@ -3,7 +3,6 @@ import React, { ReactNode } from 'react'
 import Header from '@/components/Header'
 import { authorName, authorUrl, baseUrl, siteDescription, siteTitle } from '@/config'
 
-import '@fortawesome/fontawesome-free/css/all.css'
 import './styles.css'
 
 export const metadata: Metadata = {
@@ -26,6 +25,9 @@ const RootLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
         <html lang="ja">
             <head>
+                <link
+                    rel="stylesheet"
+                    href="https://fonts.googleapis.com/icon?family=Material+Icons" />
                 <link
                     rel="stylesheet"
                     href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"

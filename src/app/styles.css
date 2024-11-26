@@ -168,8 +168,7 @@ footer {
     a:hover { @apply underline; }
 }
 
-.fa-hatena:before {
-    content: "B!";
-    font-family: Verdana;
-    font-weight: bold;
+.material-icons {
+    font-size: 18px !important;
+    vertical-align: middle !important;
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import Headline from '@/components/Headline'
 import PostList from '@/components/PostList'
-import { Tag as TagIcon } from '@/components/icons'
+import { Tag as TagIcon } from '@/components/MaterialIcon'
 import { getPosts } from '@/lib/api'
 
 export type Params = {
