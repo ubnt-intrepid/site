@@ -7,8 +7,8 @@ import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import FormattedDate from '@/components/FormattedDate'
 import Headline from '@/components/Headline'
 import Comments from '@/components/Comments'
-import { Calendar, Folder, GitHub, Hatena, Tag, Twitter } from '@/components/icons'
-import { baseUrl, siteRepoUrl, siteTitle } from '@/config'
+import { Calendar, Folder, Tag, Edit } from '@/components/MaterialIcon'
+import { siteRepoUrl } from '@/config'
 import { getPosts } from '@/lib/api'
 import markdownToJsx from '@/lib/markdownToJsx'
 
@@ -71,14 +71,10 @@ const CodeBlock: React.FC<CodeBlockProps> = async ({ lang, title, content }) => 
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const { slug } = await params
     const posts = await getPosts()
-    const { title, date, tags: rawTags, categories: rawCategories, rawContent } = posts.find(post => post.slug === slug) ?? {}
+    const { title, date, tags: rawTags, categories: rawCategories, rawContent, mdPath } = posts.find(post => post.slug === slug) ?? {}
     const tags = rawTags ?? []
     const categories = rawCategories ?? []
-    const permalink = `${baseUrl}/${slug}/`;
-    const pageTitle = `${title} - ${siteTitle}`;
-    const tweetUrl = `https://twitter.com/intent/tweet?url=${encodeURI(permalink)}&text=${encodeURI(pageTitle)}`;
-    const bookmarkUrl = `http://b.hatena.ne.jp/add?mode=confirm&url=${encodeURI(permalink)}&t=${encodeURI(pageTitle)}`;
-    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${slug}.md`;
+    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${mdPath}`;
     const content = await markdownToJsx(rawContent ?? "", CodeBlock)
     return (
         <>
@@ -92,7 +88,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                 <div className='article-body'>{content}</div>
 
                 <div className='article-footer'>
-                    <span>
+                    <span className='categories'>
                         { categories.map(category => (
                             <span className='card' key={category}>
                                 <Link href={`/categories/${category}`}>
@@ -101,7 +97,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                             </span>
                         ))}
                     </span>
-                    <span>
+                    <span className='tags'>
                         { tags.map(tag => (
                             <span className='card' key={tag}>
                                 <Link href={`/tags/${tag}`}>
@@ -111,22 +107,10 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                         ))}
                     </span>
 
-                    <span>
-                        <span className='card'>
-                            <a href={tweetUrl} target='_blank' title='Tweet'>
-                                <Twitter />
-                            </a>
-                        </span>
-
-                        <span className='card'>
-                            <a href={bookmarkUrl} target='_blank' title='Bookmark'>
-                                <Hatena />
-                            </a>
-                        </span>
-
+                    <span className='share-icons'>
                         <span className='card'>
                             <a href={sourceUrl} target='_blank' title='Source'>
-                                <GitHub />
+                                <Edit />
                             </a>
                         </span>
                     </span>

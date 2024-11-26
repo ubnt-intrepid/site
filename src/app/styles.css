@@ -4,6 +4,33 @@
 
 body {
     @apply flex flex-col min-h-screen;
+
+    font-family:
+        "Helvetica Neue",
+        "Segoe UI",
+        Arial,
+        "Hiragino Kaku Gothic ProN",
+        "Hiragino Sans",
+        Meiryo,
+        sans-serif,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+code {
+    font-family:
+        "Cascadia Mono",
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
 }
 
 header {
@@ -140,8 +167,7 @@ footer {
     a:hover { @apply underline; }
 }
 
-.fa-hatena:before {
-    content: "B!";
-    font-family: Verdana;
-    font-weight: bold;
+.material-icons {
+    font-size: 18px !important;
+    vertical-align: middle !important;
 }

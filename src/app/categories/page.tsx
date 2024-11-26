@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 import Headline from '@/components/Headline'
-import { Folder } from '@/components/icons'
+import { Folder } from '@/components/MaterialIcon'
 import { getPosts } from '@/lib/api'
 import { collectCounts } from '@/lib/utils'
 
