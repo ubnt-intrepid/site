@@ -4,6 +4,34 @@
 
 body {
     @apply flex flex-col min-h-screen;
+
+    font-family:
+        "Helvetica Neue",
+        "Segoe UI",
+        Arial,
+        "Hiragino Kaku Gothic ProN",
+        "Hiragino Sans",
+        Meiryo,
+        sans-serif,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+code {
+    font-family:
+        "Source Han Code JP",
+        "Cascadia Mono",
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        Menlo,
+        monospace,
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji";
 }
 
 header {
