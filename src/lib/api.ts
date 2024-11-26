@@ -8,6 +8,7 @@ const postsDir = path.join(process.cwd(), '_posts')
 
 export type Post = {
     slug: string
+    mdPath: string
     title?: string 
     date?: string
     tags?: string[]
@@ -19,11 +20,13 @@ export const getPosts = async () => {
     const postPaths = await glob(postsDir + '/**/*.md')
     const posts: Post[] = []
     for (const filePath of postPaths) {
+        const mdPath = path.relative(postsDir, filePath)
         const post = await readPost(filePath)
         if (posts.findIndex(p => p.slug === post.slug) != -1) {
-            console.warn(`Ignored due to conflicting the slug: ${path.relative(postsDir, filePath)}`)
+            console.warn(`Ignored due to conflicting the slug: ${mdPath}`)
             continue
         }
+        post.mdPath = mdPath
         posts.push(post)
     }
 
