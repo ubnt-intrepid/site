@@ -89,27 +89,18 @@ const CodeBlock: React.FC<{
         jsxs: prod.jsxs,
         components: {
             pre: props => {
-                return title ? (
+                return (
                     <div className='my-6'>
-                        <span className='
-                            inline-block
-                            px-2
-                            py-1
-                            -mb-px
-                            rounded-t-sm
-                            text-sm
-                            font-mono
-                            font-bold
-                            bg-orange-600
-                            text-orange-50
-                        '>
-                            {title}
-                        </span>
-                        <pre {...props} className='mt-0' />
-                    </div>
-                ) : (
-                    <div>
-                        <pre {...props} />
+                        { title
+                            ? <span className='
+                                inline-block px-2 py-1 -mb-px rounded-t-sm
+                                text-sm font-mono font-bold
+                                bg-orange-600 text-orange-50'>{title}</span>
+                            : null }
+                        <pre {...props} className='
+                            m-0 px-5 py-3 border-2 border-solid
+                            border-slate-300 rounded-b-md rounded-tr-md
+                            whitespace-pre-wrap' />
                     </div>
                 )
             }
