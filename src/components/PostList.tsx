@@ -14,14 +14,19 @@ const PostCard = ({ post }: { post: Post }) => {
         <span>
             <Calendar /> <FormattedDate date={date} />
             &nbsp; - &nbsp;
-            <Link href="/[slug]" as={`/${slug}`}>{title}</Link>
+            <Link
+                href="/[slug]"
+                as={`/${slug}`}
+                className='no-underline text-orange-600 hover:underline'>
+                {title}
+            </Link>
         </span>
     )
 }
 
 const PostList: React.FC<Props> = ({ posts }) => {
     return (
-        <ul className='entries'>
+        <ul className='container mx-auto px-8 py-6'>
             { posts.map(post => {
                 return (
                     <li key={post.slug}>

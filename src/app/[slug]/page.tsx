@@ -89,14 +89,14 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                 </p>
             </Headline>
 
-            <div className='article'>
+            <div className='container mx-auto'>
                 <div className='article-body'>{content}</div>
 
-                <div className='article-footer'>
+                <div className='flex justify-between text-center text-sm'>
                     <span className='categories'>
                         { categories.map(category => (
-                            <span className='card' key={category}>
-                                <Link href={`/categories/${category}`}>
+                            <span className='inline-block p-2' key={category}>
+                                <Link href={`/categories/${category}`} className='no-underline text-orange-600 hover:underline'>
                                     <Folder /> {category}
                                 </Link>
                             </span>
@@ -104,8 +104,8 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                     </span>
                     <span className='tags'>
                         { tags.map(tag => (
-                            <span className='card' key={tag}>
-                                <Link href={`/tags/${tag}`}>
+                            <span className='inline-block p-2' key={tag}>
+                                <Link href={`/tags/${tag}`} className='no-underline text-orange-600 hover:underline'>
                                     <Tag /> {tag}
                                 </Link>
                             </span>
@@ -113,8 +113,8 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                     </span>
 
                     <span className='share-icons'>
-                        <span className='card'>
-                            <a href={sourceUrl} target='_blank' title='Source'>
+                        <span className='inline-block p-2'>
+                            <a href={sourceUrl} target='_blank' title='Source' className='no-underline text-orange-600 hover:underline'>
                                 <Edit />
                             </a>
                         </span>
