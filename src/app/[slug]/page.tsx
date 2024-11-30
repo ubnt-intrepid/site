@@ -1,16 +1,14 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import React, { Fragment } from 'react'
-import { jsx, jsxs } from 'react/jsx-runtime'
-import { codeToHast } from 'shiki'
-import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
+import React from 'react'
+import Comments from '@/components/Comments'
 import FormattedDate from '@/components/FormattedDate'
 import Headline from '@/components/Headline'
-import Comments from '@/components/Comments'
+import Markdown from '@/components/Markdown'
 import { Calendar, Folder, Tag, Edit } from '@/components/MaterialIcon'
 import { siteRepoUrl } from '@/config'
 import { getPosts } from '@/lib/api'
-import markdownToJsx from '@/lib/markdownToJsx'
+
 
 export type Params = {
     slug: string
@@ -18,7 +16,7 @@ export type Params = {
 
 export const generateStaticParams = async () => {
     const posts = await getPosts()
-    return posts.map(({ slug }) => ({ slug })) satisfies Params[] as Params[]
+    return posts.map(({ slug }) => ({ slug })) satisfies Params[]
 }
 
 export const generateMetadata = async ({ params }: { params: Promise<Params> }) => {
@@ -28,44 +26,6 @@ export const generateMetadata = async ({ params }: { params: Promise<Params> }) 
     return {
         title,
     } satisfies Metadata
-}
-
-type CodeBlockProps = {
-    lang?: string
-    title?: string
-    content?: string
-}
-
-const canonicalizeLanguageName = (lang?: string) => {
-    if (!lang) {
-        return 'txt'
-    }
-    if (lang === 'shell-session' || lang === 'command') {
-        return 'shellsession'
-    }
-    return lang
-}
-
-const CodeBlock: React.FC<CodeBlockProps> = async ({ lang, title, content }) => {
-    const hast = await codeToHast(content ?? '', {
-        lang: canonicalizeLanguageName(lang),
-        theme: 'vitesse-light',
-    })
-    return toJsxRuntime(hast, {
-        Fragment,
-        jsx,
-        jsxs,
-        components: {
-            pre: props => {
-                return (
-                    <div className='code-block'>
-                        { title ? <span className='title'>{title}</span> : null}
-                        <pre {...props} />
-                    </div>
-                )
-            }
-        }
-    })
 }
 
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
@@ -79,7 +39,6 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
     }
     const { title, date, tags, categories, content: rawContent, mdPath } = post
     const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${mdPath}`;
-    const content = await markdownToJsx(rawContent ?? "", CodeBlock)
 
     return (
         <>
@@ -89,14 +48,14 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                 </p>
             </Headline>
 
-            <div className='article'>
-                <div className='article-body'>{content}</div>
+            <div className='container mx-auto content-center'>
+                <Markdown content={rawContent} />
 
-                <div className='article-footer'>
+                <div className='flex justify-between text-center text-sm'>
                     <span className='categories'>
                         { categories.map(category => (
-                            <span className='card' key={category}>
-                                <Link href={`/categories/${category}`}>
+                            <span className='inline-block p-2' key={category}>
+                                <Link href={`/categories/${category}`} className='no-underline text-orange-600 hover:underline'>
                                     <Folder /> {category}
                                 </Link>
                             </span>
@@ -104,8 +63,8 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                     </span>
                     <span className='tags'>
                         { tags.map(tag => (
-                            <span className='card' key={tag}>
-                                <Link href={`/tags/${tag}`}>
+                            <span className='inline-block p-2' key={tag}>
+                                <Link href={`/tags/${tag}`} className='no-underline text-orange-600 hover:underline'>
                                     <Tag /> {tag}
                                 </Link>
                             </span>
@@ -113,8 +72,8 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                     </span>
 
                     <span className='share-icons'>
-                        <span className='card'>
-                            <a href={sourceUrl} target='_blank' title='Source'>
+                        <span className='inline-block p-2'>
+                            <a href={sourceUrl} target='_blank' title='Source' className='no-underline text-orange-600 hover:underline'>
                                 <Edit />
                             </a>
                         </span>

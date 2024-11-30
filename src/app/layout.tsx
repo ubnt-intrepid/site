@@ -34,13 +34,15 @@ const RootLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
                     integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+"
                     crossOrigin="anonymous" />
             </head>
-            <body>
+            <body className='flex flex-col min-h-screen'>
                 <Header />
-                <main>
+                <main className='flex-grow'>
                     {children}
                 </main>
-                <footer>
-                    <p>&copy; 2019-2024 <strong><a href={authorUrl}>{authorName}</a></strong></p>
+                <footer className='bg-orange-100 text-orange-800'>
+                    <p className='text-center text-xs p-2'>
+                        &copy; 2019-2024 <strong><a href={authorUrl}>{authorName}</a></strong>
+                    </p>
                 </footer>
             </body>
         </html>

@@ -5,10 +5,10 @@
 import React, { useState } from 'react'
 import { siteRepo, siteRepoId } from '@/config'
 
-const Utterances: React.FC = () => {
+const Comments: React.FC = () => {
     const [initialized, setInitialized] = useState(false)
     return (
-        <div className='comments' ref={elem => {
+        <div className='container mx-auto mt-12 mb-auto' ref={elem => {
             if (!elem) {
                 return
             }
@@ -37,4 +37,4 @@ const Utterances: React.FC = () => {
     )
 }
 
-export default Utterances
+export default Comments
