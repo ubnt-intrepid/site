@@ -1,111 +1,119 @@
 import React from 'react'
-import * as prod from 'react/jsx-runtime'
-import { unified } from 'unified'
+import * as unified from 'unified'
+import mdast from 'mdast'
+import * as mdastMath from 'mdast-util-math'
 import remarkParse from 'remark-parse'
 import remarkDirective from 'remark-directive'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
-import remarkRehype from 'remark-rehype'
-import rehypeRaw from 'rehype-raw'
-import rehypeKatex from 'rehype-katex'
-import rehypeClassNames from 'rehype-class-names'
-import rehypeReact, { Components } from 'rehype-react'
-import { Code } from 'mdast'
-import { Handlers, State } from 'mdast-util-to-hast'
-import { Element } from 'hast'
-import { h } from 'hastscript'
-import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
-import { visit } from 'unist-util-visit'
-import { codeToHast } from 'shiki'
+import { inspect } from 'unist-util-inspect'
 
-const remarkCalloutDirectives = () => {
-    return (tree: any) => {
-        visit(tree, (node) => {
-            if (
-                node.type !== 'containerDirective' &&
-                node.type !== 'leafDirective' &&
-                node.type !== 'textDirective'
-            ) {
-                return
-            }
-
-            if (node.name !== 'callout') {
-                return
-            }
-
-            const data = node.data || (node.data = {})
-            const tagName = node.type === 'textDirective' ? 'span' : 'div'
-
-            const attributes = node.attributes || {}
-            const className = attributes.className || (attributes.className = [])
-            className.push('bg-orange-50 px-5 py-3 my-10 rounded relative')
-
-            data.hName = tagName
-            data.hProperties = h(tagName, attributes).properties
-        })
+declare module 'unified' {
+    interface CompileResultMap {
+        JsxResult: JsxResult
     }
 }
 
-const mdCodeBlockHandler = (state: State, node: Code) => {
-    let result: Element = {
-        type: 'element',
-        tagName: 'my-code-block',
-        properties: {
-            lang: node.lang,
-            title: node.meta,
-            content: node.value ? node.value + '\n' : '',
+type JsxResult = {
+    raw: mdast.Node
+    jsx: string | React.JSX.Element
+}
+
+function remarkToJsx(this: unified.Processor) {
+    type CompilerState = {}
+
+    interface NodeTypeMap {
+        root: mdast.Root
+        text: mdast.Text
+        paragraph: mdast.Paragraph
+        heading: mdast.Heading
+        link: mdast.Link
+        inlineCode: mdast.InlineCode
+        code: mdast.Code
+        inlineMath: mdastMath.InlineMath
+        math: mdastMath.Math
+    }
+    type NodeType = keyof NodeTypeMap
+    type Emitter<N extends mdast.Node> = (state: CompilerState, node: N) => string | React.JSX.Element
+
+    const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
+        root: (state, node) => {
+            return <div className='root'>
+                { node.children.map(child => emitOne(state, child)) }
+            </div>
         },
-        children: [],
-    }
-    state.patch(node, result)
-    result = state.applyData(node, result)
 
-    return result
-}
+        text: (state, node) => {
+            return node.value
+        },
 
-const canonicalizeLanguageName = (lang?: string) => {
-    if (!lang) {
-        return 'txt'
+        paragraph: (state, node) => {
+            return <p>
+                { node.children.map(child => emitOne(state, child)) }
+            </p>
+        },
+    
+        heading: (state, node) => {
+            return <div className='heading' x-depth={node.depth}>
+                { node.children.map(child => emitOne(state, child)) }
+            </div>
+        },
+    
+        link: (state, node) => {
+            return <span className='link' x-title={node.title} x-url={node.url}>
+                { node.children.map(child => emitOne(state, child)) }
+            </span>
+        },
+    
+        inlineCode: (state, node) => {
+            return <code>{node.value}</code>
+        },
+    
+        code: (state, node) => {
+            return <pre x-lang={node.lang} x-meta={node.meta}>
+                <code>
+                    {node.value}
+                </code>
+            </pre>
+        },
+    
+        inlineMath: (state, node) => {
+            return <code className='inline-math'>{node.value}</code>
+        },
+    
+        math: (state, node) => {
+            return <pre x-lang='math' x-meta={node.meta}>
+                <code>
+                    {node.value}
+                </code>
+            </pre>        
+        }    
     }
-    if (lang === 'shell-session' || lang === 'command') {
-        return 'shellsession'
-    }
-    return lang
-}
 
-const CodeBlock: React.FC<{
-    lang?: string
-    title?: string
-    content?: string
-    theme?: string
-}> = async ({ lang, title, content, theme }) => {
-    const hast = await codeToHast(content ?? '', {
-        lang: canonicalizeLanguageName(lang),
-        theme: theme ?? 'vitesse-dark',
-    })
-    return toJsxRuntime(hast, {
-        Fragment: prod.Fragment,
-        jsx: prod.jsx,
-        jsxs: prod.jsxs,
-        components: {
-            pre: props => {
-                return (
-                    <div className='my-6'>
-                        { title
-                            ? <span className='
-                                inline-block px-2 py-1 -mb-px rounded-t-sm
-                                text-sm font-mono font-bold
-                                bg-orange-600 text-orange-50'>{title}</span>
-                            : null }
-                        <pre {...props} className='
-                            m-0 px-5 py-3 border-2 border-solid
-                            border-slate-300 rounded-b-md rounded-tr-md
-                            whitespace-pre-wrap' />
-                    </div>
-                )
-            }
+    const emitOne: Emitter<mdast.Node> = (state, node) => {
+        if (node.type in emitters) {
+            return emitters[node.type as NodeType](state, node as never)
         }
-    })
+        return (
+            <details>
+                <summary className='bg-red-500'>unimplemented</summary>
+                <pre className='overflow-x-auto'>
+                    <code>
+                        {inspect(node, { color: false, showPositions: false })}
+                    </code>
+                </pre>
+            </details>
+        )    
+    }
+
+    this.compiler = (tree, file) => {
+        const state: CompilerState = {}
+        const compiled = emitOne(state, tree)
+        return {
+            raw: tree,
+            jsx: compiled
+        } satisfies JsxResult as JsxResult
+    }
 }
 
 // ---
@@ -115,45 +123,25 @@ export type Props = {
 }
 
 const Markdown: React.FC<Props> = async ({ content }) => {
-    const parsed = await unified()
+    const parsed = await unified.unified()
         .use(remarkParse, { fragment: true })
         .use(remarkDirective)
-        .use(remarkCalloutDirectives)
         .use(remarkGfm)
         .use(remarkMath)
-        .use(remarkRehype, {
-            allowDangerousHtml: true,
-            handlers: { code: mdCodeBlockHandler } as Handlers
-        })
-        .use(rehypeRaw)
-        .use(rehypeKatex)
-        .use(rehypeClassNames, {
-            'p,ul,ol,pre,figure,blockquote': 'my-6',
-            'hr': 'flex mx-auto w-20',
-            'h1': 'text-3xl mt-5 mb-3',
-            'h2': 'text-2xl mt-5 mb-3',
-            'h3,h4,h5,h6': 'text-xl mt-5 mb-3',
-            'a': 'no-underline text-orange-600 hover:underline',
-            'ul,ol': 'list-outside pl-4',
-            'li': 'ml-6',
-            'ul': 'list-disc',
-            'ol': 'list-decimal',
-            'figure': 'text-center',
-            'img': 'block mx-auto',
-            'figcaption': 'text-sm',
-        })
-        .use(rehypeReact, {
-            Fragment: prod.Fragment,
-            jsx: prod.jsx,
-            jsxs: prod.jsxs,
-            components: {
-                'my-code-block': (props: any) => <CodeBlock {...props} theme='vitesse-light' />,
-            } as Partial<Components>,
-        })
+        .use(remarkToJsx)
         .process(content)
+    const { raw, jsx } = parsed.result as JsxResult
     return (
         <article className='px-4 py-6'>
-            {parsed.result}
+            <details>
+                <summary className='bg-blue-200'>Raw MdAst</summary>
+                <pre className='overflow-x-auto'>
+                    <code>
+                        {inspect(raw, { color: false, showPositions: false })}
+                    </code>
+                </pre>
+            </details>
+            {jsx}
         </article>
     )
 }
