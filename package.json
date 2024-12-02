@@ -45,6 +45,7 @@
     "toml": "^3.0.0",
     "typescript": "^5",
     "unified": "^11.0.5",
+    "unist-util-inspect": "^8.1.0",
     "unist-util-visit": "^5.0.0"
   }
 }
