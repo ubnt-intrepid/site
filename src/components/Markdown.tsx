@@ -13,6 +13,7 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeParse from 'rehype-parse'
 import rehypeReact from 'rehype-react'
+import * as shiki from 'shiki'
 
 declare module 'unified' {
     interface CompileResultMap {
@@ -20,8 +21,9 @@ declare module 'unified' {
     }
 }
 
-function remarkToJsx(this: unified.Processor) {
+function remarkToJsx(this: unified.Processor, options: { highlighter: shiki.Highlighter }) {
     type CompilerState = {
+        highlighter: shiki.Highlighter
         definitions: Map<string, mdast.Definition>,
         footnoteDefinitions: Map<string, mdast.FootnoteDefinition>,
     }
@@ -66,19 +68,18 @@ function remarkToJsx(this: unified.Processor) {
 
         break: ({ key }) => <br key={key} />,
 
-        code: ({ node, key }) => {
+        code: ({ state, node, key }) => {
             if (node.lang === 'math') {
                 const rendered = katex.renderToString(node.value, {
                     displayMode: true
                 })
                 return emitRawHtml(rendered, key)
             } else {
-                // TODO: code highlighting
-                return <pre key={key} className={`lang-${node.lang}`} title={node.meta || undefined}>
-                    <code>
-                        {node.value}
-                    </code>
-                </pre>
+                const rendered = state.highlighter.codeToHtml(node.value, {
+                    lang: node.lang || 'txt',
+                    theme: 'vitesse-light',
+                } satisfies shiki.CodeToHastOptions)
+                return emitRawHtml(rendered, key)
             }
         },
 
@@ -295,6 +296,7 @@ function remarkToJsx(this: unified.Processor) {
 
     this.compiler = (tree) => {
         const state: CompilerState = {
+            highlighter: options.highlighter,
             definitions: new Map(),
             footnoteDefinitions: new Map(),
         }
@@ -338,12 +340,29 @@ export type Props = {
 }
 
 const Markdown: React.FC<Props> = async ({ children }) => {
+    const highlighter = await shiki.createHighlighter({
+        langs: [
+            'c',
+            'c++',
+            'css',
+            'diff',
+            'html',
+            'rust',
+            'shellsession',
+            'toml',
+            'yaml',
+        ],
+        langAlias: {
+            'shell-session': 'shellsession',
+        },
+        themes: ['vitesse-light'],
+    })
     const parsed = await unified.unified()
         .use(remarkParse, { fragment: true })
         .use(remarkDirective)
         .use(remarkGfm)
         .use(remarkMath)
-        .use(remarkToJsx)
+        .use(remarkToJsx, { highlighter })
         .process(children)
     return <>
         {parsed.result}
