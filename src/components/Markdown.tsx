@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import React, { Fragment } from 'react'
 import * as prod from 'react/jsx-runtime'
 import * as unified from 'unified'
@@ -136,9 +137,9 @@ function remarkToJsx(this: unified.Processor) {
         },
 
         image: ({ node, key }) => (
-            <img
-                src={node.url}
-                alt={node.alt || undefined}
+            <Image
+                src={node.url}                
+                alt={node.alt || node.url}
                 title={node.title || undefined}
                 key={key} />
         ),
