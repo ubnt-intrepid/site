@@ -157,7 +157,7 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
 
     image: ({ node, key }) => (
         <Image
-            src={sanitizeUri(node.url)}                
+            src={sanitizeUri(node.url)}
             alt={node.alt || ''}
             title={node.title || undefined}
             width={480}
@@ -304,16 +304,18 @@ const safeFootnoteId = (state: CompilerState, id: string) => {
 const highlighter = await shiki.createHighlighter({
     langs: [
         'c',
-        'c++',
         'css',
         'diff',
+        'graphql',
         'html',
+        'http',
         'rust',
         'shellsession',
         'toml',
         'yaml',
     ],
     langAlias: {
+        'command': 'shellsession',
         'shell-session': 'shellsession',
     },
     themes: ['vitesse-light'],
