@@ -3,6 +3,7 @@ import * as prod from 'react/jsx-runtime'
 import * as unified from 'unified'
 import mdast from 'mdast'
 import * as mdastMath from 'mdast-util-math'
+import { visit } from 'unist-util-visit'
 import remarkParse from 'remark-parse'
 import remarkDirective from 'remark-directive'
 import remarkGfm from 'remark-gfm'
@@ -21,50 +22,82 @@ type JsxResult = {
 }
 
 function remarkToJsx(this: unified.Processor) {
-    type CompilerState = {}
+    type CompilerState = {
+        definitions: Map<string, mdast.Definition>,
+        footnoteDefinitions: Map<string, mdast.FootnoteDefinition>,
+    }
 
     interface NodeTypeMap {
-        root: mdast.Root
-        text: mdast.Text
-        paragraph: mdast.Paragraph
-        heading: mdast.Heading
         blockquote: mdast.Blockquote
-        list: mdast.List
-        listItem: mdast.ListItem
-        link: mdast.Link
-        linkReference: mdast.LinkReference
-        footnoteReference: mdast.FootnoteReference
-        inlineCode: mdast.InlineCode
-        code: mdast.Code
-        inlineMath: mdastMath.InlineMath
-        math: mdastMath.Math
-        html: mdast.Html
-        thematicBreak: mdast.ThematicBreak
-        strong: mdast.Strong
-        delete: mdast.Delete
         break: mdast.Break
+        code: mdast.Code
+        definition: mdast.Definition
+        delete: mdast.Delete
         emphasis: mdast.Emphasis
+        footnoteDefinition: mdast.Definition
+        footnoteReference: mdast.FootnoteReference
+        heading: mdast.Heading
+        html: mdast.Html
         image: mdast.Image
         imageReference: mdast.ImageReference
-        definition: mdast.Definition
-        footnoteDefinition: mdast.Definition
+        inlineCode: mdast.InlineCode
+        inlineMath: mdastMath.InlineMath
+        link: mdast.Link
+        linkReference: mdast.LinkReference
+        list: mdast.List
+        listItem: mdast.ListItem
+        math: mdastMath.Math
+        paragraph: mdast.Paragraph
+        strong: mdast.Strong
+        text: mdast.Text
+        thematicBreak: mdast.ThematicBreak
     }
     type NodeType = keyof NodeTypeMap
     type Emitter<N extends mdast.Node> = (args: { state: CompilerState, node: N, key?: string }) => React.ReactNode
 
     const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
-        root: ({ state, node }) => {
-            return emitChildren({ state, node })
-        },
-
-        text: ({ node }) => {
-            return node.value
-        },
-
-        paragraph: ({ state, node, key }) => {
-            return <p key={key}>
+        blockquote: ({ state, node, key }) => (
+            <blockquote key={key}>
                 { emitChildren({ state, node }) }
-            </p>
+            </blockquote>
+        ),
+
+        break: ({ key }) => <br key={key} />,
+
+        code: ({ node, key }) => (
+            <pre
+                x-lang={node.lang}
+                x-meta={node.meta}
+                key={key}>
+                <code>
+                    {node.value}
+                </code>
+            </pre>
+        ),
+
+        definition: () => undefined,
+
+        delete: ({ state, node, key }) => (
+            <del key={key}>
+                { emitChildren({ state, node }) }
+            </del>
+        ),
+
+        emphasis: ({ state, node, key }) => (
+            <em key={key}>
+                { emitChildren({ state, node }) }
+            </em>
+        ),
+
+        footnoteDefinition: () => undefined,
+
+        footnoteReference: ({ state, node, key }) => {
+            const ref = state.footnoteDefinitions.get(node.identifier)
+            return <sup key={key}>
+                <a href={`#footnote-${ref?.identifier}`}>
+                    {ref?.label || "footnote"}
+                </a>
+            </sup>
         },
 
         heading: ({ state, node, key }) => {
@@ -88,81 +121,13 @@ function remarkToJsx(this: unified.Processor) {
             }
         },
 
-        blockquote: ({ state, node, key }) => {
-            return <blockquote key={key}>
-                { emitChildren({ state, node }) }
-            </blockquote>
-        },
-
-        list: ({ state, node, key }) => {
-            if (node.ordered) {
-                return <ol key={key}>
-                    { emitChildren({ state, node }) }
-                </ol>
-            } else {
-                return <ul key={key}>
-                    { emitChildren({ state, node }) }
-                </ul>
-            }
-        },
-
-        listItem: ({ state, node, key }) => {
-            return <li key={key}>
-                { emitChildren({ state, node }) }
-            </li>
-        },
-
-        link: ({ state, node, key }) => {
-            return <a href={node.url} title={node.title || undefined} key={key}>
-                { emitChildren({ state, node }) }
-            </a>
-        },
-
-        linkReference: ({ state, node, key }) => {
-            return <span key={key} x-identifier={node.identifier} x-label={node.label} x-reference-type={node.referenceType} className='text-red-500 underline'>
-                { emitChildren({ state, node }) }                
-            </span>
-        },
-
-        footnoteReference: ({ state, node, key }) => {
-            return <sup key={key}>
-                <span key={key} x-identifier={node.identifier} x-label={node.label} className='text-red-500 underline'>
-                    f
-                </span>
-            </sup>
-        },
-
-        inlineCode: ({ node, key }) => {
-            return <code key={key}>{node.value}</code>
-        },
-
-        code: ({ node, key }) => {
-            return <pre x-lang={node.lang} x-meta={node.meta} key={key}>
-                <code>
-                    {node.value}
-                </code>
-            </pre>
-        },
-
-        inlineMath: ({ node, key }) => {
-            return <code className='inline-math' key={key}>{node.value}</code>
-        },
-
-        math: ({ node, key }) => {
-            return <pre x-lang='math' x-meta={node.meta} key={key}>
-                <code>
-                    {node.value}
-                </code>
-            </pre>
-        },
-
         html: ({ node, key }) => {
             const parsed = unified.unified()
                 .use(rehypeParse, { fragment: true })
                 .use(rehypeReact, {
                     Fragment: prod.Fragment,
                     jsx: prod.jsx,
-                    jsxs: prod.jsxs,    
+                    jsxs: prod.jsxs,
                 })
                 .processSync(node.value)
             return <Fragment key={key}>
@@ -170,40 +135,89 @@ function remarkToJsx(this: unified.Processor) {
             </Fragment>
         },
 
-        thematicBreak: ({ key }) => {
-            return <hr key={key} />
+        image: ({ node, key }) => (
+            <img
+                src={node.url}
+                alt={node.alt || undefined}
+                title={node.title || undefined}
+                key={key} />
+        ),
+
+        imageReference: ({ node, key }) => (
+            <span
+                key={key}
+                x-identifier={node.identifier}
+                x-label={node.label}
+                x-reference-type={node.referenceType}
+                x-alt={node.alt}
+                className='text-red-500 underline' />
+        ),
+
+        inlineCode: ({ node, key }) => (
+            <code key={key}>
+                {node.value}
+            </code>
+        ),
+
+        inlineMath: ({ node, key }) => (
+            <code className='inline-math' key={key}>
+                {node.value}
+            </code>
+        ),
+
+        link: ({ state, node, key }) => (
+            <a
+                href={node.url}
+                title={node.title || undefined}
+                key={key}>
+                { emitChildren({ state, node }) }
+            </a>
+        ),
+
+        linkReference: ({ state, node, key }) => {
+            const ref = state.definitions.get(node.identifier)
+            return <a
+                key={key}
+                href={ref?.url}>
+                { emitChildren({ state, node }) }
+            </a>
         },
 
-        strong: ({ state, node, key }) => {
-            return <strong className='text-red-400' key={key}>
+        list: ({ state, node, key }) => (
+            node.ordered
+                ? <ol key={key}>{ emitChildren({ state, node }) }</ol>
+                : <ul key={key}>{ emitChildren({ state, node }) }</ul>
+        ),
+
+        listItem: ({ state, node, key }) => (
+            <li key={key}>
+                { emitChildren({ state, node }) }
+            </li>
+        ),
+
+        math: ({ node, key }) => (
+            <pre x-lang='math' x-meta={node.meta} key={key}>
+                <code>
+                    {node.value}
+                </code>
+            </pre>
+        ),
+
+        paragraph: ({ state, node, key }) => (
+            <p key={key}>
+                { emitChildren({ state, node }) }
+            </p>
+        ),
+
+        strong: ({ state, node, key }) => (
+            <strong className='text-red-400' key={key}>
                 { emitChildren({ state, node }) }
             </strong>
-        },
+        ),
 
-        delete: ({ state, node, key }) => {
-            return <del key={key}>
-                { emitChildren({ state, node }) }
-            </del>
-        },
+        text: ({ node }) => node.value,
 
-        break: ({ key }) => <br key={key} />,
-
-        emphasis: ({ state, node, key }) => {
-            return <em key={key}>
-                { emitChildren({ state, node }) }
-            </em>
-        },
-
-        image: ({ node, key }) => {
-            return <img src={node.url} alt={node.alt || undefined} title={node.title || undefined} key={key} />
-        },
-
-        imageReference: ({ node, key }) => {
-            return <span key={key} x-identifier={node.identifier} x-label={node.label} x-reference-type={node.referenceType} x-alt={node.alt} className='text-red-500 underline' />
-        },
-
-        definition: () => undefined,
-        footnoteDefinition: () => undefined,
+        thematicBreak: ({ key }) => <hr key={key} />,
     }
 
     const emitOne: Emitter<mdast.Node> = ({ state, node, key }) => {
@@ -230,11 +244,38 @@ function remarkToJsx(this: unified.Processor) {
         </>
     }
 
-    this.compiler = (tree, file) => {
-        const state: CompilerState = {}
-        const compiled = emitters['root']({ state, node: tree as mdast.Root })
+    this.compiler = (tree) => {
+        const state: CompilerState = {
+            definitions: new Map(),
+            footnoteDefinitions: new Map(),
+        }
+
+        visit(tree, (node) => {
+            if (node.type === 'definition') {
+                const def = node as mdast.Definition
+                state.definitions.set(def.identifier, def)
+            }
+
+            if (node.type === 'footnoteDefinition') {
+                const def = node as mdast.FootnoteDefinition
+                state.footnoteDefinitions.set(def.identifier, def)
+            }
+        })
+        const body = emitChildren({ state, node: tree as mdast.Root })
+        const footnotes = Array.from(state.footnoteDefinitions.values())
         return {
-            jsx: compiled
+            jsx: <>
+                {body}
+                <section className='footnotes'>
+                    <ol>
+                        { footnotes.map(node => {
+                            return <li key={node.identifier} id={`footnote-${node.identifier}`}>
+                                { emitChildren({ state, node }) }
+                            </li>
+                        }) }
+                    </ol>
+                </section>
+            </>
         } satisfies JsxResult as JsxResult
     }
 }
