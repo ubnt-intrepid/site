@@ -1,6 +1,7 @@
 import Image from 'next/image'
-import React, { Fragment } from 'react'
+import React, { Fragment, ReactNode } from 'react'
 import * as prod from 'react/jsx-runtime'
+import katex from 'katex'
 import * as unified from 'unified'
 import mdast from 'mdast'
 import * as mdastMath from 'mdast-util-math'
@@ -14,12 +15,8 @@ import rehypeReact from 'rehype-react'
 
 declare module 'unified' {
     interface CompileResultMap {
-        JsxResult: JsxResult
+        ReactNode: ReactNode
     }
-}
-
-type JsxResult = {
-    jsx: React.ReactNode
 }
 
 function remarkToJsx(this: unified.Processor) {
@@ -65,16 +62,21 @@ function remarkToJsx(this: unified.Processor) {
 
         break: ({ key }) => <br key={key} />,
 
-        code: ({ node, key }) => (
-            <pre
-                x-lang={node.lang}
-                x-meta={node.meta}
-                key={key}>
-                <code>
-                    {node.value}
-                </code>
-            </pre>
-        ),
+        code: ({ node, key }) => {
+            if (node.lang === 'math') {
+                const rendered = katex.renderToString(node.value, {
+                    displayMode: true
+                })
+                return emitRawHtml(rendered, key)
+            } else {
+                // TODO: code highlighting
+                return <pre key={key} className={`lang-${node.lang}`} title={node.meta || undefined}>
+                    <code>
+                        {node.value}
+                    </code>
+                </pre>
+            }
+        },
 
         definition: () => undefined,
 
@@ -122,19 +124,7 @@ function remarkToJsx(this: unified.Processor) {
             }
         },
 
-        html: ({ node, key }) => {
-            const parsed = unified.unified()
-                .use(rehypeParse, { fragment: true })
-                .use(rehypeReact, {
-                    Fragment: prod.Fragment,
-                    jsx: prod.jsx,
-                    jsxs: prod.jsxs,
-                })
-                .processSync(node.value)
-            return <Fragment key={key}>
-                {parsed.result}
-            </Fragment>
-        },
+        html: ({ node, key }) => emitRawHtml(node.value, key),
 
         image: ({ node, key }) => (
             <Image
@@ -160,11 +150,12 @@ function remarkToJsx(this: unified.Processor) {
             </code>
         ),
 
-        inlineMath: ({ node, key }) => (
-            <code className='inline-math' key={key}>
-                {node.value}
-            </code>
-        ),
+        inlineMath: ({ node, key }) => {
+            const rendered = katex.renderToString(node.value, {
+                displayMode: false,
+            })
+            return emitRawHtml(rendered, key)
+        },
 
         link: ({ state, node, key }) => (
             <a
@@ -196,13 +187,12 @@ function remarkToJsx(this: unified.Processor) {
             </li>
         ),
 
-        math: ({ node, key }) => (
-            <pre x-lang='math' x-meta={node.meta} key={key}>
-                <code>
-                    {node.value}
-                </code>
-            </pre>
-        ),
+        math: ({ node, key }) => {
+            const rendered = katex.renderToString(node.value, {
+                displayMode: true,
+            })
+            return emitRawHtml(rendered, key)
+        },
 
         paragraph: ({ state, node, key }) => (
             <p key={key}>
@@ -219,6 +209,20 @@ function remarkToJsx(this: unified.Processor) {
         text: ({ node }) => node.value,
 
         thematicBreak: ({ key }) => <hr key={key} />,
+    }
+
+    const emitRawHtml = (html: string, key?: string) => {
+        const parsed = unified.unified()
+            .use(rehypeParse, { fragment: true })
+            .use(rehypeReact, {
+                Fragment: prod.Fragment,
+                jsx: prod.jsx,
+                jsxs: prod.jsxs,
+            })
+            .processSync(html)
+        return <Fragment key={key}>
+            {parsed.result}
+        </Fragment>
     }
 
     const emitOne: Emitter<mdast.Node> = ({ state, node, key }) => {
@@ -264,43 +268,38 @@ function remarkToJsx(this: unified.Processor) {
         })
         const body = emitChildren({ state, node: tree as mdast.Root })
         const footnotes = Array.from(state.footnoteDefinitions.values())
-        return {
-            jsx: <>
-                {body}
-                <section className='footnotes'>
-                    <ol>
-                        { footnotes.map(node => {
-                            return <li key={node.identifier} id={`footnote-${node.identifier}`}>
-                                { emitChildren({ state, node }) }
-                            </li>
-                        }) }
-                    </ol>
-                </section>
-            </>
-        } satisfies JsxResult as JsxResult
+        return <article className='px-4 py-6 prose'>
+            {body}
+            <section className='footnotes'>
+                <ol>
+                    { footnotes.map(node => {
+                        return <li key={node.identifier} id={`footnote-${node.identifier}`}>
+                            { emitChildren({ state, node }) }
+                        </li>
+                    }) }
+                </ol>
+            </section>
+        </article>
     }
 }
 
 // ---
 
 export type Props = {
-    content?: string
+    children?: string
 }
 
-const Markdown: React.FC<Props> = async ({ content }) => {
+const Markdown: React.FC<Props> = async ({ children }) => {
     const parsed = await unified.unified()
         .use(remarkParse, { fragment: true })
         .use(remarkDirective)
         .use(remarkGfm)
         .use(remarkMath)
         .use(remarkToJsx)
-        .process(content)
-    const { jsx } = parsed.result as JsxResult
-    return (
-        <article className='px-4 py-6 prose'>
-            {jsx}
-        </article>
-    )
+        .process(children)
+    return <>
+        {parsed.result}
+    </>
 }
 
 export default Markdown
