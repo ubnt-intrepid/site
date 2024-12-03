@@ -59,7 +59,7 @@ function remarkToJsx(this: unified.Processor) {
 
     const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
         blockquote: ({ state, node, key }) => (
-            <blockquote key={key}>
+            <blockquote key={key} className='my-6'>
                 { emitChildren({ state, node }) }
             </blockquote>
         ),
@@ -112,7 +112,8 @@ function remarkToJsx(this: unified.Processor) {
         footnoteReference: ({ state, node, key }) => {
             const ref = state.footnoteDefinitions.get(node.identifier)
             return <sup key={key}>
-                <a href={`#footnote-${ref?.identifier}`}>
+                <a  href={`#footnote-${ref?.identifier}`}
+                    className='no-underline text-orange-600 hover:underline'>
                     {ref?.label || "footnote"}
                 </a>
             </sup>
@@ -120,22 +121,34 @@ function remarkToJsx(this: unified.Processor) {
 
         heading: ({ state, node, key }) => {
             if (node.depth === 1) {
-                return <h1 key={key}>{ emitChildren({ state, node }) }</h1>
+                return <h1 key={key} className='text-3xl mt-5 mb-3'>
+                    { emitChildren({ state, node }) }
+                </h1>
             }
             if (node.depth === 2) {
-                return <h2 key={key}>{ emitChildren({ state, node }) }</h2>
+                return <h2 key={key} className='text-2xl mt-5 mb-3'>
+                    { emitChildren({ state, node }) }
+                </h2>
             }
             if (node.depth === 3) {
-                return <h3 key={key}>{ emitChildren({ state, node }) }</h3>
+                return <h3 key={key} className='text-xl mt-5 mb-3'>
+                    { emitChildren({ state, node }) }
+                </h3>
             }
             if (node.depth === 4) {
-                return <h4 key={key}>{ emitChildren({ state, node }) }</h4>
+                return <h4 key={key} className='text-xl mt-5 mb-3'>
+                    { emitChildren({ state, node }) }
+                </h4>
             }
             if (node.depth === 5) {
-                return <h5 key={key}>{ emitChildren({ state, node }) }</h5>
+                return <h5 key={key} className='text-xl mt-5 mb-3'>
+                    { emitChildren({ state, node }) }
+                </h5>
             }
             if (node.depth === 6) {
-                return <h6 key={key}>{ emitChildren({ state, node }) }</h6>
+                return <h6 key={key} className='text-xl mt-5 mb-3'>
+                    { emitChildren({ state, node }) }
+                </h6>
             }
         },
 
@@ -182,6 +195,7 @@ function remarkToJsx(this: unified.Processor) {
             <a
                 href={node.url}
                 title={node.title || undefined}
+                className='no-underline text-orange-600 hover:underline'
                 key={key}>
                 { emitChildren({ state, node }) }
             </a>
@@ -191,19 +205,20 @@ function remarkToJsx(this: unified.Processor) {
             const ref = state.definitions.get(node.identifier)
             return <a
                 key={key}
-                href={ref?.url}>
+                href={ref?.url}
+                className='no-underline text-orange-600 hover:underline'>
                 { emitChildren({ state, node }) }
             </a>
         },
 
         list: ({ state, node, key }) => (
             node.ordered
-                ? <ol key={key}>{ emitChildren({ state, node }) }</ol>
-                : <ul key={key}>{ emitChildren({ state, node }) }</ul>
+                ? <ol key={key} className='my-6 list-outside pl-4 list-decimal'>{ emitChildren({ state, node }) }</ol>
+                : <ul key={key} className='my-6 list-outside pl-4 list-disc'>{ emitChildren({ state, node }) }</ul>
         ),
 
         listItem: ({ state, node, key }) => (
-            <li key={key}>
+            <li key={key} className='ml-6'>
                 { emitChildren({ state, node }) }
             </li>
         ),
@@ -216,7 +231,7 @@ function remarkToJsx(this: unified.Processor) {
         },
 
         paragraph: ({ state, node, key }) => (
-            <p key={key}>
+            <p key={key} className='my-6'>
                 { emitChildren({ state, node }) }
             </p>
         ),
@@ -235,7 +250,9 @@ function remarkToJsx(this: unified.Processor) {
             </span>
         },
 
-        thematicBreak: ({ key }) => <hr key={key} />,
+        thematicBreak: ({ key }) => (
+            <hr key={key} className='flex mx-auto w-20' />
+        ),
     }
 
     const emitRawHtml = (html: string, key?: string) => {
@@ -295,12 +312,16 @@ function remarkToJsx(this: unified.Processor) {
         })
         const body = emitChildren({ state, node: tree as mdast.Root })
         const footnotes = Array.from(state.footnoteDefinitions.values())
-        return <article className='px-4 py-6 prose'>
+        return <article className='px-4 py-6'>
             {body}
             <section className='footnotes'>
-                <ol>
+                <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
+                <ol className='list-outside pl-4 list-decimal'>
                     { footnotes.map(node => {
-                        return <li key={node.identifier} id={`footnote-${node.identifier}`}>
+                        return <li
+                            key={node.identifier}
+                            id={`footnote-${node.identifier}`}
+                            className='ml-6' >
                             { emitChildren({ state, node }) }
                         </li>
                     }) }
