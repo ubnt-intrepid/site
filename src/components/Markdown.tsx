@@ -4,6 +4,7 @@ import * as prod from 'react/jsx-runtime'
 import katex from 'katex'
 import * as unified from 'unified'
 import mdast from 'mdast'
+import * as mdastDirective from 'mdast-util-directive'
 import * as mdastMath from 'mdast-util-math'
 import { visit } from 'unist-util-visit'
 import remarkParse from 'remark-parse'
@@ -29,6 +30,7 @@ function remarkToJsx(this: unified.Processor) {
         blockquote: mdast.Blockquote
         break: mdast.Break
         code: mdast.Code
+        containerDirective: mdastDirective.ContainerDirective
         definition: mdast.Definition
         delete: mdast.Delete
         emphasis: mdast.Emphasis
@@ -40,6 +42,7 @@ function remarkToJsx(this: unified.Processor) {
         imageReference: mdast.ImageReference
         inlineCode: mdast.InlineCode
         inlineMath: mdastMath.InlineMath
+        leafDirective: mdastDirective.LeafDirective
         link: mdast.Link
         linkReference: mdast.LinkReference
         list: mdast.List
@@ -48,6 +51,7 @@ function remarkToJsx(this: unified.Processor) {
         paragraph: mdast.Paragraph
         strong: mdast.Strong
         text: mdast.Text
+        textDirective: mdastDirective.TextDirective
         thematicBreak: mdast.ThematicBreak
     }
     type NodeType = keyof NodeTypeMap
@@ -76,6 +80,17 @@ function remarkToJsx(this: unified.Processor) {
                     </code>
                 </pre>
             }
+        },
+
+        containerDirective: ({ state, node, key }) => {
+            if (node.name !== 'callout') {
+                return <div className='container-directive bg-blue-200' key={key} x-name={node.name}>
+                    { emitChildren({ state, node }) }
+                </div>
+            }
+            return <div key={key} className='bg-orange-50 px-5 py-3 my-10 rounded relative'>
+                { emitChildren({ state, node }) }
+            </div>
         },
 
         definition: () => undefined,
@@ -157,6 +172,12 @@ function remarkToJsx(this: unified.Processor) {
             return emitRawHtml(rendered, key)
         },
 
+        leafDirective: ({ state, node, key }) => {
+            return <div className='leaf-directive text-blue-400' x-name={node.name} key={key}>
+                { emitChildren({ state, node }) }
+            </div>
+        },
+
         link: ({ state, node, key }) => (
             <a
                 href={node.url}
@@ -207,6 +228,12 @@ function remarkToJsx(this: unified.Processor) {
         ),
 
         text: ({ node }) => node.value,
+
+        textDirective: ({ state, node, key }) => {
+            return <span className='text-directive font-bold text-blue-500' x-name={node.name} key={key}>
+                { emitChildren({ state, node }) }
+            </span>
+        },
 
         thematicBreak: ({ key }) => <hr key={key} />,
     }

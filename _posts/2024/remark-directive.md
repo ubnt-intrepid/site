@@ -19,3 +19,15 @@ $$
 :::
 
 タイトル表示や組み込みの環境（Info/Warningや定理、補題など）を用意すれば大分書きごこちが良くなりそうだが、それらを実装するのは今後の課題とする。
+
+---
+:::main{#readme}
+
+Lorem:br
+ipsum.
+
+::hr{.red}
+
+A :i[lovely] language know as :abbr[HTML]{title="HyperText Markup Language"}.
+
+:::
