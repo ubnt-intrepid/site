@@ -81,6 +81,13 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
                 Fragment: prod.Fragment,
                 jsx: prod.jsx,
                 jsxs: prod.jsxs,
+                components: {
+                    pre: (props) => {
+                        const addedClasses = 'm-0 px-5 py-3 border-2 border-solid border-slate-300 rounded-b-md rounded-tr-md whitespace-pre-wrap'
+                        const className = props.className ? `${props.className} ${addedClasses}` : addedClasses
+                        return <pre {...props} className={className} />
+                    }
+                }
             })
             .processSync(rendered)
             .result
@@ -89,11 +96,7 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
             { title ? <span className='inline-block px-2 py-1 -mb-px rounded-t-sm
                 text-sm font-mono font-bold
                 bg-orange-600 text-orange-5'>{title}</span> : null }
-            <div className='m-0 px-5 py-3 border-2 border-solid
-                border-slate-300 rounded-b-md rounded-tr-md
-                whitespace-pre-wrap'>
-                {codeBlock}
-            </div>
+            {codeBlock}
         </div>
     },
 
