@@ -260,14 +260,7 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
 }
 
 const emitRawHtml = (html: string, key?: string) => {
-    const parsed = unified.unified()
-        .use(rehypeParse, { fragment: true })
-        .use(rehypeReact, {
-            Fragment: prod.Fragment,
-            jsx: prod.jsx,
-            jsxs: prod.jsxs,
-        })
-        .processSync(html)
+    const parsed = htmlConverter.processSync(html)
     return <Fragment key={key}>
         {parsed.result}
     </Fragment>
@@ -301,6 +294,15 @@ const safeFootnoteId = (state: CompilerState, id: string) => {
     return `footnote-${normalizeUri(id.toLowerCase())}`
 }
 
+const htmlConverter = unified.unified()
+    .use(rehypeParse, { fragment: true })
+    .use(rehypeReact, {
+        Fragment: prod.Fragment,
+        jsx: prod.jsx,
+        jsxs: prod.jsxs,
+    })
+    .freeze()
+
 const highlighter = await shiki.createHighlighter({
     langs: [
         'c',
@@ -329,62 +331,68 @@ type CompilerState = {
 
 function remarkToJsx(this: unified.Processor) {
     this.compiler = (tree) => {
-        const state: CompilerState = {
-            definitions: new Map(),
-            footnoteDefinitions: new Map(),
-            footnoteIdentifiers: []
-        }
-
+        const definitions = new Map()
+        const footnoteDefinitions = new Map()
         visit(tree, (node) => {
             if (node.type === 'definition' || node.type === 'footnoteDefinition') {
                 const id = (node as mdast.Definition | mdast.FootnoteDefinition).identifier
-                const map = node.type === 'definition' ? state.definitions : state.footnoteDefinitions
+                const map = node.type === 'definition' ? definitions : footnoteDefinitions
                 if (!map.has(id)) {
                     // id が重複する場合は先行する定義が優先される
                     map.set(id, node as never)
                 }
             }
         })
-        state.footnoteIdentifiers = state.footnoteDefinitions.keys().toArray()
+        const footnoteIdentifiers = footnoteDefinitions.keys().toArray()
+
+        const state: CompilerState = {
+            definitions,
+            footnoteDefinitions,
+            footnoteIdentifiers,
+        }
 
         const body = emitChildren({ state, node: tree as mdast.Root })
-        const footnotes = Array.from(state.footnoteDefinitions.values())
+        
+        const footnotes = state.footnoteDefinitions.values().toArray()
+        const footer = footnotes.length > 0
+            ? <section className='footnotes'>
+                <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
+                <ol className='list-outside pl-4 list-decimal'>
+                    { footnotes.map(node => {
+                        return <li
+                            key={node.identifier}
+                            id={`footnote-${node.identifier}`}
+                            className='ml-6' >
+                            { emitChildren({ state, node }) }
+                        </li>
+                    }) }
+                </ol>
+            </section>
+            : null
 
         return <article className='px-4 py-6'>
             {body}
-            { footnotes.length > 0
-                ? <section className='footnotes'>
-                    <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
-                    <ol className='list-outside pl-4 list-decimal'>
-                        { footnotes.map(node => {
-                            return <li
-                                key={node.identifier}
-                                id={`footnote-${node.identifier}`}
-                                className='ml-6' >
-                                { emitChildren({ state, node }) }
-                            </li>
-                        }) }
-                    </ol>
-                </section>
-                : null }
+            {footer}
         </article>
     }
 }
 
 // ---
 
+const markdownProcessor = unified.unified()
+    .use(remarkParse, { fragment: true })
+    .use(remarkDirective)
+    .use(remarkGfm)
+    .use(remarkMath)
+    .use(remarkToJsx)
+    .freeze()
+
 export type Props = {
     children?: string
 }
 
 const Markdown: React.FC<Props> = async ({ children }) => {
-    const parsed = await unified.unified()
-        .use(remarkParse, { fragment: true })
-        .use(remarkDirective)
-        .use(remarkGfm)
-        .use(remarkMath)
-        .use(remarkToJsx)
-        .process(children)
+    const parsed = await markdownProcessor.process(children)
     return <>
         {parsed.result}
     </>
