@@ -68,13 +68,26 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
                 displayMode: true
             })
             return emitRawHtml(rendered, key)
-        } else {
-            const rendered = highlighter.codeToHtml(node.value, {
-                lang: node.lang || 'txt',
-                theme: 'vitesse-light',
-            } satisfies shiki.CodeToHastOptions)
-            return emitRawHtml(rendered, key)
         }
+        
+        const rendered = highlighter.codeToHtml(node.value, {
+            lang: node.lang || 'txt',
+            theme: 'vitesse-light',
+        } satisfies shiki.CodeToHastOptions)
+        
+        const title = node.meta
+        const codeBlock = emitRawHtml(rendered, key)
+
+        return <div className='my-6' key={key}>
+            { title ? <span className='inline-block px-2 py-1 -mb-px rounded-t-sm
+                text-sm font-mono font-bold
+                bg-orange-600 text-orange-5'>{title}</span> : null }
+            <div className='m-0 px-5 py-3 border-2 border-solid
+                border-slate-300 rounded-b-md rounded-tr-md
+                whitespace-pre-wrap'>
+                {codeBlock}
+            </div>
+        </div>
     },
 
     containerDirective: ({ state, node, key }) => {
