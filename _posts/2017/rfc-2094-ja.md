@@ -2728,7 +2728,7 @@ For the case of futures especially, [the `?Move` RFC][?Move] proposes another li
 -->
 # 注釈
 
-<a name="temporaries"></a>
+<!-- <a name="temporaries"></a> -->
 
 <!--
 **1.** Scopes always correspond to blocks with one exception: the scope of a temporary value is sometimes the enclosing statement.

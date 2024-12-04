@@ -64,10 +64,8 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
 
     code: ({ node, key }) => {
         if (node.lang === 'math') {
-            const rendered = katex.renderToString(node.value, {
-                displayMode: true
-            })
-            return emitRawHtml(rendered, key)
+            /// ```math ... ``` は数式ブロックとして扱う
+            return emitMath(node.value, true, key)
         }
         
         const rendered = highlighter.codeToHtml(node.value, {
@@ -76,7 +74,15 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
         } satisfies shiki.CodeToHastOptions)
         
         const title = node.meta
-        const codeBlock = emitRawHtml(rendered, key)
+        const codeBlock = unified.unified()
+            .use(rehypeParse, { fragment: true })
+            .use(rehypeReact, {
+                Fragment: prod.Fragment,
+                jsx: prod.jsx,
+                jsxs: prod.jsxs,
+            })
+            .processSync(rendered)
+            .result
 
         return <div className='my-6' key={key}>
             { title ? <span className='inline-block px-2 py-1 -mb-px rounded-t-sm
@@ -92,13 +98,11 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
 
     containerDirective: ({ state, node, key }) => {
         if (node.name !== 'callout') {
-            return <div className='container-directive bg-blue-200' key={key} x-name={node.name}>
+            return <div key={key} className='bg-orange-50 px-5 py-3 my-10 rounded relative'>
                 { emitChildren({ state, node }) }
             </div>
         }
-        return <div key={key} className='bg-orange-50 px-5 py-3 my-10 rounded relative'>
-            { emitChildren({ state, node }) }
-        </div>
+        return undefined
     },
 
     definition: () => undefined,
@@ -166,7 +170,12 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
         }
     },
 
-    html: ({ node, key }) => emitRawHtml(node.value, key),
+    html: ({ state, node }) => {
+        if (!node.value.trimStart().startsWith('<!--')) {
+            console.warn(`${state.path}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
+        }
+        return undefined
+    },
 
     image: ({ node, key }) => (
         <Image
@@ -195,18 +204,9 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
         </code>
     ),
 
-    inlineMath: ({ node, key }) => {
-        const rendered = katex.renderToString(node.value, {
-            displayMode: false,
-        })
-        return emitRawHtml(rendered, key)
-    },
+    inlineMath: ({ node, key }) => emitMath(node.value, false, key),
 
-    leafDirective: ({ state, node, key }) => {
-        return <div className='leaf-directive text-blue-400' x-name={node.name} key={key}>
-            { emitChildren({ state, node }) }
-        </div>
-    },
+    leafDirective: () => undefined,
 
     link: ({ state, node, key }) => (
         <a
@@ -240,12 +240,7 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
         </li>
     ),
 
-    math: ({ node, key }) => {
-        const rendered = katex.renderToString(node.value, {
-            displayMode: true,
-        })
-        return emitRawHtml(rendered, key)
-    },
+    math: ({ node, key }) => emitMath(node.value, true, key),
 
     paragraph: ({ state, node, key }) => (
         <p key={key} className='my-6'>
@@ -261,22 +256,11 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
 
     text: ({ node }) => node.value,
 
-    textDirective: ({ state, node, key }) => {
-        return <span className='text-directive font-bold text-blue-500' x-name={node.name} key={key}>
-            { emitChildren({ state, node }) }
-        </span>
-    },
+    textDirective: () => undefined,
 
     thematicBreak: ({ key }) => (
         <hr key={key} className='flex mx-auto w-20' />
     ),
-}
-
-const emitRawHtml = (html: string, key?: string) => {
-    const parsed = htmlConverter.processSync(html)
-    return <Fragment key={key}>
-        {parsed.result}
-    </Fragment>
 }
 
 const emitOne: Emitter<mdast.Node> = ({ state, node, key }) => {
@@ -303,18 +287,24 @@ const emitChildren: Emitter<mdast.Parent> = ({ state, node: parent }) => {
     </>
 }
 
+const emitMath = (code: string, displayMode: boolean, key?: string) => {
+    const rendered = katex.renderToString(code, { displayMode })
+    const parsed = unified.unified()
+        .use(rehypeParse, { fragment: true })
+        .use(rehypeReact, {
+            Fragment: prod.Fragment,
+            jsx: prod.jsx,
+            jsxs: prod.jsxs,
+        })
+        .processSync(rendered)
+        return <Fragment key={key}>
+            {parsed.result}
+        </Fragment>
+}
+
 const safeFootnoteId = (state: CompilerState, id: string) => {
     return `footnote-${normalizeUri(id.toLowerCase())}`
 }
-
-const htmlConverter = unified.unified()
-    .use(rehypeParse, { fragment: true })
-    .use(rehypeReact, {
-        Fragment: prod.Fragment,
-        jsx: prod.jsx,
-        jsxs: prod.jsxs,
-    })
-    .freeze()
 
 const highlighter = await shiki.createHighlighter({
     langs: [
@@ -337,12 +327,13 @@ const highlighter = await shiki.createHighlighter({
 })
 
 type CompilerState = {
+    path?: string
     definitions: Map<string, mdast.Definition>,
     footnoteDefinitions: Map<string, mdast.FootnoteDefinition>,
     footnoteIdentifiers: string[],
 }
 
-function remarkToJsx(this: unified.Processor) {
+function remarkToJsx(this: unified.Processor, { path }: { path?: string }) {
     this.compiler = (tree) => {
         const definitions = new Map()
         const footnoteDefinitions = new Map()
@@ -359,6 +350,7 @@ function remarkToJsx(this: unified.Processor) {
         const footnoteIdentifiers = footnoteDefinitions.keys().toArray()
 
         const state: CompilerState = {
+            path,
             definitions,
             footnoteDefinitions,
             footnoteIdentifiers,
@@ -392,20 +384,20 @@ function remarkToJsx(this: unified.Processor) {
 
 // ---
 
-const markdownProcessor = unified.unified()
-    .use(remarkParse, { fragment: true })
-    .use(remarkDirective)
-    .use(remarkGfm)
-    .use(remarkMath)
-    .use(remarkToJsx)
-    .freeze()
-
 export type Props = {
+    path?: string
     children?: string
 }
 
-const Markdown: React.FC<Props> = async ({ children }) => {
-    const parsed = await markdownProcessor.process(children)
+const Markdown: React.FC<Props> = async ({ path, children }) => {
+    const parsed = await unified.unified()
+        .use(remarkParse, { fragment: true })
+        .use(remarkDirective)
+        .use(remarkGfm)
+        .use(remarkMath)
+        .use(remarkToJsx, { path })
+        .freeze()
+        .process(children)
     return <>
         {parsed.result}
     </>

@@ -49,7 +49,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
             </Headline>
 
             <div className='container mx-auto content-center'>
-                <Markdown>
+                <Markdown path={mdPath}>
                     {rawContent}
                 </Markdown>
 
