@@ -3,19 +3,8 @@ import path from 'path'
 import { glob } from 'glob'
 import matter from 'gray-matter'
 import { parseISO } from 'date-fns'
-import  { unified, Processor } from 'unified'
-import mdast, { Node } from 'mdast'
-import remarkParse from 'remark-parse'
-import remarkGfm from 'remark-gfm'
-import remarkDirective from 'remark-directive'
-import remarkMath from 'remark-math'
-import { filter } from 'unist-util-filter'
-
-declare module 'unified' {
-    interface CompileResultMap {
-        Node: Node | undefined
-    }
-}
+import { parseMarkdown } from '@/lib/markdown'
+import mdast from 'mdast'
 
 const postsDir = path.join(process.cwd(), '_posts')
 
@@ -26,7 +15,7 @@ export type Post = {
     published: Date
     tags: string[]
     categories: string[]
-    content: Node
+    content: mdast.Node
 }
 
 export const getPosts = async () => {
@@ -42,7 +31,7 @@ const _cachedPosts: Promise<Post[]> = (async () => {
         const fileContents = await fs.readFile(filePath, 'utf8')
         const sourcePath = path.relative(postsDir, filePath)
 
-        const { data, content }: {
+        const { data, content: rawContent }: {
             data: {
                 title?: string
                 published?: string 
@@ -63,13 +52,7 @@ const _cachedPosts: Promise<Post[]> = (async () => {
         }
         const published = parseISO(data.published)
     
-        const parsed = await unified()
-            .use(remarkParse, { fragment: true })
-            .use(remarkDirective)
-            .use(remarkGfm)
-            .use(remarkMath)
-            .use(remarkExport, { filePath })
-            .process(content)
+        const content = await parseMarkdown(rawContent, filePath)
 
         posts.push({
             id,
@@ -78,7 +61,7 @@ const _cachedPosts: Promise<Post[]> = (async () => {
             published,
             tags: data.tags ?? [],
             categories: data.categories ?? [],    
-            content: parsed.result as Node
+            content
         })
     }
 
@@ -86,19 +69,3 @@ const _cachedPosts: Promise<Post[]> = (async () => {
 
     return posts
 })()
-
-function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
-    this.compiler = (tree) => {
-        return filter(tree, (node) => {
-            if (node.type === 'html') {
-                const html = node as mdast.Html
-                if (!html.value.trimStart().startsWith('<!--')) {
-                    console.warn(`${filePath}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
-                }
-                return false
-            }
-
-            return true
-        })
-    }
-}
