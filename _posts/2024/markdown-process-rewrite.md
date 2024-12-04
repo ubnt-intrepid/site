@@ -1,6 +1,6 @@
 ---
 title: Markdownの変換処理まわりの実装を見直した
-date: "2024-12-04"
+published: "2024-12-04"
 categories: [ "programming" ]
 tags: [ "blog", "nextjs", "remarkjs" ]
 ---

@@ -1,6 +1,6 @@
 ---
 title: 現状の当ブログの実装をまとめておく
-date: "2024-12-01"
+published: "2024-12-01"
 tags: [ "blog", "nextjs" ]
 categories: [ "general" ]
 ---

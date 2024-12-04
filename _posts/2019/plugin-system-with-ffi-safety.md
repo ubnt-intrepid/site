@@ -1,6 +1,6 @@
 ---
 title: Rustの（FFIまわりの安全性を考慮した）プラグインシステム
-date: "2019-12-25"
+published: "2019-12-25"
 tags: [ "rust", "qiita" ]
 categories: [ "programming" ]
 ---

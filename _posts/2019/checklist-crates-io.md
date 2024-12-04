@@ -1,6 +1,6 @@
 ---
 title: crates.io でクレートを公開する際に気をつけることリスト
-date: "2019-12-02"
+published: "2019-12-02"
 tags: [ "rust", "crates.io", "qiita" ]
 categories: [ "programming" ]
 ---

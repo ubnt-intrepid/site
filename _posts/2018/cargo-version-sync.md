@@ -1,6 +1,6 @@
 ---
 title: cargo-version-sync の紹介
-date: "2018-10-30"
+published: "2018-10-30"
 tags: [ "rust", "announce", "qiita" ]
 categories: [ "programming" ]
 ---

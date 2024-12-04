@@ -1,6 +1,6 @@
 ---
 title: 立ち上げました
-date: "2017-10-05"
+published: "2017-10-05"
 tags: [ "hexo" ]
 categories: [ "general" ]
 ---

@@ -1,6 +1,6 @@
 ---
 title: Rust の文字列フォーマット回り（改訂版）
-date: "2017-10-11T21:21:33Z"
+published: "2017-10-11T21:21:33Z"
 tags: [ "rust", "programming" ]
 categories: [ "programming" ]
 ---

@@ -1,6 +1,6 @@
 ---
 title: "コンパイル時にツイートするマクロ"
-date: "2017-10-20T22:37:29Z"
+published: "2017-10-20T22:37:29Z"
 tags: [ "rust", "programming", "hobby" ]
 categories: [ "programming" ]
 ---

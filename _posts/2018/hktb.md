@@ -1,6 +1,6 @@
 ---
 title: 高階トレイト境界とうまく付き合う
-date: "2018-10-07"
+published: "2018-10-07"
 tags: [ "rust", "hktb", "tips", "qiita" ]
 categories: [ "programming" ]
 ---

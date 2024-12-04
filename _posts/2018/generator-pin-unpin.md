@@ -1,6 +1,6 @@
 ---
 title: ジェネレータと Pin/Unpin まとめ
-date: "2018-03-31"
+published: "2018-03-31"
 tags: [ "rust", "qiita" ]
 categories: [ "programming" ]
 ---

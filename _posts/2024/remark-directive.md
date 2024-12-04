@@ -1,6 +1,6 @@
 ---
 title: remark-directiveの有効化
-date: "2024-11-25"
+published: "2024-11-25"
 categories: [ general ]
 tags: [ blog ]
 ---

@@ -11,40 +11,38 @@ import { getPosts } from '@/lib/api'
 
 
 export type Params = {
-    slug: string
+    id: string
 }
 
 export const generateStaticParams = async () => {
     const posts = await getPosts()
-    return posts.map(({ slug }) => ({ slug })) satisfies Params[]
+    return posts.map(({ id }) => ({ id })) satisfies Params[]
 }
 
 export const generateMetadata = async ({ params }: { params: Promise<Params> }) => {
-    const { slug } = await params
+    const { id } = await params
     const posts = await getPosts()
-    const { title } = posts.find(post => post.slug == slug) ?? {}
+    const post = posts.find(post => post.id == id)
     return {
-        title,
+        title: post?.title,
     } satisfies Metadata
 }
 
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
-    const { slug } = await params
+    const { id } = await params
     const posts = await getPosts()
-    const post = posts.find(post => post.slug === slug)
+    const post = posts.find(post => post.id === id)
     if (!post) {
-        return (
-            <div>Failed to get post</div>
-        )
+        throw Error(`invalid post id: ${id}`)
     }
-    const { title, date, tags, categories, content, mdPath } = post
-    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${mdPath}`;
+    const { sourcePath, title, published, categories, tags, content } = post
+    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${sourcePath}`;
 
     return (
         <>
-            <Headline title={title ?? ""} href={`/${slug}`}>
+            <Headline title={title ?? ""} href={`/${id}`}>
                 <p className='mt-3'>
-                    <Calendar /> <FormattedDate date={date} />
+                    <Calendar /> <FormattedDate date={published} />
                 </p>
             </Headline>
 

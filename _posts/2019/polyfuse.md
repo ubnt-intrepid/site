@@ -1,6 +1,6 @@
 ---
 title: Announcing polyfuse - A FUSE library for Rust -
-date: "2019-12-10"
+published: "2019-12-10"
 tags: [ "rust", "fuse", "polyfuse", "async_await", "advent calendar" ]
 categories: [ "programming" ]
 ---

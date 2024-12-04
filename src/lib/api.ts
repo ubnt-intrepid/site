@@ -20,10 +20,10 @@ declare module 'unified' {
 const postsDir = path.join(process.cwd(), '_posts')
 
 export type Post = {
-    slug: string
-    mdPath: string
+    id: string
+    sourcePath: string
     title?: string 
-    date: Date
+    published: Date
     tags: string[]
     categories: string[]
     content: Node
@@ -34,54 +34,52 @@ export const getPosts = async () => {
 
     const posts: Post[] = []
     for (const filePath of postPaths) {
-        const mdPath = path.relative(postsDir, filePath)
-        const post = await readPost(filePath)
-        if (posts.findIndex(p => p.slug === post.slug) != -1) {
-            console.warn(`Ignored due to conflicting the slug: ${mdPath}`)
+        const fileContents = await fs.readFile(filePath, 'utf8')
+        const sourcePath = path.relative(postsDir, filePath)
+
+        const { data, content }: {
+            data: {
+                title?: string
+                published?: string 
+                tags?: string[]
+                categories?: string[]
+            }
+            content: string
+        } = matter(fileContents)
+
+        const id = path.basename(filePath).replace(/\.md$/, '')
+        if (posts.findIndex(post => post.id === id) != -1) {
+            console.warn(`Ignored due to conflicting the post identifier: ${sourcePath}`)
             continue
         }
-        post.mdPath = mdPath
-        posts.push(post)
+
+        if (!data.published) {
+            throw Error(`${filePath}: missing 'date' in front matter.`)
+        }
+        const published = parseISO(data.published)
+    
+        const parsed = await unified()
+            .use(remarkParse, { fragment: true })
+            .use(remarkDirective)
+            .use(remarkGfm)
+            .use(remarkMath)
+            .use(remarkExport, { filePath })
+            .process(content)
+
+        posts.push({
+            id,
+            sourcePath,
+            title: data.title,
+            published,
+            tags: data.tags ?? [],
+            categories: data.categories ?? [],    
+            content: parsed.result as Node
+        })
     }
 
-    posts.sort((a, b) => a.date < b.date ? 1 : -1)
+    posts.sort((a, b) => a.published < b.published ? 1 : -1)
 
     return posts
-}
-
-const readPost = async (filePath: string) => {
-    const fileContents = await fs.readFile(filePath, 'utf8')
-
-    const { data, content }: {
-        data: {
-            title?: string
-            date?: string 
-            tags?: string[]
-            categories?: string[]
-        }
-        content: string
-    } = matter(fileContents)
-
-    if (!data.date) {
-        throw Error(`${filePath}: missing 'date' in front matter.`)
-    }
-
-    const parsed = await unified()
-        .use(remarkParse, { fragment: true })
-        .use(remarkDirective)
-        .use(remarkGfm)
-        .use(remarkMath)
-        .use(remarkExport, { filePath })
-        .process(content)
-
-    return {
-        slug: path.basename(filePath).replace(/\.md$/, ''),
-        title: data.title,
-        date: parseISO(data.date),
-        tags: data.tags ?? [],
-        categories: data.categories ?? [],
-        content: parsed.result
-    } as Post
 }
 
 function remarkExport(this: Processor, { filePath }: { filePath?: string }) {

@@ -1,6 +1,6 @@
 ---
 title: Next.js に乗り換えた
-date: "2020-09-03T19:02:11"
+published: "2020-09-03T19:02:11"
 categories: [ "general" ]
 tags: [ "blog" ]
 ---

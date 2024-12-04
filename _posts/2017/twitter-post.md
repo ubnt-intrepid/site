@@ -1,6 +1,6 @@
 ---
 title: Twitterシェアのフォームにタイトルを挿入する
-date: "2017-10-06T00:08:37Z"
+published: "2017-10-06T00:08:37Z"
 tags: [ "hexo" ]
 categories: [ "general" ]
 ---
