@@ -37,7 +37,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
             <div>Failed to get post</div>
         )
     }
-    const { title, date, tags, categories, content: rawContent, mdPath } = post
+    const { title, date, tags, categories, content, mdPath } = post
     const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${mdPath}`;
 
     return (
@@ -49,9 +49,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
             </Headline>
 
             <div className='container mx-auto content-center'>
-                <Markdown path={mdPath}>
-                    {rawContent}
-                </Markdown>
+                <Markdown content={content} />
 
                 <div className='flex justify-between text-center text-sm'>
                     <span className='categories'>

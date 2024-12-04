@@ -3,6 +3,19 @@ import path from 'path'
 import { glob } from 'glob'
 import matter from 'gray-matter'
 import { parseISO } from 'date-fns'
+import  { unified, Processor } from 'unified'
+import mdast, { Node } from 'mdast'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkDirective from 'remark-directive'
+import remarkMath from 'remark-math'
+import { filter } from 'unist-util-filter'
+
+declare module 'unified' {
+    interface CompileResultMap {
+        Node: Node | undefined
+    }
+}
 
 const postsDir = path.join(process.cwd(), '_posts')
 
@@ -13,7 +26,7 @@ export type Post = {
     date: Date
     tags: string[]
     categories: string[]
-    content: string
+    content: Node
 }
 
 export const getPosts = async () => {
@@ -53,12 +66,36 @@ const readPost = async (filePath: string) => {
         throw Error(`${filePath}: missing 'date' in front matter.`)
     }
 
+    const parsed = await unified()
+        .use(remarkParse, { fragment: true })
+        .use(remarkDirective)
+        .use(remarkGfm)
+        .use(remarkMath)
+        .use(remarkExport, { filePath })
+        .process(content)
+
     return {
         slug: path.basename(filePath).replace(/\.md$/, ''),
         title: data.title,
         date: parseISO(data.date),
         tags: data.tags ?? [],
         categories: data.categories ?? [],
-        content
+        content: parsed.result
     } as Post
+}
+
+function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
+    this.compiler = (tree) => {
+        return filter(tree, (node) => {
+            if (node.type === 'html') {
+                const html = node as mdast.Html
+                if (!html.value.trimStart().startsWith('<!--')) {
+                    console.warn(`${filePath}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
+                }
+                return false
+            }
+
+            return true
+        })
+    }
 }

@@ -1,27 +1,16 @@
 import Image from 'next/image'
 import { Fragment } from 'react'
-import type { ReactNode } from 'react'
 import * as prod from 'react/jsx-runtime'
 import katex from 'katex'
-import * as unified from 'unified'
-import type mdast from 'mdast'
+import { unified } from 'unified'
+import mdast from 'mdast'
 import { normalizeUri, sanitizeUri } from 'micromark-util-sanitize-uri'
 import type { ContainerDirective, LeafDirective, TextDirective } from 'mdast-util-directive'
 import type { InlineMath, Math } from 'mdast-util-math'
 import { visit } from 'unist-util-visit'
-import remarkParse from 'remark-parse'
-import remarkDirective from 'remark-directive'
-import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
 import rehypeParse from 'rehype-parse'
 import rehypeReact from 'rehype-react'
 import * as shiki from 'shiki'
-
-declare module 'unified' {
-    interface CompileResultMap {
-        ReactNode: ReactNode
-    }
-}
 
 interface NodeTypeMap {
     blockquote: mdast.Blockquote
@@ -75,7 +64,7 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
         } satisfies shiki.CodeToHastOptions)
         
         const title = node.meta
-        const codeBlock = unified.unified()
+        const codeBlock = unified()
             .use(rehypeParse, { fragment: true })
             .use(rehypeReact, {
                 Fragment: prod.Fragment,
@@ -174,11 +163,8 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
         }
     },
 
-    html: ({ state, node }) => {
-        if (!node.value.trimStart().startsWith('<!--')) {
-            console.warn(`${state.path}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
-        }
-        return undefined
+    html: () => {
+        throw Error("unreachable code")
     },
 
     image: ({ node, key }) => (
@@ -293,7 +279,7 @@ const emitChildren: Emitter<mdast.Parent> = ({ state, node: parent }) => {
 
 const emitMath = (code: string, displayMode: boolean, key?: string) => {
     const rendered = katex.renderToString(code, { displayMode })
-    const parsed = unified.unified()
+    const parsed = unified()
         .use(rehypeParse, { fragment: true })
         .use(rehypeReact, {
             Fragment: prod.Fragment,
@@ -337,74 +323,58 @@ type CompilerState = {
     footnoteIdentifiers: string[],
 }
 
-function remarkToJsx(this: unified.Processor, { path }: { path?: string }) {
-    this.compiler = (tree) => {
-        const definitions = new Map()
-        const footnoteDefinitions = new Map()
-        visit(tree, (node) => {
-            if (node.type === 'definition' || node.type === 'footnoteDefinition') {
-                const id = (node as mdast.Definition | mdast.FootnoteDefinition).identifier
-                const map = node.type === 'definition' ? definitions : footnoteDefinitions
-                if (!map.has(id)) {
-                    // id が重複する場合は先行する定義が優先される
-                    map.set(id, node as never)
-                }
-            }
-        })
-        const footnoteIdentifiers = footnoteDefinitions.keys().toArray()
-
-        const state: CompilerState = {
-            path,
-            definitions,
-            footnoteDefinitions,
-            footnoteIdentifiers,
-        }
-
-        const body = emitChildren({ state, node: tree as mdast.Root })
-        
-        const footnotes = state.footnoteDefinitions.values().toArray()
-        const footer = footnotes.length > 0
-            ? <section className='footnotes'>
-                <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
-                <ol className='list-outside pl-4 list-decimal'>
-                    { footnotes.map(node => {
-                        return <li
-                            key={node.identifier}
-                            id={`footnote-${node.identifier}`}
-                            className='ml-6' >
-                            { emitChildren({ state, node }) }
-                        </li>
-                    }) }
-                </ol>
-            </section>
-            : null
-
-        return <article className='px-4 py-6'>
-            {body}
-            {footer}
-        </article>
-    }
-}
-
 // ---
 
 export type Props = {
     path?: string
-    children?: string
+    content: mdast.Node
 }
 
-const Markdown: React.FC<Props> = async ({ path, children }) => {
-    const parsed = await unified.unified()
-        .use(remarkParse, { fragment: true })
-        .use(remarkDirective)
-        .use(remarkGfm)
-        .use(remarkMath)
-        .use(remarkToJsx, { path })
-        .freeze()
-        .process(children)
-    return <>
-        {parsed.result}
-    </>
+const Markdown: React.FC<Props> = async ({ path, content }) => {
+    const definitions = new Map()
+    const footnoteDefinitions = new Map()
+    visit(content, (node) => {
+        if (node.type === 'definition' || node.type === 'footnoteDefinition') {
+            const id = (node as mdast.Definition | mdast.FootnoteDefinition).identifier
+            const map = node.type === 'definition' ? definitions : footnoteDefinitions
+            if (!map.has(id)) {
+                // id が重複する場合は先行する定義が優先される
+                map.set(id, node as never)
+            }
+        }
+    })
+    const footnoteIdentifiers = footnoteDefinitions.keys().toArray()
+
+    const state: CompilerState = {
+        path,
+        definitions,
+        footnoteDefinitions,
+        footnoteIdentifiers,
+    }
+
+    const body = emitChildren({ state, node: content as mdast.Root })
+    
+    const footnotes = state.footnoteDefinitions.values().toArray()
+    const footer = footnotes.length > 0
+        ? <section className='footnotes'>
+            <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
+            <ol className='list-outside pl-4 list-decimal'>
+                { footnotes.map(node => {
+                    return <li
+                        key={node.identifier}
+                        id={`footnote-${node.identifier}`}
+                        className='ml-6' >
+                        { emitChildren({ state, node }) }
+                    </li>
+                }) }
+            </ol>
+        </section>
+        : null
+
+    return <article className='px-4 py-6'>
+        {body}
+        {footer}
+    </article>
 }
 
 export default Markdown
