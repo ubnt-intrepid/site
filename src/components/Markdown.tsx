@@ -98,7 +98,7 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
     },
 
     containerDirective: ({ state, node, key }) => {
-        if (node.name !== 'callout') {
+        if (node.name === 'callout') {
             return <div key={key} className='bg-orange-50 px-5 py-3 my-10 rounded relative'>
                 { emitChildren({ state, node }) }
             </div>
