@@ -1,9 +1,9 @@
-+++
-title = "Rust のフロントエンド開発に入門する (2)"
-date = "2020-09-10T17:42:51+09:00"
-tags = ["wasm", "webpack"]
-categories = ["programming"]
-+++
+---
+title: Rust のフロントエンド開発に入門する (2)
+date: "2020-09-10T17:42:51+09:00"
+tags: ["wasm", "webpack"]
+categories: ["programming"]
+---
 
 Rust/WebAssembly でフロントエンド開発に入門してみる記事です。
 [前回](/wasm-frontend-1)の最後で予告した通り、今回は Webpack やフレームワークの導入を行っていきます。

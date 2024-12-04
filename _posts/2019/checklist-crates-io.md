@@ -1,9 +1,9 @@
-+++
-title = "crates.io でクレートを公開する際に気をつけることリスト"
-date = "2019-12-02"
-tags = [ "rust", "crates.io", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: crates.io でクレートを公開する際に気をつけることリスト
+date: "2019-12-02"
+tags: [ "rust", "crates.io", "qiita" ]
+categories: [ "programming" ]
+---
 
 自作クレートを公開するにあたり気をつけている点をまとめておきます。自己流なものが多いので、問題がある場合はコメントなどで指摘してもらえると助かります…
 

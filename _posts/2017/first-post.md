@@ -1,9 +1,9 @@
-+++
-title = "立ち上げました"
-date = "2017-10-05"
-tags = [ "hexo" ]
-categories = [ "general" ]
-+++
+---
+title: 立ち上げました
+date: "2017-10-05"
+tags: [ "hexo" ]
+categories: [ "general" ]
+---
 
 Hugo で MathJaX の設定をしようと思ったら良くわからなかったので Hexo で作り直しました。
 Hugo の方はまだ今度トライします…

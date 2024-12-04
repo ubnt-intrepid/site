@@ -1,9 +1,9 @@
-+++
-title = "Markdownの変換処理まわりの実装を見直した"
-date = "2024-12-04"
-categories = [ "programming" ]
-tags = [ "blog", "nextjs", "remarkjs" ]
-+++
+---
+title: Markdownの変換処理まわりの実装を見直した
+date: "2024-12-04"
+categories: [ "programming" ]
+tags: [ "blog", "nextjs", "remarkjs" ]
+---
 
 [前回](current-blog-implementation) では当ブログの実装方針について簡単に述べましたが、その後で Markdown の変換処理まわりを改修しました。
 

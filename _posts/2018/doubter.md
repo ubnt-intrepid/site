@@ -1,9 +1,9 @@
-+++
-title = "Markdown 内の Rust コードをテストするためのクレートを作った"
-date = "2018-10-11"
-tags = [ "rust", "doctest", "announce", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: Markdown 内の Rust コードをテストするためのクレートを作った
+date: "2018-10-11"
+tags: [ "rust", "doctest", "announce", "qiita" ]
+categories: [ "programming" ]
+---
 
 以前から Markdown 内の Rust コードブロックのテストをするためのクレートとして [`skeptic`] を推していたのですが、コンパイラのバージョンが更新された場合などにクレートの参照が上手くいかなくなる問題があったので、代用としてコードブロックのテスト用のクレートを作ってみました。
 

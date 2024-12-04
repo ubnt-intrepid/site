@@ -1,9 +1,9 @@
-+++
-title = "Tokioで1チャンネル双方向通信可能なMessagePack-RPCのライブラリを作った"
-date = "2017-12-20"
-tags = [ "rust", "tokio", "announce", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: Tokioで1チャンネル双方向通信可能なMessagePack-RPCのライブラリを作った
+date: "2017-12-20"
+tags: [ "rust", "tokio", "announce", "qiita" ]
+categories: [ "programming" ]
+---
 
 少し前に作った双方向の MessagePack-RPC 実装に関する知見をまとめておきます．
 

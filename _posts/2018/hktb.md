@@ -1,9 +1,9 @@
-+++
-title = "高階トレイト境界とうまく付き合う"
-date = "2018-10-07"
-tags = [ "rust", "hktb", "tips", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: 高階トレイト境界とうまく付き合う
+date: "2018-10-07"
+tags: [ "rust", "hktb", "tips", "qiita" ]
+categories: [ "programming" ]
+---
 
 <!-- more -->
 

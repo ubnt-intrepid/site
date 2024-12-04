@@ -1,9 +1,9 @@
-+++
-title = "RFC 2094 (non-lexical lifetime) の非公式訳"
-date = "2017-12-01T00:00:00Z"
-tags = [ "rust", "rfc", "nll" ]
-categories = [ "programming" ]
-+++
+---
+title: RFC 2094 (non-lexical lifetime) の非公式訳
+date: "2017-12-01T00:00:00Z"
+tags: [ "rust", "rfc", "nll" ]
+categories: [ "programming" ]
+---
 
 本記事は [Rust Internal Advent Calendar 2017][adc] 第1日目の記事です。
 

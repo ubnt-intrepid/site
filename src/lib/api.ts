@@ -2,7 +2,6 @@ import fs from 'fs/promises'
 import path from 'path'
 import { glob } from 'glob'
 import matter from 'gray-matter'
-import toml from 'toml'
 
 const postsDir = path.join(process.cwd(), '_posts')
 
@@ -48,28 +47,16 @@ const readPost = async (filePath: string) => {
 
     const { data, content }: {
         data: {
-            slug?: string
             title?: string
             date?: string 
             tags?: string[]
             categories?: string[]
         }
         content: string
-    } = matter(fileContents, {
-        language: 'toml',
-        delimiters: '+++',
-        engines: {
-            toml: {
-                parse: toml.parse.bind(toml),
-                stringify: () => {
-                    throw new Error('cannot stringify to TOML')
-                }
-            }
-        }
-    })
+    } = matter(fileContents)
 
     return {
-        slug: data.slug ?? path.basename(filePath).replace(/\.md$/, ''),
+        slug: path.basename(filePath).replace(/\.md$/, ''),
         title: data.title,
         date: data.date,
         tags: data.tags ?? [],

@@ -1,9 +1,9 @@
-+++
-title = "Next.js に乗り換えた"
-date = "2020-09-03T19:02:11"
-categories = [ "general" ]
-tags = [ "blog" ]
-+++
+---
+title: Next.js に乗り換えた
+date: "2020-09-03T19:02:11"
+categories: [ "general" ]
+tags: [ "blog" ]
+---
 
 1 年ほど前に[ブログの静的サイトジェネレータを Zola に変更した](/migrate-to-zola)が、これを Next.js に置き換え、ついでにサイトのスタイルを Tailwind CSS を使ってみた。
 デザインの微調整やブログシステムの調整などはこれからやっていく予定。

@@ -1,9 +1,9 @@
-+++
-title = "cargo でドキュメント生成とサーバ起動を行うコマンドを作った"
-date = "2018-08-24"
-tags = [ "rust", "announce", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: cargo でドキュメント生成とサーバ起動を行うコマンドを作った
+date: "2018-08-24"
+tags: [ "rust", "announce", "qiita" ]
+categories: [ "programming" ]
+---
 
 WSL や仮想環境、VPS上で作業をする場合、`cargo doc --open` が使用できないので何かしらの手段で `target/doc` 内のコンテンツを配信する Web サーバを起動する必要があります。この手の簡易 HTTP サーバは探せばいくらでも出てくるのですが、`cargo doc` と組み合わせてコマンド一発で実行したかったので、`cargo` サブコマンド作成の練習がてらドキュメント生成とサーバが一つにまとまったコマンドを作ってみました。
 

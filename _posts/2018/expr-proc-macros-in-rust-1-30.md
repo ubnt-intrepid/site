@@ -1,9 +1,9 @@
-+++
-title = "Rust1.30で式形式の手続き的マクロを無理やり定義する"
-date = "2018-11-02"
-tags = [ "rust", "proc-macro", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: Rust1.30で式形式の手続き的マクロを無理やり定義する
+date: "2018-11-02"
+tags: [ "rust", "proc-macro", "qiita" ]
+categories: [ "programming" ]
+---
 
 <!-- more -->
 
