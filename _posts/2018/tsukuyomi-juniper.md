@@ -17,13 +17,7 @@ Rust では，GraphQL サーバ向けのライブラリとして [Juniper][junip
 
 # Tsukuyomi について
 
-<div align="center">
-    <a href="https://github.com/tsukuyomi-rs/tsukuyomi">
-        <img src="https://raw.githubusercontent.com/tsukuyomi-rs/tsukuyomi/v0.2.2/tsukuyomi-header.png"
-             alt="header"
-             style="width: 600px;">
-    </a>
-</div>
+[![header](https://raw.githubusercontent.com/tsukuyomi-rs/tsukuyomi/v0.2.2/tsukuyomi-header.png)](https://github.com/tsukuyomi-rs/tsukuyomi)
 
 Hyper 0.12 ベースの非同期 Web フレームワークです。もともと開発していた Susanoo というプロジェクトの後継にあたり，既存の非同期 WAF (Gotham, Actix-web など）の設計に影響を受けつつ使いやすいフレームワークとなることを目指しています。
 

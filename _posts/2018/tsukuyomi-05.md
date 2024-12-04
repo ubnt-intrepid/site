@@ -9,13 +9,7 @@ categories = [ "programming" ]
 
 <!-- more -->
 
-<div align="center">
-    <a href="https://github.com/tsukuyomi-rs/tsukuyomi">
-        <img src="https://tsukuyomi-rs.github.io/images/tsukuyomi-header.png"
-             alt="header"
-             style="width: 500px;">
-    </a>
-</div>
+[![header](https://tsukuyomi-rs.github.io/images/tsukuyomi-header.png)](https://github.com/tsukuyomi-rs/tsukuyomi)
 
 # Hello, Tsukuyomi
 

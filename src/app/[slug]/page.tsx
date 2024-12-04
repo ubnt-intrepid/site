@@ -49,7 +49,9 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
             </Headline>
 
             <div className='container mx-auto content-center'>
-                <Markdown content={rawContent} />
+                <Markdown path={mdPath}>
+                    {rawContent}
+                </Markdown>
 
                 <div className='flex justify-between text-center text-sm'>
                     <span className='categories'>
