@@ -30,6 +30,11 @@ export type Post = {
 }
 
 export const getPosts = async () => {
+    // FIXME: invalidate the cache when post(s) are modified
+    return await _cachedPosts
+}
+
+const _cachedPosts: Promise<Post[]> = (async () => {
     const postPaths = await glob(postsDir + '/**/*.md')
 
     const posts: Post[] = []
@@ -80,7 +85,7 @@ export const getPosts = async () => {
     posts.sort((a, b) => a.published < b.published ? 1 : -1)
 
     return posts
-}
+})()
 
 function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
     this.compiler = (tree) => {
