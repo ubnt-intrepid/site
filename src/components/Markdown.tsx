@@ -1,12 +1,13 @@
 import Image from 'next/image'
-import React, { Fragment, ReactNode } from 'react'
+import { Fragment } from 'react'
+import type { ReactNode } from 'react'
 import * as prod from 'react/jsx-runtime'
 import katex from 'katex'
 import * as unified from 'unified'
-import mdast from 'mdast'
+import type mdast from 'mdast'
 import { normalizeUri, sanitizeUri } from 'micromark-util-sanitize-uri'
-import * as mdastDirective from 'mdast-util-directive'
-import * as mdastMath from 'mdast-util-math'
+import type { ContainerDirective, LeafDirective, TextDirective } from 'mdast-util-directive'
+import type { InlineMath, Math } from 'mdast-util-math'
 import { visit } from 'unist-util-visit'
 import remarkParse from 'remark-parse'
 import remarkDirective from 'remark-directive'
@@ -26,7 +27,7 @@ interface NodeTypeMap {
     blockquote: mdast.Blockquote
     break: mdast.Break
     code: mdast.Code
-    containerDirective: mdastDirective.ContainerDirective
+    containerDirective: ContainerDirective
     definition: mdast.Definition
     delete: mdast.Delete
     emphasis: mdast.Emphasis
@@ -37,17 +38,17 @@ interface NodeTypeMap {
     image: mdast.Image
     imageReference: mdast.ImageReference
     inlineCode: mdast.InlineCode
-    inlineMath: mdastMath.InlineMath
-    leafDirective: mdastDirective.LeafDirective
+    inlineMath: InlineMath
+    leafDirective: LeafDirective
     link: mdast.Link
     linkReference: mdast.LinkReference
     list: mdast.List
     listItem: mdast.ListItem
-    math: mdastMath.Math
+    math: Math
     paragraph: mdast.Paragraph
     strong: mdast.Strong
     text: mdast.Text
-    textDirective: mdastDirective.TextDirective
+    textDirective: TextDirective
     thematicBreak: mdast.ThematicBreak
 }
 type NodeType = keyof NodeTypeMap
