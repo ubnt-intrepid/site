@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict'
 import  { unified, Processor } from 'unified'
 import mdast from 'mdast'
 import remarkParse from 'remark-parse'
@@ -15,7 +16,7 @@ declare module 'unified' {
 
 type ParseResult = {
     matter: string
-    node: mdast.Node,
+    content: mdast.Root,
 }
 
 export const parseMarkdown = async (content: string, filePath: string) => {
@@ -34,7 +35,7 @@ export const parseMarkdown = async (content: string, filePath: string) => {
 function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
     this.compiler = (tree) => {
         let matter: string | null = null
-        const node = filter(tree, (node) => {
+        const result = filter(tree, (node) => {
             if (node.type === 'yaml') {
                 // front matter
                 matter = (node as mdast.Yaml).value
@@ -53,13 +54,17 @@ function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
             return true
         })
 
-        if (!node) {
-            throw Error("filtered mdast should not be empty")
+        if (!result) {
+            assert.fail('filtered mdast should not be empty')
+        }
+
+        if (result.type !== 'root') {
+            assert.fail('the root node must be mdast.Root')
         }
 
         return {
             matter: matter ?? "",
-            node
+            content: result as mdast.Root,
         } satisfies ParseResult as ParseResult
     }
 }

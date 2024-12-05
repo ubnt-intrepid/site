@@ -15,7 +15,7 @@ export type Post = {
     published: Date
     tags: string[]
     categories: string[]
-    content: mdast.Node
+    content: mdast.Root
 }
 
 export const getPosts = async () => {
@@ -31,7 +31,7 @@ const _cachedPosts: Promise<Post[]> = (async () => {
         const fileContents = await fs.readFile(filePath, 'utf8')
         const sourcePath = path.relative(postsDir, filePath)
 
-        const { matter, node: content } = await parseMarkdown(fileContents, filePath)
+        const { matter, content } = await parseMarkdown(fileContents, filePath)
         const data = yaml.load(matter) as {
             title?: string
             published?: Date | string

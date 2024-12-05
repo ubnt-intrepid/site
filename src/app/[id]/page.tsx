@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
@@ -33,7 +34,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
     const posts = await getPosts()
     const post = posts.find(post => post.id === id)
     if (!post) {
-        throw Error(`invalid post id: ${id}`)
+        assert.fail(`invalid post id: ${id}`)
     }
     const { sourcePath, title, published, categories, tags, content } = post
     const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${sourcePath}`;

@@ -23,7 +23,6 @@ interface NodeTypeMap {
     footnoteDefinition: mdast.Definition
     footnoteReference: mdast.FootnoteReference
     heading: mdast.Heading
-    html: mdast.Html
     image: mdast.Image
     imageReference: mdast.ImageReference
     inlineCode: mdast.InlineCode
@@ -161,10 +160,6 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
                 { emitChildren({ state, node }) }
             </h6>
         }
-    },
-
-    html: () => {
-        throw Error("unreachable code")
     },
 
     image: ({ node, key }) => (
