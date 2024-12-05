@@ -5,18 +5,19 @@ import katex from 'katex'
 import { unified } from 'unified'
 import mdast from 'mdast'
 import { normalizeUri, sanitizeUri } from 'micromark-util-sanitize-uri'
-import type { ContainerDirective, LeafDirective, TextDirective } from 'mdast-util-directive'
 import type { InlineMath, Math } from 'mdast-util-math'
 import { visit } from 'unist-util-visit'
 import rehypeParse from 'rehype-parse'
 import rehypeReact from 'rehype-react'
 import * as shiki from 'shiki'
 
+import type { UserCallout } from '@/lib/markdown'
+import MaterialIcon from './MaterialIcon'
+
 interface NodeTypeMap {
     blockquote: mdast.Blockquote
     break: mdast.Break
     code: mdast.Code
-    containerDirective: ContainerDirective
     definition: mdast.Definition
     delete: mdast.Delete
     emphasis: mdast.Emphasis
@@ -27,7 +28,6 @@ interface NodeTypeMap {
     imageReference: mdast.ImageReference
     inlineCode: mdast.InlineCode
     inlineMath: InlineMath
-    leafDirective: LeafDirective
     link: mdast.Link
     linkReference: mdast.LinkReference
     list: mdast.List
@@ -36,15 +36,16 @@ interface NodeTypeMap {
     paragraph: mdast.Paragraph
     strong: mdast.Strong
     text: mdast.Text
-    textDirective: TextDirective
     thematicBreak: mdast.ThematicBreak
+    // custom directives
+    userCallout: UserCallout,
 }
 type NodeType = keyof NodeTypeMap
 type Emitter<N extends mdast.Node> = (args: { state: CompilerState, node: N, key?: string }) => React.ReactNode
 
 const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
     blockquote: ({ state, node, key }) => (
-        <blockquote key={key} className='my-6'>
+        <blockquote key={key} className='px-5 py-0.5 mx-6 my-10 border-l-4 border-orange-800 bg-orange-50'>
             { emitChildren({ state, node }) }
         </blockquote>
     ),
@@ -86,15 +87,6 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
                 bg-orange-600 text-orange-5'>{title}</span> : null }
             {codeBlock}
         </div>
-    },
-
-    containerDirective: ({ state, node, key }) => {
-        if (node.name === 'callout') {
-            return <div key={key} className='bg-orange-50 px-5 py-3 my-10 rounded relative'>
-                { emitChildren({ state, node }) }
-            </div>
-        }
-        return undefined
     },
 
     definition: () => undefined,
@@ -191,8 +183,6 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
 
     inlineMath: ({ node, key }) => emitMath(node.value, false, key),
 
-    leafDirective: () => undefined,
-
     link: ({ state, node, key }) => (
         <a
             href={node.url}
@@ -241,11 +231,45 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
 
     text: ({ node }) => node.value,
 
-    textDirective: () => undefined,
-
     thematicBreak: ({ key }) => (
         <hr key={key} className='flex mx-auto w-20' />
     ),
+
+    userCallout: ({ state, node, key }) => {        
+        const { icon, title } = calloutStyles[node.kind]
+
+        return <div key={key} className='px-5 py-3 my-10 border-l-4 border-orange-600 relative'>
+            <div className='font-bold text-xl text-orange-600 my-0'>
+                <MaterialIcon name={icon} />
+                &nbsp;
+                {title}
+            </div>
+            { emitChildren({ state, node }) }
+        </div>
+    },
+}
+
+const calloutStyles: Record<string, { icon: string, title: string }> = {
+    'note': {
+        icon: 'error',
+        title: 'Note'
+    },
+    'tip': {
+        icon: 'lightbulb',
+        title: 'Tip'
+    },
+    'important': {
+        icon: 'warning',
+        title: 'Important'
+    },
+    'warning': {
+        icon: 'warning',
+        title: 'Warning'
+    },
+    'caution': {
+        icon: 'error',
+        title: 'Caution'
+    }
 }
 
 const emitOne: Emitter<mdast.Node> = ({ state, node, key }) => {

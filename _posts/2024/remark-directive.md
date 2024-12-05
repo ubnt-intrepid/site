@@ -7,7 +7,7 @@ tags: [ blog ]
 
 `remark-directive` を有効化し、簡単な Callout を使用できるようにした。
 
-:::callout{title="タイトル"}
+:::tip
 このように使用します。
 ```txt sample.txt
 コードブロックや
