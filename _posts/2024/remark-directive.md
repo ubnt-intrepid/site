@@ -1,9 +1,9 @@
-+++
-title = "remark-directiveの有効化"
-date = "2024-11-25"
-categories = [ "general" ]
-tags = [ "blog" ]
-+++
+---
+title: remark-directiveの有効化
+published: 2024-11-25
+categories: [ general ]
+tags: [ blog ]
+---
 
 `remark-directive` を有効化し、簡単な Callout を使用できるようにした。
 

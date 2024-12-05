@@ -1,7 +1,7 @@
 import React from 'react'
 import Headline from '@/components/Headline'
 import { Folder } from '@/components/MaterialIcon'
-import { getPosts } from '@/lib/api'
+import { getPosts } from '@/lib/post'
 import PostList from '@/components/PostList'
 
 export type Params = {

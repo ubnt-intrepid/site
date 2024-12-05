@@ -1,9 +1,9 @@
-+++
-title = "Zolaに移行した"
-date = "2019-12-01"
-tags = [ "blog", "zola" ]
-categories = [ "general" ]
-+++
+---
+title: Zolaに移行した
+published: 2019-12-01
+tags: [ "blog", "zola" ]
+categories: [ "general" ]
+---
 
 <!-- more -->
 

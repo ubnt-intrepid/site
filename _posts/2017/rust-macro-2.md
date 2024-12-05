@@ -1,9 +1,9 @@
-+++
-title = "Rust のマクロ・構文拡張，および Macros 2.0 について"
-date = "2017-12-10T19:07:51Z"
-tags = [ "rust", "advent calendar", "macros" ]
-categories = [ "programming" ]
-+++
+---
+title: Rust のマクロ・構文拡張，および Macros 2.0 について
+published: 2017-12-10T19:07:51Z
+tags: [ "rust", "advent calendar", "macros" ]
+categories: [ "programming" ]
+---
 
 本記事は [Rust Internal Advent Calendar 2017][adc] 第10日目の記事です．
 

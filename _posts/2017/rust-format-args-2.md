@@ -1,9 +1,9 @@
-+++
-title = "Rust の文字列フォーマット回り (2)"
-date = "2017-10-06T16:48:57Z"
-tags = [ "rust", "programming" ]
-categories = [ "programming" ]
-+++
+---
+title: Rust の文字列フォーマット回り (2)
+published: 2017-10-06T16:48:57Z
+tags: [ "rust", "programming" ]
+categories: [ "programming" ]
+---
 
 前回はフォーマット出力系のマクロの定義と呼び出している関数を確認した。
 今回はそれらが実際に呼び出している `core::fmt::write()` の動作を見てみる。

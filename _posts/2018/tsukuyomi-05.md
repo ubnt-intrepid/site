@@ -1,9 +1,9 @@
-+++
-title = "Tsukuyomi 0.5 -Yet Another Web Framework for Rust-"
-date = "2018-12-22"
-tags = [ "rust", "announce", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: Tsukuyomi 0.5 -Yet Another Web Framework for Rust-
+published: 2018-12-22
+tags: [ "rust", "announce", "qiita" ]
+categories: [ "programming" ]
+---
 
 先日、自作の Web アプリケーションフレームワークである Tsukuyomi の最新版である 0.5.0 を公開したのでその紹介です。
 

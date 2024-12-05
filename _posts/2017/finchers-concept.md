@@ -1,9 +1,9 @@
-+++
-title = "Finchers の設計思想、およびサンプル"
-date = "2017-12-20"
-tags = [ "rust", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: Finchers の設計思想、およびサンプル
+published: 2017-12-20
+tags: [ "rust", "qiita" ]
+categories: [ "programming" ]
+---
 
 **追記(2018-02-07:02:14)**
 

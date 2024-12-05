@@ -1,9 +1,9 @@
-+++
-title = "Rust の文字列フォーマット回り (1)"
-date = "2017-10-05T11:55:39Z"
-tags = [ "rust", "programming" ]
-categories = [ "programming" ]
-+++
+---
+title: Rust の文字列フォーマット回り (1)
+published: 2017-10-05T11:55:39Z
+tags: [ "rust", "programming" ]
+categories: [ "programming" ]
+---
 
 気になったのでメモ。
 

@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
@@ -7,51 +8,47 @@ import Headline from '@/components/Headline'
 import Markdown from '@/components/Markdown'
 import { Calendar, Folder, Tag, Edit } from '@/components/MaterialIcon'
 import { siteRepoUrl } from '@/config'
-import { getPosts } from '@/lib/api'
+import { getPosts } from '@/lib/post'
 
 
 export type Params = {
-    slug: string
+    id: string
 }
 
 export const generateStaticParams = async () => {
     const posts = await getPosts()
-    return posts.map(({ slug }) => ({ slug })) satisfies Params[]
+    return posts.map(({ id }) => ({ id })) satisfies Params[]
 }
 
 export const generateMetadata = async ({ params }: { params: Promise<Params> }) => {
-    const { slug } = await params
+    const { id } = await params
     const posts = await getPosts()
-    const { title } = posts.find(post => post.slug == slug) ?? {}
+    const post = posts.find(post => post.id == id)
     return {
-        title,
+        title: post?.title,
     } satisfies Metadata
 }
 
 const PostPage = async ({ params }: { params: Promise<Params> }) => {
-    const { slug } = await params
+    const { id } = await params
     const posts = await getPosts()
-    const post = posts.find(post => post.slug === slug)
+    const post = posts.find(post => post.id === id)
     if (!post) {
-        return (
-            <div>Failed to get post</div>
-        )
+        assert.fail(`invalid post id: ${id}`)
     }
-    const { title, date, tags, categories, content: rawContent, mdPath } = post
-    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${mdPath}`;
+    const { sourcePath, title, published, categories, tags, content } = post
+    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${sourcePath}`;
 
     return (
         <>
-            <Headline title={title ?? ""} href={`/${slug}`}>
+            <Headline title={title ?? ""} href={`/${id}`}>
                 <p className='mt-3'>
-                    <Calendar /> <FormattedDate date={date} />
+                    <Calendar /> <FormattedDate date={published} />
                 </p>
             </Headline>
 
             <div className='container mx-auto content-center'>
-                <Markdown path={mdPath}>
-                    {rawContent}
-                </Markdown>
+                <Markdown content={content} />
 
                 <div className='flex justify-between text-center text-sm'>
                     <span className='categories'>

@@ -1,9 +1,9 @@
-+++
-title = "Twitterシェアのフォームにタイトルを挿入する"
-date = "2017-10-06T00:08:37Z"
-tags = [ "hexo" ]
-categories = [ "general" ]
-+++
+---
+title: Twitterシェアのフォームにタイトルを挿入する
+published: 2017-10-06T00:08:37Z
+tags: [ "hexo" ]
+categories: [ "general" ]
+---
 
 デフォルトのテーマである `landspace` ではシェアするときにページのタイトルが挿入されないので、出来るように修正した。
 

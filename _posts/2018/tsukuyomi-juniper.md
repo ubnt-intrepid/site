@@ -1,9 +1,9 @@
-+++
-title = "Tsukuyomi + Juniper で GraphQL サーバを作る"
-date = "2018-07-11"
-tags = [ "rust", "graphql", "juniper", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: Tsukuyomi + Juniper で GraphQL サーバを作る
+published: 2018-07-11
+tags: [ "rust", "graphql", "juniper", "qiita" ]
+categories: [ "programming" ]
+---
 
 Rust では，GraphQL サーバ向けのライブラリとして [Juniper][juniper] というクレートが公開されています。少し前に自作の Web フレームワークである [Tsukuyomi][tsukuyomi] でこのライブラリを使用するためのライブラリを[公開した][tsukuyomi-juniper]ので， Tsukuyomi 自体の紹介もかねて簡単なチュートリアルを記しておきます。
 

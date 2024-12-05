@@ -1,9 +1,9 @@
-+++
-title = "cargo で npm-scripts 的なことをする"
-date = "2019-11-20"
-tags = [ "rust", "cargo", "cargo-xtask", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: cargo で npm-scripts 的なことをする
+published: 2019-11-20
+tags: [ "rust", "cargo", "cargo-xtask", "qiita" ]
+categories: [ "programming" ]
+---
 
 <!-- more -->
 

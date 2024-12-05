@@ -1,9 +1,9 @@
-+++
-title = "cargo-version-sync の紹介"
-date = "2018-10-30"
-tags = [ "rust", "announce", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: cargo-version-sync の紹介
+published: 2018-10-30
+tags: [ "rust", "announce", "qiita" ]
+categories: [ "programming" ]
+---
 
 `crates.io` に自作のクレートを公開する際、`README.md` などに記載しているクレートのバージョンをリリース時に書き換えることを忘れてしまうことが稀によくあります。以前はこのような事故を防ぐために `cargo-release` で提供されている機能を使用していたのですが、リリース時にしか実行できない点などいまいち自分の好みと合わなかったので、バージョン番号のチェック・書き換えの部分だけを行う cargo サブコマンドを新しく作りました。
 

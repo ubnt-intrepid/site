@@ -1,9 +1,9 @@
-+++
-title = "コンパイル時にツイートするマクロ"
-date = "2017-10-20T22:37:29Z"
-tags = [ "rust", "programming", "hobby" ]
-categories = [ "programming" ]
-+++
+---
+title: "コンパイル時にツイートするマクロ"
+published: 2017-10-20T22:37:29Z
+tags: [ "rust", "programming", "hobby" ]
+categories: [ "programming" ]
+---
 
 を作った。
 

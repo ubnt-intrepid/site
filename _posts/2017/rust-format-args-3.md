@@ -1,9 +1,9 @@
-+++
-title = "Rust の文字列フォーマット周り (3)"
-date = "2017-10-08T20:29:46Z"
-tags = [ "rust", "programming" ]
-categories = [ "programming" ]
-+++
+---
+title: Rust の文字列フォーマット周り (3)
+published: 2017-10-08T20:29:46Z
+tags: [ "rust", "programming" ]
+categories: [ "programming" ]
+---
 
 前回は `format_args!()` が出力する `core::fmt::Arguments` の詳細を見てみた。
 今回はコード生成周りを概観する。

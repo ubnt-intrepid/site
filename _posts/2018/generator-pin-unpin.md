@@ -1,9 +1,9 @@
-+++
-title = "ジェネレータと Pin/Unpin まとめ"
-date = "2018-03-31"
-tags = [ "rust", "qiita" ]
-categories = [ "programming" ]
-+++
+---
+title: ジェネレータと Pin/Unpin まとめ
+published: 2018-03-31
+tags: [ "rust", "qiita" ]
+categories: [ "programming" ]
+---
 
 ジェネレータと自己参照周りの問題整理，および新しく提案された参照型 `Pin` と自動トレイト `Unpin` の概略。
 
