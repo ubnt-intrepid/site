@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import { glob } from 'glob'
-import matter from 'gray-matter'
+import yaml from 'js-yaml'
 import { parseISO } from 'date-fns'
 import { parseMarkdown } from '@/lib/markdown'
 import mdast from 'mdast'
@@ -31,16 +31,14 @@ const _cachedPosts: Promise<Post[]> = (async () => {
         const fileContents = await fs.readFile(filePath, 'utf8')
         const sourcePath = path.relative(postsDir, filePath)
 
-        const { data, content: rawContent }: {
-            data: {
-                title?: string
-                published?: string 
-                tags?: string[]
-                categories?: string[]
-            }
-            content: string
-        } = matter(fileContents)
-
+        const { matter, node: content } = await parseMarkdown(fileContents, filePath)
+        const data = yaml.load(matter) as {
+            title?: string
+            published?: string 
+            tags?: string[]
+            categories?: string[]
+        }
+ 
         const id = path.basename(filePath).replace(/\.md$/, '')
         if (posts.findIndex(post => post.id === id) != -1) {
             console.warn(`Ignored due to conflicting the post identifier: ${sourcePath}`)
@@ -52,8 +50,6 @@ const _cachedPosts: Promise<Post[]> = (async () => {
         }
         const published = parseISO(data.published)
     
-        const content = await parseMarkdown(rawContent, filePath)
-
         posts.push({
             id,
             sourcePath,
