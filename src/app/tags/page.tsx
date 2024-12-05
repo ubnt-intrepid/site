@@ -3,7 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 import Headline from '@/components/Headline'
 import { Tag } from '@/components/MaterialIcon'
-import { getPosts } from '@/lib/api'
+import { getPosts } from '@/lib/post'
 import { collectCounts } from '@/lib/utils'
 
 export const metadata: Metadata = {

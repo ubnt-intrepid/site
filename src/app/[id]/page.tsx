@@ -7,7 +7,7 @@ import Headline from '@/components/Headline'
 import Markdown from '@/components/Markdown'
 import { Calendar, Folder, Tag, Edit } from '@/components/MaterialIcon'
 import { siteRepoUrl } from '@/config'
-import { getPosts } from '@/lib/api'
+import { getPosts } from '@/lib/post'
 
 
 export type Params = {

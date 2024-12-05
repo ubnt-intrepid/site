@@ -2,7 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 import { Calendar } from './MaterialIcon'
 import FormattedDate from './FormattedDate'
-import { Post } from '@/lib/api'
+import { Post } from '@/lib/post'
 
 export type Props = {
     posts: Post[]
