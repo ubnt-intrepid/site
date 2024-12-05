@@ -1,6 +1,6 @@
 ---
 title: Tokioで1チャンネル双方向通信可能なMessagePack-RPCのライブラリを作った
-published: "2017-12-20"
+published: 2017-12-20
 tags: [ "rust", "tokio", "announce", "qiita" ]
 categories: [ "programming" ]
 ---

@@ -1,6 +1,6 @@
 ---
 title: Rust1.30で式形式の手続き的マクロを無理やり定義する
-published: "2018-11-02"
+published: 2018-11-02
 tags: [ "rust", "proc-macro", "qiita" ]
 categories: [ "programming" ]
 ---

@@ -1,8 +1,8 @@
+import assert from 'node:assert/strict'
 import fs from 'fs/promises'
 import path from 'path'
 import { glob } from 'glob'
 import yaml from 'js-yaml'
-import { parseISO } from 'date-fns'
 import { parseMarkdown } from '@/lib/markdown'
 import mdast from 'mdast'
 
@@ -11,7 +11,7 @@ const postsDir = path.join(process.cwd(), '_posts')
 export type Post = {
     id: string
     sourcePath: string
-    title?: string 
+    title?: string
     published: Date
     tags: string[]
     categories: string[]
@@ -34,11 +34,11 @@ const _cachedPosts: Promise<Post[]> = (async () => {
         const { matter, node: content } = await parseMarkdown(fileContents, filePath)
         const data = yaml.load(matter) as {
             title?: string
-            published?: string 
+            published?: Date | string
             tags?: string[]
             categories?: string[]
         }
- 
+
         const id = path.basename(filePath).replace(/\.md$/, '')
         if (posts.findIndex(post => post.id === id) != -1) {
             console.warn(`Ignored due to conflicting the post identifier: ${sourcePath}`)
@@ -46,17 +46,19 @@ const _cachedPosts: Promise<Post[]> = (async () => {
         }
 
         if (!data.published) {
-            throw Error(`${filePath}: missing 'date' in front matter.`)
+            assert.fail(`${filePath}: missing \`date\` in front matter.`)
         }
-        const published = parseISO(data.published)
-    
+        if (typeof data.published === 'string') {
+            assert.fail(`${filePath}: the type of \`date\` must be timestamp.`)
+        }
+
         posts.push({
             id,
             sourcePath,
             title: data.title,
-            published,
+            published: data.published,
             tags: data.tags ?? [],
-            categories: data.categories ?? [],    
+            categories: data.categories ?? [],
             content
         })
     }

@@ -1,6 +1,6 @@
 ---
 title: Markdown 内の Rust コードをテストするためのクレートを作った
-published: "2018-10-11"
+published: 2018-10-11
 tags: [ "rust", "doctest", "announce", "qiita" ]
 categories: [ "programming" ]
 ---

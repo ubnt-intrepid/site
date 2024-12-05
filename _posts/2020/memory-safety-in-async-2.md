@@ -1,6 +1,6 @@
 ---
 title: 非同期処理で書き込むメモリを（ちゃんと）守るためのエトセトラ (2)
-published: "2020-06-10T02:48:34"
+published: 2020-06-10T02:48:34
 tags: ["rust", "futures"]
 categories: ["programming"]
 ---

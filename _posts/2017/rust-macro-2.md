@@ -1,6 +1,6 @@
 ---
 title: Rust のマクロ・構文拡張，および Macros 2.0 について
-published: "2017-12-10T19:07:51Z"
+published: 2017-12-10T19:07:51Z
 tags: [ "rust", "advent calendar", "macros" ]
 categories: [ "programming" ]
 ---

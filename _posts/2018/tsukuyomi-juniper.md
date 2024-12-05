@@ -1,6 +1,6 @@
 ---
 title: Tsukuyomi + Juniper で GraphQL サーバを作る
-published: "2018-07-11"
+published: 2018-07-11
 tags: [ "rust", "graphql", "juniper", "qiita" ]
 categories: [ "programming" ]
 ---

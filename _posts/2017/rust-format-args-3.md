@@ -1,6 +1,6 @@
 ---
 title: Rust の文字列フォーマット周り (3)
-published: "2017-10-08T20:29:46Z"
+published: 2017-10-08T20:29:46Z
 tags: [ "rust", "programming" ]
 categories: [ "programming" ]
 ---

@@ -1,6 +1,6 @@
 ---
 title: cargo で npm-scripts 的なことをする
-published: "2019-11-20"
+published: 2019-11-20
 tags: [ "rust", "cargo", "cargo-xtask", "qiita" ]
 categories: [ "programming" ]
 ---

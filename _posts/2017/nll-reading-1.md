@@ -1,6 +1,6 @@
 ---
 title: NLLのソースコードを読む (1)
-published: "2017-12-03T23:46:22Z"
+published: 2017-12-03T23:46:22Z
 tags: [ "rust", "nll" ]
 categories: [ "programming" ]
 ---

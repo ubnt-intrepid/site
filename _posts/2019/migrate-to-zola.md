@@ -1,6 +1,6 @@
 ---
 title: Zolaに移行した
-published: "2019-12-01"
+published: 2019-12-01
 tags: [ "blog", "zola" ]
 categories: [ "general" ]
 ---

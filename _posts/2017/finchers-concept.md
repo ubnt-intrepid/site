@@ -1,6 +1,6 @@
 ---
 title: Finchers の設計思想、およびサンプル
-published: "2017-12-20"
+published: 2017-12-20
 tags: [ "rust", "qiita" ]
 categories: [ "programming" ]
 ---
