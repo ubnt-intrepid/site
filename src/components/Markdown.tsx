@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Fragment } from 'react'
+import React from 'react'
 import * as prod from 'react/jsx-runtime'
 import katex from 'katex'
 import { unified } from 'unified'
@@ -41,28 +41,30 @@ interface NodeTypeMap {
     userCallout: UserCallout,
 }
 type NodeType = keyof NodeTypeMap
-type Emitter<N extends mdast.Node> = (args: { state: CompilerState, node: N, key?: string }) => React.ReactNode
+type NodeComponent<N extends mdast.Node> = React.FC<{ state: CompilerState, node: N }>
 
-const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
-    blockquote: ({ state, node, key }) => (
-        <blockquote key={key} className='px-5 py-0.5 mx-6 my-10 border-l-4 border-orange-800 bg-orange-50'>
-            { emitChildren({ state, node }) }
+const components: { [key in NodeType]: NodeComponent<NodeTypeMap[key]> } = {
+    blockquote: ({ state, node }) => (
+        <blockquote className='px-5 py-0.5 mx-6 my-10 border-l-4 border-orange-800 bg-orange-50'>
+            { emitChildren(state, node) }
         </blockquote>
     ),
 
-    break: ({ key }) => <br key={key} />,
+    break: () => <br />,
 
-    code: ({ node, key }) => {
+    code: ({ node }) => {
         if (node.lang === 'math') {
             /// ```math ... ``` は数式ブロックとして扱う
-            return emitMath(node.value, true, key)
+            return <Math displayMode={true}>
+                {node.value}
+            </Math>
         }
-        
+
         const rendered = highlighter.codeToHtml(node.value, {
             lang: node.lang || 'txt',
             theme: 'vitesse-light',
         } satisfies shiki.CodeToHastOptions)
-        
+
         const title = node.meta
         const codeBlock = unified()
             .use(rehypeParse, { fragment: true })
@@ -81,7 +83,7 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
             .processSync(rendered)
             .result
 
-        return <div className='my-6' key={key}>
+        return <div className='my-6'>
             { title ? <span className='inline-block px-2 py-1 -mb-px rounded-t-sm
                 text-sm font-mono font-bold
                 bg-orange-600 text-orange-5'>{title}</span> : null }
@@ -91,21 +93,21 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
 
     definition: () => undefined,
 
-    delete: ({ state, node, key }) => (
-        <del key={key}>
-            { emitChildren({ state, node }) }
+    delete: ({ state, node }) => (
+        <del>
+            { emitChildren(state, node) }
         </del>
     ),
 
-    emphasis: ({ state, node, key }) => (
-        <em key={key}>
-            { emitChildren({ state, node }) }
+    emphasis: ({ state, node }) => (
+        <em>
+            { emitChildren(state, node) }
         </em>
     ),
 
     footnoteDefinition: () => undefined,
 
-    footnoteReference: ({ state, node, key }) => {
+    footnoteReference: ({ state, node }) => {
         const ref = state.footnoteDefinitions.get(node.identifier)
         if (!ref) {
             return <code>[^{node.identifier}]</code>
@@ -114,137 +116,141 @@ const emitters: { [key in NodeType]: Emitter<NodeTypeMap[key]> } = {
         const index = state.footnoteIdentifiers.indexOf(node.identifier)
         const footnoteId = safeFootnoteId(state, ref.identifier)
 
-        return <sup key={key}>
+        return <sup>
             <a href={`#${footnoteId}`} className='no-underline text-orange-600 hover:underline'>
                 {index + 1})
             </a>
         </sup>
     },
 
-    heading: ({ state, node, key }) => {
+    heading: ({ state, node }) => {
         if (node.depth === 1) {
-            return <h1 key={key} className='text-3xl mt-5 mb-3'>
-                { emitChildren({ state, node }) }
+            return <h1 className='text-3xl mt-5 mb-3'>
+                { emitChildren(state, node) }
             </h1>
         }
         if (node.depth === 2) {
-            return <h2 key={key} className='text-2xl mt-5 mb-3'>
-                { emitChildren({ state, node }) }
+            return <h2 className='text-2xl mt-5 mb-3'>
+                { emitChildren(state, node) }
             </h2>
         }
         if (node.depth === 3) {
-            return <h3 key={key} className='text-xl mt-5 mb-3'>
-                { emitChildren({ state, node }) }
+            return <h3 className='text-xl mt-5 mb-3'>
+                { emitChildren(state, node) }
             </h3>
         }
         if (node.depth === 4) {
-            return <h4 key={key} className='text-xl mt-5 mb-3'>
-                { emitChildren({ state, node }) }
+            return <h4 className='text-xl mt-5 mb-3'>
+                { emitChildren(state, node) }
             </h4>
         }
         if (node.depth === 5) {
-            return <h5 key={key} className='text-xl mt-5 mb-3'>
-                { emitChildren({ state, node }) }
+            return <h5 className='text-xl mt-5 mb-3'>
+                { emitChildren(state, node) }
             </h5>
         }
         if (node.depth === 6) {
-            return <h6 key={key} className='text-xl mt-5 mb-3'>
-                { emitChildren({ state, node }) }
+            return <h6 className='text-xl mt-5 mb-3'>
+                { emitChildren(state, node) }
             </h6>
         }
     },
 
-    image: ({ node, key }) => (
+    image: ({ node }) => (
         <Image
             src={sanitizeUri(node.url)}
             alt={node.alt || ''}
             title={node.title || undefined}
             width={480}
-            height={320}
-            key={key} />
+            height={320} />
     ),
 
-    imageReference: ({ state, node, key }) => {
+    imageReference: ({ state, node }) => {
         const ref = state.definitions.get(node.identifier)
         return <Image
             src={sanitizeUri(ref?.url)}
             alt={node.alt || ''}
             title={ref?.title || undefined}
             width={480}
-            height={320}
-            key={key} />
+            height={320} />
     },
 
-    inlineCode: ({ node, key }) => (
-        <code key={key}>
+    inlineCode: ({ node }) => (
+        <code>
             {node.value}
         </code>
     ),
 
-    inlineMath: ({ node, key }) => emitMath(node.value, false, key),
+    inlineMath: ({ node }) => (
+        <Math displayMode={false}>
+            {node.value}
+        </Math>
+    ),
 
-    link: ({ state, node, key }) => (
+    link: ({ state, node }) => (
         <a
             href={node.url}
             title={node.title || undefined}
-            className='no-underline text-orange-600 hover:underline'
-            key={key}>
-            { emitChildren({ state, node }) }
+            className='no-underline text-orange-600 hover:underline'>
+            { emitChildren(state, node) }
         </a>
     ),
 
-    linkReference: ({ state, node, key }) => {
+    linkReference: ({ state, node }) => {
         const ref = state.definitions.get(node.identifier)
         return <a
-            key={key}
             href={sanitizeUri(ref?.url)}
             className='no-underline text-orange-600 hover:underline'>
-            { emitChildren({ state, node }) }
+            { emitChildren(state, node) }
         </a>
     },
 
-    list: ({ state, node, key }) => (
+    list: ({ state, node }) => (
         node.ordered
-            ? <ol key={key} className='my-6 list-outside pl-4 list-decimal'>{ emitChildren({ state, node }) }</ol>
-            : <ul key={key} className='my-6 list-outside pl-4 list-disc'>{ emitChildren({ state, node }) }</ul>
+            ? <ol className='my-6 list-outside pl-4 list-decimal'>{ emitChildren(state, node) }</ol>
+            : <ul className='my-6 list-outside pl-4 list-disc'>{ emitChildren(state, node) }</ul>
     ),
 
-    listItem: ({ state, node, key }) => (
-        <li key={key} className='ml-6'>
-            { emitChildren({ state, node }) }
+    listItem: ({ state, node }) => (
+        <li className='ml-6'>
+            { emitChildren(state, node) }
         </li>
     ),
 
-    math: ({ node, key }) => emitMath(node.value, true, key),
+    math: ({ node }) => (
+        <Math displayMode={true}>
+            {node.value}
+        </Math>
+    ),
 
-    paragraph: ({ state, node, key }) => (
-        <p key={key} className='my-6'>
-            { emitChildren({ state, node }) }
+    paragraph: ({ state, node }) => (
+        <p className='my-6'>
+            { emitChildren(state, node) }
         </p>
     ),
 
-    strong: ({ state, node, key }) => (
-        <strong className='text-red-400' key={key}>
-            { emitChildren({ state, node }) }
+    strong: ({ state, node }) => (
+        <strong className='text-red-400'>
+            { emitChildren(state, node) }
         </strong>
     ),
 
     text: ({ node }) => node.value,
 
-    thematicBreak: ({ key }) => (
-        <hr key={key} className='flex mx-auto w-20' />
+    thematicBreak: () => (
+        <hr className='flex mx-auto w-20' />
     ),
 
-    userCallout: ({ state, node, key }) => {        
+    userCallout: ({ state, node }) => {
         const { icon, title } = calloutStyles[node.kind]
 
-        return <div key={key} className='px-5 py-3 my-10 border-l-4 border-orange-600 relative'>
+        return <div className='px-5 py-3 my-10 border-l-4 border-orange-600 relative'>
             <div className='font-bold text-xl text-orange-600 my-0'>
                 <MaterialIcon name={icon} />
                 &nbsp;
                 {title}
             </div>
-            { emitChildren({ state, node }) }
+            { emitChildren(state, node) }
         </div>
     },
 }
@@ -272,32 +278,23 @@ const calloutStyles: Record<string, { icon: string, title: string }> = {
     }
 }
 
-const emitOne: Emitter<mdast.Node> = ({ state, node, key }) => {
-    if (node.type in emitters) {
-        return emitters[node.type as NodeType]({
+const Node: NodeComponent<mdast.Node> = ({ state, node }) => {
+    if (node.type in components) {
+        return components[node.type as NodeType]({
             state,
             node: node as never,
-            key
         })
     }
-    return <span className='bg-red-200 my-2' key={key}>
+    return <span className='bg-red-200 my-2'>
         {`unknown nodeType: ${node.type}`}
     </span>
 }
 
-const emitChildren: Emitter<mdast.Parent> = ({ state, node: parent }) => {
-    let keyCount = 0
-    return <>
-        { parent.children.map(child => {
-            const key = `${child.type}-${keyCount}`
-            keyCount += 1
-            return emitOne({ state, node: child, key })
-        }) }
-    </>
-}
-
-const emitMath = (code: string, displayMode: boolean, key?: string) => {
-    const rendered = katex.renderToString(code, { displayMode })
+const Math: React.FC<{
+    displayMode: boolean
+    children: string
+}> = ({ children, displayMode }) => {
+    const rendered = katex.renderToString(children, { displayMode })
     const parsed = unified()
         .use(rehypeParse, { fragment: true })
         .use(rehypeReact, {
@@ -306,9 +303,15 @@ const emitMath = (code: string, displayMode: boolean, key?: string) => {
             jsxs: prod.jsxs,
         })
         .processSync(rendered)
-        return <Fragment key={key}>
+        return <>
             {parsed.result}
-        </Fragment>
+        </>
+}
+
+const emitChildren = (state: CompilerState, { children }: mdast.Parent) => {
+    return <> {
+        children.map((child, i) => <Node state={state} node={child} key={i.toString()} />)
+    } </>
 }
 
 const safeFootnoteId = (state: CompilerState, id: string) => {
@@ -371,8 +374,8 @@ const Markdown: React.FC<Props> = async ({ path, content }) => {
         footnoteIdentifiers,
     }
 
-    const body = emitChildren({ state, node: content as mdast.Root })
-    
+    const body = emitChildren(state, content as mdast.Root)
+
     const footnotes = state.footnoteDefinitions.values().toArray()
     const footer = footnotes.length > 0
         ? <section className='footnotes'>
@@ -383,7 +386,7 @@ const Markdown: React.FC<Props> = async ({ path, content }) => {
                         key={node.identifier}
                         id={`footnote-${node.identifier}`}
                         className='ml-6' >
-                        { emitChildren({ state, node }) }
+                        { emitChildren(state, node) }
                     </li>
                 }) }
             </ol>
