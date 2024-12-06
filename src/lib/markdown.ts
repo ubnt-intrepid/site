@@ -1,36 +1,14 @@
 import assert from 'node:assert/strict'
-import  { unified, Processor } from 'unified'
 import type mdast from 'mdast'
-import type { ContainerDirective } from 'mdast-util-directive'
-import remarkParse from 'remark-parse'
-import remarkFrontmatter from 'remark-frontmatter'
-import remarkGfm from 'remark-gfm'
-import remarkDirective from 'remark-directive'
-import remarkMath from 'remark-math'
-
-declare module 'unified' {
-    interface CompileResultMap {
-        ParseResult: ParseResult
-    }
-}
-
-type ParseResult = {
-    matter: string
-    content: mdast.Root,
-}
-
-export const parseMarkdown = async (content: string, filePath: string) => {
-    const parsed = await unified()
-        .use(remarkParse, { fragment: true })
-        .use(remarkFrontmatter)
-        .use(remarkDirective)
-        .use(remarkGfm)
-        .use(remarkMath)
-        .use(remarkExport, { filePath })
-        .process(content)
-
-    return parsed.result as ParseResult
-}
+import { directiveFromMarkdown, ContainerDirective } from 'mdast-util-directive'
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { frontmatterFromMarkdown } from 'mdast-util-frontmatter'
+import { gfmFromMarkdown } from 'mdast-util-gfm'
+import { mathFromMarkdown } from 'mdast-util-math'
+import { directive } from 'micromark-extension-directive'
+import { frontmatter } from 'micromark-extension-frontmatter'
+import { gfm } from 'micromark-extension-gfm'
+import { math } from 'micromark-extension-math'
 
 export interface UserCallout extends mdast.Parent {
     type: 'userCallout'
@@ -46,54 +24,72 @@ const userCalloutKind = {
     'caution': ''
 }
 
-function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
-    this.compiler = (tree) => {
-        let matter: string | null = null
-        const result = filterMap(tree, (node) => {
-            if (node.type === 'yaml') {
-                // front matter
-                matter = (node as mdast.Yaml).value
-                return undefined
-            }
+type ParseResult = {
+    matter: string
+    content: mdast.Root,
+}
 
-            if (node.type === 'html') {
-                // raw HTML
-                const html = node as mdast.Html
-                if (!html.value.trimStart().startsWith('<!--')) {
-                    console.warn(`${filePath}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
-                }
-                return undefined
-            }
+export const parseMarkdown = (content: string, filePath: string) => {
+    const tree = fromMarkdown(content, 'utf-8', {
+        extensions: [
+            directive(),
+            frontmatter(),
+            gfm(),
+            math(),
+        ],
+        mdastExtensions: [
+            directiveFromMarkdown(),
+            frontmatterFromMarkdown(),
+            gfmFromMarkdown(),
+            mathFromMarkdown(),
+        ]
+    })
 
-            if (node.type === 'containerDirective') {
-                // custom directives
-                const n = node as ContainerDirective
-                if (n.name in userCalloutKind) {
-                    return {
-                        type: 'userCallout',
-                        kind: n.name,
-                        children: n.children,
-                    } satisfies UserCallout
-                }
-                return undefined
-            }
-
-            return node
-        })
-
-        if (!result) {
-            assert.fail('filtered mdast should not be empty')
+    let matter: string | null = null
+    const result = filterMap(tree, (node) => {
+        if (node.type === 'yaml') {
+            // front matter
+            matter = (node as mdast.Yaml).value
+            return undefined
         }
 
-        if (result.type !== 'root') {
-            assert.fail('the root node must be mdast.Root')
+        if (node.type === 'html') {
+            // raw HTML
+            const html = node as mdast.Html
+            if (!html.value.trimStart().startsWith('<!--')) {
+                console.warn(`${filePath}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
+            }
+            return undefined
         }
 
-        return {
-            matter: matter ?? "",
-            content: result as mdast.Root,
-        } satisfies ParseResult as ParseResult
+        if (node.type === 'containerDirective') {
+            // custom directives
+            const n = node as ContainerDirective
+            if (n.name in userCalloutKind) {
+                return {
+                    type: 'userCallout',
+                    kind: n.name,
+                    children: n.children,
+                } satisfies UserCallout
+            }
+            return undefined
+        }
+
+        return node
+    })
+
+    if (!result) {
+        assert.fail('filtered mdast should not be empty')
     }
+
+    if (result.type !== 'root') {
+        assert.fail('the root node must be mdast.Root')
+    }
+
+    return {
+        matter: matter ?? "",
+        content: result as mdast.Root,
+    } satisfies ParseResult as ParseResult
 }
 
 const filterMap = (node: mdast.Node, mapFn: (oldNode: mdast.Node, parent?: mdast.Node) => mdast.Node | undefined) => {
