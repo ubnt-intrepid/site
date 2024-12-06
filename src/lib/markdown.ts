@@ -46,11 +46,11 @@ export const parseMarkdown = (content: string, filePath: string) => {
     })
 
     let matter: string | null = null
-    const result = filterMap(tree, (node) => {
+    const result = flatMap(tree, (node) => {
         if (node.type === 'yaml') {
             // front matter
             matter = (node as mdast.Yaml).value
-            return undefined
+            return []
         }
 
         if (node.type === 'html') {
@@ -59,54 +59,56 @@ export const parseMarkdown = (content: string, filePath: string) => {
             if (!html.value.trimStart().startsWith('<!--')) {
                 console.warn(`${filePath}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
             }
-            return undefined
+            return []
         }
 
         if (node.type === 'containerDirective') {
             // custom directives
             const n = node as ContainerDirective
             if (n.name in userCalloutKind) {
-                return {
+                return [{
                     type: 'userCallout',
                     kind: n.name,
                     children: n.children,
-                } satisfies UserCallout
+                } satisfies UserCallout]
             }
-            return undefined
+            return []
         }
 
-        return node
+        return [node]
     })
 
-    if (!result) {
+    if (result.length === 0) {
         assert.fail('filtered mdast should not be empty')
     }
 
-    if (result.type !== 'root') {
+    const root = result[0]
+    if (root.type !== 'root') {
         assert.fail('the root node must be mdast.Root')
     }
 
     return {
         matter: matter ?? "",
-        content: result as mdast.Root,
+        content: root as mdast.Root,
     } satisfies ParseResult as ParseResult
 }
 
-const filterMap = (node: mdast.Node, mapFn: (oldNode: mdast.Node, parent?: mdast.Node) => mdast.Node | undefined) => {
+const flatMap = (node: mdast.Node, mapFn: (oldNode: mdast.Node, parent?: mdast.Node) => mdast.Node[]) => {
     const inner = (oldNode: mdast.Node, parent?: mdast.Node) => {
-        const newNode = mapFn(oldNode, parent)
-        if (!newNode) {
-            return undefined
+        const newNodes = mapFn(oldNode, parent)
+        if (!newNodes) {
+            return []
         }
         if ('children' in oldNode) {
-            const newParent = newNode as mdast.Parent
-            const nextChildren = newParent.children.flatMap(child => {
-                const newChild = inner(child, oldNode)
-                return newChild ? [newChild as mdast.RootContent] : []
-            })
-            newParent.children = nextChildren
+            for (const newNode of newNodes) {
+                const newParent = newNode as mdast.Parent
+                const nextChildren = newParent.children.flatMap(child => {
+                    return inner(child, oldNode) as mdast.RootContent[]
+                })
+                newParent.children = nextChildren
+            }
         }
-        return newNode
+        return newNodes
     }
     return inner(node)
 }
