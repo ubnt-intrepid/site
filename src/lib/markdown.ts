@@ -8,6 +8,10 @@ import remarkGfm from 'remark-gfm'
 import remarkDirective from 'remark-directive'
 import remarkMath from 'remark-math'
 
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { fromHtml } from 'hast-util-from-html'
+import { toMdast, Options as ToMdastOptions } from 'hast-util-to-mdast'
+
 declare module 'unified' {
     interface CompileResultMap {
         ParseResult: ParseResult
@@ -30,6 +34,18 @@ export const parseMarkdown = async (content: string, filePath: string) => {
         .process(content)
 
     return parsed.result as ParseResult
+}
+
+export interface HtmlFragment extends mdast.Parent {
+    type: 'htmlFragment'
+}
+
+export interface Figure extends mdast.Parent {
+    type: 'figure'
+}
+
+export interface FigCaption extends mdast.Parent {
+    type: 'figcaption'
 }
 
 export interface UserCallout extends mdast.Parent {
@@ -59,10 +75,52 @@ function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
             if (node.type === 'html') {
                 // raw HTML
                 const html = node as mdast.Html
-                if (!html.value.trimStart().startsWith('<!--')) {
-                    console.warn(`${filePath}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
+                if (html.value.trimStart().startsWith('<!--')) {
+                    // HTML comments are always ignored.
+                    return undefined
                 }
-                return undefined
+                console.warn(`${filePath}@${node.position?.start?.line} raw HTML support is experimental.`)
+
+                const hast = fromHtml(html.value, { fragment: true })
+                const mdast = toMdast(hast, {
+                    document: false,
+                    handlers: {
+                        figure: (state, node) => {
+                            const result = {
+                                type: 'figure',
+                                children: state.all(node)
+                            }
+                            state.patch(node, result as any)
+                            return result
+                        },
+                        figcaption: (state, node) => {
+                            const result = {
+                                type: 'figcaption',
+                                children: state.all(node)
+                            }
+                            state.patch(node, result as any)
+                            return result
+                        }
+                    },
+                    nodeHandlers: {
+                        text: (state, node) => {
+                            const parsed = fromMarkdown(node.value, 'utf-8')
+                            // => { type: 'root', children: [{ type: 'paragraph', children: [...] }] }
+
+                            if (parsed.children.length == 0) {
+                                return
+                            }
+                            const p = parsed.children[0] as mdast.Paragraph
+                            p.children.map(ch => state.patch(node, ch as any))
+                            return p.children
+                        },
+                    }
+                } as ToMdastOptions)
+
+                return {
+                    ...mdast,
+                    type: 'htmlFragment'
+                }
             }
 
             if (node.type === 'containerDirective') {
