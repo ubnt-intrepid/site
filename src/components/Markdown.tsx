@@ -5,7 +5,7 @@ import { normalizeUri, sanitizeUri } from 'micromark-util-sanitize-uri'
 import type { InlineMath, Math as MathDirective } from 'mdast-util-math'
 import { visit } from 'unist-util-visit'
 
-import type { FigCaption, Figure, HtmlFragment, UserCallout } from '@/lib/markdown'
+import type { FigCaption, Figure, UserCallout } from '@/lib/markdown'
 import MaterialIcon from './MaterialIcon'
 import Math from './Math'
 import Code from './Code'
@@ -36,7 +36,6 @@ interface NodeTypeMap {
     thematicBreak: mdast.ThematicBreak
     // custom directives
     userCallout: UserCallout
-    htmlFragment: HtmlFragment
     figure: Figure
     figcaption: FigCaption
 }
@@ -233,12 +232,6 @@ const components: {
             { renderChildren(state, node) }
         </div>
     },
-
-    htmlFragment: ({ state, node }) => (
-        <>
-            { renderChildren(state, node) }
-        </>
-    ),
 
     figure: ({ state, node }) => (
         <figure className='justify-items-center'>

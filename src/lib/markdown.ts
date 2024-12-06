@@ -11,6 +11,7 @@ import remarkMath from 'remark-math'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { fromHtml } from 'hast-util-from-html'
 import { toMdast, Options as ToMdastOptions } from 'hast-util-to-mdast'
+import { filter } from 'unist-util-filter'
 
 declare module 'unified' {
     interface CompileResultMap {
@@ -34,10 +35,6 @@ export const parseMarkdown = async (content: string, filePath: string) => {
         .process(content)
 
     return parsed.result as ParseResult
-}
-
-export interface HtmlFragment extends mdast.Parent {
-    type: 'htmlFragment'
 }
 
 export interface Figure extends mdast.Parent {
@@ -65,23 +62,23 @@ const userCalloutKind = {
 function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
     this.compiler = (tree) => {
         let matter: string | null = null
-        const result = filterMap(tree, (node) => {
+        const result = flatMap(tree as mdast.Root, (node) => {
             if (node.type === 'yaml') {
                 // front matter
                 matter = (node as mdast.Yaml).value
-                return undefined
+                return []
             }
 
             if (node.type === 'html') {
                 // raw HTML
                 const html = node as mdast.Html
-                if (html.value.trimStart().startsWith('<!--')) {
-                    // HTML comments are always ignored.
-                    return undefined
-                }
-                console.warn(`${filePath}@${node.position?.start?.line} raw HTML support is experimental.`)
 
-                const hast = fromHtml(html.value, { fragment: true })
+                const hast = filter(fromHtml(html.value, { fragment: true }), node => node.type !== 'comment')
+                if (!hast) {
+                    return []
+                }
+
+                console.warn(`${filePath}:${node.position?.start?.line} raw HTML support is experimental.`)
                 const mdast = toMdast(hast, {
                     document: false,
                     handlers: {
@@ -117,26 +114,23 @@ function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
                     }
                 } as ToMdastOptions)
 
-                return {
-                    ...mdast,
-                    type: 'htmlFragment'
-                }
+                return (mdast as mdast.Root).children
             }
 
             if (node.type === 'containerDirective') {
                 // custom directives
                 const n = node as ContainerDirective
                 if (n.name in userCalloutKind) {
-                    return {
+                    return [{
                         type: 'userCallout',
                         kind: n.name,
                         children: n.children,
-                    } satisfies UserCallout
+                    } satisfies UserCallout]
                 }
-                return undefined
+                return []
             }
 
-            return node
+            return [node]
         })
 
         if (!result) {
@@ -154,21 +148,21 @@ function remarkExport(this: Processor, { filePath }: { filePath?: string }) {
     }
 }
 
-const filterMap = (node: mdast.Node, mapFn: (oldNode: mdast.Node, parent?: mdast.Node) => mdast.Node | undefined) => {
+const flatMap = (tree: mdast.Root, mapFn: (oldNode: mdast.Node, parent?: mdast.Node) => mdast.Node[]) => {
     const inner = (oldNode: mdast.Node, parent?: mdast.Node) => {
-        const newNode = mapFn(oldNode, parent)
-        if (!newNode) {
-            return undefined
-        }
+        const newNodes = mapFn(oldNode, parent)
         if ('children' in oldNode) {
-            const newParent = newNode as mdast.Parent
-            const nextChildren = newParent.children.flatMap(child => {
-                const newChild = inner(child, oldNode)
-                return newChild ? [newChild as mdast.RootContent] : []
-            })
-            newParent.children = nextChildren
+            for (const newNode of newNodes) {
+                const newParent = newNode as mdast.Parent
+                const nextChildren = newParent.children.flatMap(child => {
+                    return inner(child, oldNode) as mdast.RootContent[]
+                })
+                newParent.children = nextChildren
+            }
         }
-        return newNode
+        return newNodes
     }
-    return inner(node)
+    const result = inner(tree)
+    assert(result.length > 0)
+    return result[0]
 }
