@@ -219,7 +219,9 @@ const components: {
 
     table: ({ state, node }) => (
         <table>
-            { renderChildren(state, node) }
+            <tbody>
+                { renderChildren(state, node) }
+            </tbody>
         </table>
     ),
 

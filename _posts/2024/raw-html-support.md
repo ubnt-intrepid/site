@@ -43,3 +43,14 @@ baz
         </tr>
     </tbody>
 </table>
+
+---
+
+<p>
+:::tip
+This is tips defined as $P$.
+$$
+    f(x) = \sin \omega t
+$$
+:::
+</p>
