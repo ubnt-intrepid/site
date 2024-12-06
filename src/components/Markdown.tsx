@@ -32,6 +32,9 @@ interface NodeTypeMap {
     math: MathDirective
     paragraph: mdast.Paragraph
     strong: mdast.Strong
+    table: mdast.Table
+    tableCell: mdast.TableCell
+    tableRow: mdast.TableRow
     text: mdast.Text
     thematicBreak: mdast.ThematicBreak
     // custom directives
@@ -214,6 +217,24 @@ const components: {
         </strong>
     ),
 
+    table: ({ state, node }) => (
+        <table>
+            { renderChildren(state, node) }
+        </table>
+    ),
+
+    tableCell: ({ state, node }) => (
+        <td>
+            { renderChildren(state, node) }
+        </td>
+    ),
+
+    tableRow: ({ state, node }) => (
+        <tr>
+            { renderChildren(state, node) }
+        </tr>
+    ),
+
     text: ({ node }) => node.value,
 
     thematicBreak: () => (
@@ -234,7 +255,7 @@ const components: {
     },
 
     figure: ({ state, node }) => (
-        <figure className='justify-items-center'>
+        <figure>
             { renderChildren(state, node) }
         </figure>
     ),
