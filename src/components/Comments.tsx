@@ -8,7 +8,7 @@ import { siteRepo, siteRepoId } from '@/config'
 const Comments: React.FC = () => {
     const [initialized, setInitialized] = useState(false)
     return (
-        <div className='container mx-auto mt-12 mb-auto' ref={elem => {
+        <div className='giscus-container' ref={elem => {
             if (!elem) {
                 return
             }

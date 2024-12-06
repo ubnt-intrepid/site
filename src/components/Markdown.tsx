@@ -289,6 +289,27 @@ type CompilerState = {
 
 // ---
 
+const Footnotes: React.FC<{
+    state: CompilerState
+    footnotes: mdast.FootnoteDefinition[]
+}> = ({ state, footnotes }) => (
+    <section>
+        <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
+        <ol className='list-outside pl-4 list-decimal'>
+            { footnotes.map(node => {
+                return <li
+                    key={node.identifier}
+                    id={`footnote-${node.identifier}`}
+                    className='ml-6' >
+                    { renderChildren(state, node) }
+                </li>
+            }) }
+        </ol>
+    </section>
+)
+
+// ----
+
 export type Props = {
     path?: string
     content: mdast.Node
@@ -317,28 +338,16 @@ const Markdown: React.FC<Props> = async ({ path, content }) => {
     }
 
     const body = renderChildren(state, content as mdast.Root)
-
     const footnotes = state.footnoteDefinitions.values().toArray()
-    const footer = footnotes.length > 0
-        ? <section className='footnotes'>
-            <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
-            <ol className='list-outside pl-4 list-decimal'>
-                { footnotes.map(node => {
-                    return <li
-                        key={node.identifier}
-                        id={`footnote-${node.identifier}`}
-                        className='ml-6' >
-                        { renderChildren(state, node) }
-                    </li>
-                }) }
-            </ol>
-        </section>
-        : null
 
-    return <article>
-        {body}
-        {footer}
-    </article>
+    return (
+        <article>
+            {body}
+            { footnotes.length > 0
+                ? <Footnotes state={state} footnotes={footnotes} />
+                : null }
+        </article>
+    )
 }
 
 export default Markdown

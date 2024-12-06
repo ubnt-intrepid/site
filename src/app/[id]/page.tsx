@@ -79,8 +79,11 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                         </span>
                     </span>
                 </div>
+
+                <div className='mt-12'>
+                    <Comments />
+                </div>
             </Container>
-            <Comments />
         </>
     )
 }
