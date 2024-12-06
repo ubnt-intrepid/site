@@ -31,7 +31,7 @@ const _cachedPosts: Promise<Post[]> = (async () => {
         const fileContents = await fs.readFile(filePath, 'utf8')
         const sourcePath = path.relative(postsDir, filePath)
 
-        const { matter, content } = await parseMarkdown(fileContents, filePath)
+        const { matter, content } = parseMarkdown(fileContents, filePath)
         const data = yaml.load(matter) as {
             title?: string
             published?: Date | string
