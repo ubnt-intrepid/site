@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
-import Link from 'next/link'
 import React from 'react'
+import ColoredLink from '@/components/ColoredLink'
+import Container from '@/components/Container'
 import Headline from '@/components/Headline'
 import { Folder } from '@/components/MaterialIcon'
 import { getPosts } from '@/lib/post'
@@ -20,15 +21,17 @@ const Categories: React.FC = async () => {
     return (
         <>
             <Headline title="Categories" />
-            <ul className='entries'>
-                { categories.map(({ name, count }) => (
-                    <li key={name}>
-                        <Link href={`/categories/${name}`}>
-                            <Folder /> <span>{`${name} (${count})`}</span>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+            <Container>
+                <ul>
+                    { categories.map(({ name, count }) => (
+                        <li key={name}>
+                            <ColoredLink href={`/categories/${name}`}>
+                                <Folder /> <span>{`${name} (${count})`}</span>
+                            </ColoredLink>
+                        </li>
+                    ))}
+                </ul>
+            </Container>
         </>
     )
 }

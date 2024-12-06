@@ -1,4 +1,5 @@
 import React from 'react'
+import Container from '@/components/Container'
 import Headline from '@/components/Headline'
 import PostList from '@/components/PostList'
 import { siteDescription, siteTitle } from '@/config'
@@ -9,7 +10,9 @@ const IndexPage: React.FC = async () => {
     return (
         <>
             <Headline title={siteTitle} href={"/"} subtitle={siteDescription} />
-            <PostList posts={posts} />
+            <Container>
+                <PostList posts={posts} />
+            </Container>
         </>
     )
 }

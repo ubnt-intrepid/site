@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import React from 'react'
+import ColoredLink from './ColoredLink'
 import { Calendar } from './MaterialIcon'
 import FormattedDate from './FormattedDate'
 import { Post } from '@/lib/post'
@@ -13,19 +13,18 @@ const PostCard = ({ post }: { post: Post }) => {
         <span>
             <Calendar /> <FormattedDate date={post.published} />
             &nbsp; - &nbsp;
-            <Link
+            <ColoredLink
                 href="/[id]"
-                as={`/${post.id}`}
-                className='no-underline text-orange-600 hover:underline'>
+                as={`/${post.id}`}>
                 {post.title}
-            </Link>
+            </ColoredLink>
         </span>
     )
 }
 
 const PostList: React.FC<Props> = ({ posts }) => {
     return (
-        <ul className='container mx-auto px-8 py-6'>
+        <ul>
             { posts.map(post => {
                 return (
                     <li key={post.id}>

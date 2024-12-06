@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
-import Link from 'next/link'
 import React from 'react'
+import ColoredLink from '@/components/ColoredLink'
+import Container from '@/components/Container'
 import Headline from '@/components/Headline'
 import { Tag } from '@/components/MaterialIcon'
 import { getPosts } from '@/lib/post'
@@ -20,15 +21,17 @@ const Tags: React.FC = async () => {
     return (
         <>
             <Headline title="Tags" />
-            <ul className='entries'>
-                { tags.map(({ name, count }) => (
-                    <li key={name}>
-                        <Link href={`/tags/${name}`}>
-                            <Tag /> <span>{`${name} (${count})`}</span>
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+            <Container>
+                <ul>
+                    { tags.map(({ name, count }) => (
+                        <li key={name}>
+                            <ColoredLink href={`/tags/${name}`}>
+                                <Tag /> <span>{`${name} (${count})`}</span>
+                            </ColoredLink>
+                        </li>
+                    ))}
+                </ul>
+            </Container>
         </>
     )
 }

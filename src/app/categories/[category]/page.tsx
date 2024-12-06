@@ -1,8 +1,10 @@
 import React from 'react'
+import Link from 'next/link'
+import Container from '@/components/Container'
 import Headline from '@/components/Headline'
 import { Folder } from '@/components/MaterialIcon'
-import { getPosts } from '@/lib/post'
 import PostList from '@/components/PostList'
+import { getPosts } from '@/lib/post'
 
 export type Params = {
     category: string
@@ -30,8 +32,14 @@ const Category = async ({ params }: { params: Promise<Params> }) => {
     const posts = (await getPosts()).filter(post => post.categories ? post.categories.includes(category) : false)
     return (
         <>
-            <Headline title={<span><Folder /> {category}</span>} />
-            <PostList posts={posts} />
+            <Headline title={
+                <Link href={`/categories/${category}`}>
+                    <Folder /> {category}
+                </Link>
+            } />
+            <Container>
+                <PostList posts={posts} />
+            </Container>
         </>
     )
 }

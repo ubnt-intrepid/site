@@ -1,8 +1,10 @@
 import React from 'react'
+import Container from '@/components/Container'
 import Headline from '@/components/Headline'
-import PostList from '@/components/PostList'
 import { Tag as TagIcon } from '@/components/MaterialIcon'
+import PostList from '@/components/PostList'
 import { getPosts } from '@/lib/post'
+import Link from 'next/link'
 
 export type Params = {
     tag: string
@@ -30,8 +32,14 @@ const Tag = async ({ params }: { params: Promise<Params> }) => {
     const posts = (await getPosts()).filter(post => post.tags ? post.tags.includes(tag) : false)
     return (
         <>
-            <Headline title={<span><TagIcon /> {tag}</span>} />
-            <PostList posts={posts} />
+            <Headline title={
+                <Link href={`/tags/${tag}`}>
+                    <TagIcon /> {tag}
+                </Link>
+            } />
+            <Container>
+                <PostList posts={posts} />
+            </Container>
         </>
     )
 }

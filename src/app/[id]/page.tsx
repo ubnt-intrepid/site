@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict'
 import { Metadata } from 'next'
-import Link from 'next/link'
 import React from 'react'
+import ColoredLink from '@/components/ColoredLink'
 import Comments from '@/components/Comments'
+import Container from '@/components/Container'
 import FormattedDate from '@/components/FormattedDate'
 import Headline from '@/components/Headline'
 import Markdown from '@/components/Markdown'
@@ -47,38 +48,38 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
                 </p>
             </Headline>
 
-            <div className='container mx-auto content-center'>
+            <Container>
                 <Markdown content={content} />
 
                 <div className='flex justify-between text-center text-sm'>
                     <span className='categories'>
                         { categories.map(category => (
                             <span className='inline-block p-2' key={category}>
-                                <Link href={`/categories/${category}`} className='no-underline text-orange-600 hover:underline'>
+                                <ColoredLink href={`/categories/${category}`}>
                                     <Folder /> {category}
-                                </Link>
+                                </ColoredLink>
                             </span>
                         ))}
                     </span>
                     <span className='tags'>
                         { tags.map(tag => (
                             <span className='inline-block p-2' key={tag}>
-                                <Link href={`/tags/${tag}`} className='no-underline text-orange-600 hover:underline'>
+                                <ColoredLink href={`/tags/${tag}`}>
                                     <Tag /> {tag}
-                                </Link>
+                                </ColoredLink>
                             </span>
                         ))}
                     </span>
 
                     <span className='share-icons'>
                         <span className='inline-block p-2'>
-                            <a href={sourceUrl} target='_blank' title='Source' className='no-underline text-orange-600 hover:underline'>
+                            <ColoredLink href={sourceUrl} title='Source' target='_blank'>
                                 <Edit />
-                            </a>
+                            </ColoredLink>
                         </span>
                     </span>
                 </div>
-            </div>
+            </Container>
             <Comments />
         </>
     )
