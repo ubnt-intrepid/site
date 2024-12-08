@@ -4,10 +4,12 @@ import { fromMarkdown } from 'mdast-util-from-markdown'
 import { frontmatterFromMarkdown } from 'mdast-util-frontmatter'
 import { gfmFromMarkdown } from 'mdast-util-gfm'
 import { mathFromMarkdown } from 'mdast-util-math'
+import { mdxExpressionFromMarkdown } from 'mdast-util-mdx-expression'
 import { MdxJsxFlowElement, mdxJsxFromMarkdown } from 'mdast-util-mdx-jsx'
 import { frontmatter } from 'micromark-extension-frontmatter'
 import { gfm } from 'micromark-extension-gfm'
 import { math } from 'micromark-extension-math'
+import { mdxExpression } from 'micromark-extension-mdx-expression'
 import { mdxJsx } from 'micromark-extension-mdx-jsx'
 
 export interface Alert extends mdast.Parent {
@@ -95,6 +97,14 @@ export const parseMarkdown = (content: string, filePath: string, options?: Optio
             return []
         }
 
+        if (node.type === 'mdxTextExpression' || node.type === 'mdxFlowExpression') {
+            // The MDX expressions are currently enabled only for the purpose of enabling
+            // in-document comments. Therefore, all of their contents are completely removed
+            // from the document regardless of whether the expressions are valid JavaScript
+            // program or not.
+            return []
+        }
+
         return [node]
     })
 
@@ -134,12 +144,14 @@ const fromMDX = (content: string) => {
             frontmatter(),
             gfm(),
             math(),
+            mdxExpression(),
             mdxJsx(),
         ],
         mdastExtensions: [
             frontmatterFromMarkdown(),
             gfmFromMarkdown(),
             mathFromMarkdown(),
+            mdxExpressionFromMarkdown(),
             mdxJsxFromMarkdown(),
         ]
     })
