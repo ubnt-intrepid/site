@@ -1,49 +1,41 @@
 import assert from 'node:assert/strict'
 import type mdast from 'mdast'
-import { directiveFromMarkdown, ContainerDirective } from 'mdast-util-directive'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { frontmatterFromMarkdown } from 'mdast-util-frontmatter'
 import { gfmFromMarkdown } from 'mdast-util-gfm'
 import { mathFromMarkdown } from 'mdast-util-math'
-import { directive } from 'micromark-extension-directive'
+import { MdxJsxFlowElement, mdxJsxFromMarkdown } from 'mdast-util-mdx-jsx'
 import { frontmatter } from 'micromark-extension-frontmatter'
 import { gfm } from 'micromark-extension-gfm'
 import { math } from 'micromark-extension-math'
+import { mdxJsx } from 'micromark-extension-mdx-jsx'
 
-export interface UserCallout extends mdast.Parent {
-    type: 'userCallout'
-    kind: string
+export interface Alert extends mdast.Parent {
+    type: 'alert'
+    kind: AlertKind
     children: Array<mdast.BlockContent | mdast.DefinitionContent>
 }
 
-const userCalloutKind = {
-    'note': '',
-    'tip': '',
-    'important': '',
-    'warning': '',
-    'caution': ''
+const alertKindArray = [ 'note', 'tip', 'important', 'warning', 'caution'] as const
+type AlertKindTuple = typeof alertKindArray
+export type AlertKind = AlertKindTuple[number]
+
+// ---
+
+export type Options = {
+    useMDX?: boolean
 }
 
-type ParseResult = {
+export type ParseResult = {
     matter: string
     content: mdast.Root,
 }
 
-export const parseMarkdown = (content: string, filePath: string) => {
-    const tree = fromMarkdown(content, 'utf-8', {
-        extensions: [
-            directive(),
-            frontmatter(),
-            gfm(),
-            math(),
-        ],
-        mdastExtensions: [
-            directiveFromMarkdown(),
-            frontmatterFromMarkdown(),
-            gfmFromMarkdown(),
-            mathFromMarkdown(),
-        ]
-    })
+export const parseMarkdown = (content: string, filePath: string, options?: Options) => {
+    const options_ = options ?? {}
+    const tree = options_.useMDX
+        ? fromMDX(content)
+        : fromCommonMark(content)
 
     let matter: string | null = null
     const result = flatMap(tree, (node) => {
@@ -57,21 +49,31 @@ export const parseMarkdown = (content: string, filePath: string) => {
             // raw HTML
             const html = node as mdast.Html
             if (!html.value.trimStart().startsWith('<!--')) {
-                console.warn(`${filePath}@${node.position?.start?.line} raw HTML detected. Ignored due to XSS prevention`)
+                console.warn(`${filePath}:${node.position?.start?.line}`)
+                console.warn('    Raw HTMLs are always ignored in CommonMark mode. Use MDX mode instead.')
             }
             return []
         }
 
-        if (node.type === 'containerDirective') {
-            // custom directives
-            const n = node as ContainerDirective
-            if (n.name in userCalloutKind) {
-                return [{
-                    type: 'userCallout',
-                    kind: n.name,
-                    children: n.children,
-                } satisfies UserCallout]
+        if (node.type === 'mdxJsxFlowElement') {
+            // JSX flow element
+            const jsx = node as MdxJsxFlowElement
+            if (jsx.attributes.some(attr => typeof(attr) !== 'string')) {
+                assert.fail('non-string attributes in JSX are disallowed.')
             }
+
+            if (jsx.name && alertKindArray.includes(jsx.name as AlertKind)) {
+                return [{
+                    type: 'alert',
+                    kind: jsx.name as AlertKind,
+                    children: jsx.children
+                } satisfies Alert]
+            }
+            return []
+        }
+
+        if (node.type === 'mdxJsxTextElement') {
+            // placeholder
             return []
         }
 
@@ -91,6 +93,38 @@ export const parseMarkdown = (content: string, filePath: string) => {
         matter: matter ?? "",
         content: root as mdast.Root,
     } satisfies ParseResult as ParseResult
+}
+
+const fromCommonMark = (content: string) => {
+    return fromMarkdown(content, 'utf-8', {
+        extensions: [
+            frontmatter(),
+            gfm(),
+            math(),
+        ],
+        mdastExtensions: [
+            frontmatterFromMarkdown(),
+            gfmFromMarkdown(),
+            mathFromMarkdown(),
+        ]
+    })
+}
+
+const fromMDX = (content: string) => {
+    return fromMarkdown(content, 'utf-8', {
+        extensions: [
+            frontmatter(),
+            gfm(),
+            math(),
+            mdxJsx(),
+        ],
+        mdastExtensions: [
+            frontmatterFromMarkdown(),
+            gfmFromMarkdown(),
+            mathFromMarkdown(),
+            mdxJsxFromMarkdown(),
+        ]
+    })
 }
 
 const flatMap = (node: mdast.Node, mapFn: (oldNode: mdast.Node, parent?: mdast.Node) => mdast.Node[]) => {

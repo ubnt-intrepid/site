@@ -5,7 +5,7 @@ import { normalizeUri, sanitizeUri } from 'micromark-util-sanitize-uri'
 import type { InlineMath, Math as MathDirective } from 'mdast-util-math'
 import { visit } from 'unist-util-visit'
 
-import type { UserCallout } from '@/lib/markdown'
+import type { Alert, AlertKind } from '@/lib/markdown'
 import MaterialIcon from './MaterialIcon'
 import Math from './Math'
 import Code from './Code'
@@ -35,7 +35,7 @@ interface NodeTypeMap {
     text: mdast.Text
     thematicBreak: mdast.ThematicBreak
     // custom directives
-    userCallout: UserCallout,
+    alert: Alert,
 }
 type NodeType = keyof NodeTypeMap
 
@@ -218,8 +218,8 @@ const components: {
         <hr className='flex mx-auto w-20' />
     ),
 
-    userCallout: ({ state, node }) => {
-        const { icon, title } = calloutStyles[node.kind]
+    alert: ({ state, node }) => {
+        const { icon, title } = alertStyles[node.kind]
 
         return <div className='px-5 py-3 my-10 border-l-4 border-orange-600 relative'>
             <div className='font-bold text-xl text-orange-600 my-0'>
@@ -232,7 +232,7 @@ const components: {
     },
 }
 
-const calloutStyles: Record<string, { icon: string, title: string }> = {
+const alertStyles: Record<AlertKind, { icon: string, title: string }> = {
     'note': {
         icon: 'error',
         title: 'Note'

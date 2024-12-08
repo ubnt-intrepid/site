@@ -24,14 +24,16 @@ export const getPosts = async () => {
 }
 
 const _cachedPosts: Promise<Post[]> = (async () => {
-    const postPaths = await glob(postsDir + '/**/*.md')
+    const postPaths = await glob(postsDir + '/**/*.{md,mdx}')
 
     const posts: Post[] = []
     for (const filePath of postPaths) {
         const fileContents = await fs.readFile(filePath, 'utf8')
         const sourcePath = path.relative(postsDir, filePath)
 
-        const { matter, content } = parseMarkdown(fileContents, filePath)
+        const { matter, content } = parseMarkdown(fileContents, filePath, {
+            useMDX: filePath.endsWith('.mdx'),
+        })
         const data = yaml.load(matter) as {
             title?: string
             published?: Date | string
@@ -39,7 +41,7 @@ const _cachedPosts: Promise<Post[]> = (async () => {
             categories?: string[]
         }
 
-        const id = path.basename(filePath).replace(/\.md$/, '')
+        const id = path.basename(filePath).replace(/\.mdx?$/, '')
         if (posts.findIndex(post => post.id === id) != -1) {
             console.warn(`Ignored due to conflicting the post identifier: ${sourcePath}`)
             continue
