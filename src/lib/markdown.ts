@@ -16,9 +16,8 @@ export interface Alert extends mdast.Parent {
     children: Array<mdast.BlockContent | mdast.DefinitionContent>
 }
 
-const alertKindArray = [ 'note', 'tip', 'important', 'warning', 'caution'] as const
-type AlertKindTuple = typeof alertKindArray
-export type AlertKind = AlertKindTuple[number]
+const alertKindArray = ['note', 'tip', 'important', 'warning', 'caution'] as const
+export type AlertKind = (typeof alertKindArray)[number]
 
 // ---
 
@@ -58,14 +57,33 @@ export const parseMarkdown = (content: string, filePath: string, options?: Optio
         if (node.type === 'mdxJsxFlowElement') {
             // JSX flow element
             const jsx = node as MdxJsxFlowElement
-            if (jsx.attributes.some(attr => typeof(attr) !== 'string')) {
-                assert.fail('non-string attributes in JSX are disallowed.')
+            if (!jsx.attributes.every(attr => (
+                attr.type === 'mdxJsxAttribute'
+                    && (attr.value === null || typeof(attr.value) === 'string')
+            ))) {
+                assert.fail('JSX attributes must be `string` of `null`.')
             }
 
-            if (jsx.name && alertKindArray.includes(jsx.name as AlertKind)) {
+            if (!jsx.name) {
+                // Fragment
+                return jsx.children
+            }
+
+            if (jsx.name == 'Alert') {
+                const kindAttr = jsx.attributes.find(attr => attr.type === 'mdxJsxAttribute' && attr.name === 'kind')
+                let kind: AlertKind = 'note'
+                if (kindAttr && kindAttr.type === 'mdxJsxAttribute') {
+                    const rawKind = kindAttr.value as string
+                    if (!alertKindArray.includes(rawKind as AlertKind)) {
+                        console.warn(`${filePath}:${kindAttr.position?.start?.line}`)
+                        console.warn(`    Unknown alert kind specified: ${rawKind}`)
+                    } else {
+                        kind = rawKind as AlertKind
+                    }
+                }
                 return [{
                     type: 'alert',
-                    kind: jsx.name as AlertKind,
+                    kind,
                     children: jsx.children
                 } satisfies Alert]
             }
