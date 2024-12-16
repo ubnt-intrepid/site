@@ -7,15 +7,17 @@ tags: [ blog ]
 
 `remark-directive` を有効化し、簡単な Callout を使用できるようにした。
 
-:::tip
-このように使用します。
-```txt sample.txt
-コードブロックや
-```
-$$
-    f(x) = \text{ブロック数式も}
-$$
-使用できます。
-:::
+{/* This is a comment in flow content */}
+
+<Alert kind='tip'>
+  このように使用します。 {/* This is a comment in text */}
+  ```txt sample.txt
+  コードブロックや
+  ```
+  $$
+      f(x) = \text{ブロック数式も}
+  $$
+  使用できます。
+</Alert>
 
 タイトル表示や組み込みの環境（Info/Warningや定理、補題など）を用意すれば大分書きごこちが良くなりそうだが、それらを実装するのは今後の課題とする。[^1]
