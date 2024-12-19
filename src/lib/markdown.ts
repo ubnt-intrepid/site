@@ -11,6 +11,18 @@ import { gfm } from 'micromark-extension-gfm'
 import { math } from 'micromark-extension-math'
 import { mdxExpression } from 'micromark-extension-mdx-expression'
 import { mdxJsx } from 'micromark-extension-mdx-jsx'
+import { visit } from 'unist-util-visit'
+import { normalizeUri } from 'micromark-util-sanitize-uri'
+
+export interface Content extends mdast.Root {
+    footnotes: mdast.FootnoteDefinition[]
+}
+
+export interface FootnoteReference extends mdast.Node {
+    type: 'footnoteReference'
+    identifier: string
+    label: string
+}
 
 export interface Alert extends mdast.Parent {
     type: 'alert'
@@ -29,7 +41,7 @@ export type Options = {
 
 export type ParseResult = {
     matter: string
-    content: mdast.Root,
+    content: Content
 }
 
 export const parseMarkdown = (content: string, filePath: string, options?: Options) => {
@@ -37,6 +49,21 @@ export const parseMarkdown = (content: string, filePath: string, options?: Optio
     const tree = options_.useMDX
         ? fromMDX(content)
         : fromCommonMark(content)
+
+    const definitions = new Map<string, mdast.Definition>()
+    const footnoteDefinitions = new Map<string, mdast.FootnoteDefinition>()
+    visit(tree, (node) => {
+        if (node.type === 'definition' || node.type === 'footnoteDefinition') {
+            const id = (node as mdast.Definition | mdast.FootnoteDefinition).identifier
+            const map = node.type === 'definition' ? definitions : footnoteDefinitions
+            if (!map.has(id)) {
+                // id が重複する場合は先行する定義が優先される
+                map.set(id, node as never)
+            }
+        }
+    })
+
+    const footnoteIdentifiers = footnoteDefinitions.keys().toArray()
 
     let matter: string | null = null
     const result = flatMap(tree, (node) => {
@@ -105,6 +132,49 @@ export const parseMarkdown = (content: string, filePath: string, options?: Optio
             return []
         }
 
+        if (node.type === 'imageReference') {
+            const ref = node as mdast.ImageReference
+            const img = definitions.get(ref.identifier)
+            return img ? [{
+                type: 'image',
+                url: img.url,
+                title: img.title,
+                alt: ref.alt,
+                position: ref.position,
+            } satisfies mdast.Image] : []
+        }
+
+        if (node.type === 'linkReference') {
+            const ref = node as mdast.LinkReference
+            const link = definitions.get(ref.identifier)
+            return link ? [{
+                type: 'link',
+                url: link.url,
+                title: link.title,
+                position: ref.position,
+                children: ref.children,
+            } satisfies mdast.Link] : []
+        }
+
+        if (node.type === 'definition' || node.type === 'footnoteDefinition') {
+            return []
+        }
+
+        if (node.type === 'footnoteReference') {
+            const node_ = node as mdast.FootnoteReference
+            const ref = footnoteDefinitions.get(node_.identifier)
+            if (!ref) {
+                return []
+            }
+            const index = footnoteIdentifiers.indexOf(node_.identifier)
+            const identifier = `footnote-${normalizeUri(ref.identifier.toLowerCase())}`
+            return [{
+                type: 'footnoteReference',
+                identifier,
+                label: `${index + 1}`,
+            } satisfies FootnoteReference]    
+        }
+
         return [node]
     })
 
@@ -119,7 +189,10 @@ export const parseMarkdown = (content: string, filePath: string, options?: Optio
 
     return {
         matter: matter ?? "",
-        content: root as mdast.Root,
+        content: {
+            ...root as mdast.Root,
+            footnotes: footnoteDefinitions.values().toArray(),
+        }
     } satisfies ParseResult as ParseResult
 }
 
