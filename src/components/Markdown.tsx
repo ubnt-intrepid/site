@@ -15,18 +15,15 @@ interface NodeTypeMap {
     blockquote: mdast.Blockquote
     break: mdast.Break
     code: mdast.Code
-    definition: mdast.Definition
     delete: mdast.Delete
     emphasis: mdast.Emphasis
     footnoteDefinition: mdast.Definition
     footnoteReference: mdast.FootnoteReference
     heading: mdast.Heading
     image: mdast.Image
-    imageReference: mdast.ImageReference
     inlineCode: mdast.InlineCode
     inlineMath: InlineMath
     link: mdast.Link
-    linkReference: mdast.LinkReference
     list: mdast.List
     listItem: mdast.ListItem
     math: MathDirective
@@ -68,8 +65,6 @@ const components: {
             </Code>
         )
     },
-
-    definition: () => undefined,
 
     delete: ({ state, node }) => (
         <del>
@@ -143,16 +138,6 @@ const components: {
             height={320} />
     ),
 
-    imageReference: ({ state, node }) => {
-        const ref = state.definitions.get(node.identifier)
-        return <Image
-            src={sanitizeUri(ref?.url)}
-            alt={node.alt || ''}
-            title={ref?.title || undefined}
-            width={480}
-            height={320} />
-    },
-
     inlineCode: ({ node }) => (
         <code>
             {node.value}
@@ -172,15 +157,6 @@ const components: {
             { renderChildren(state, node) }
         </ColoredLink>
     ),
-
-    linkReference: ({ state, node }) => {
-        const ref = state.definitions.get(node.identifier)
-        return <ColoredLink
-            href={sanitizeUri(ref?.url)}
-            title={ref?.title || undefined}>
-            { renderChildren(state, node) }
-        </ColoredLink>
-    },
 
     list: ({ state, node }) => (
         node.ordered
@@ -282,7 +258,6 @@ const safeFootnoteId = (state: CompilerState, id: string) => {
 
 type CompilerState = {
     path?: string
-    definitions: Map<string, mdast.Definition>,
     footnoteDefinitions: Map<string, mdast.FootnoteDefinition>,
     footnoteIdentifiers: string[],
 }
@@ -316,29 +291,26 @@ export type Props = {
 }
 
 const Markdown: React.FC<Props> = async ({ path, content }) => {
-    const definitions = new Map()
     const footnoteDefinitions = new Map()
     visit(content, (node) => {
-        if (node.type === 'definition' || node.type === 'footnoteDefinition') {
-            const id = (node as mdast.Definition | mdast.FootnoteDefinition).identifier
-            const map = node.type === 'definition' ? definitions : footnoteDefinitions
-            if (!map.has(id)) {
+        if (node.type === 'footnoteDefinition') {
+            const id = (node as mdast.FootnoteDefinition).identifier
+            if (!footnoteDefinitions.has(id)) {
                 // id が重複する場合は先行する定義が優先される
-                map.set(id, node as never)
+                footnoteDefinitions.set(id, node as never)
             }
         }
     })
     const footnoteIdentifiers = footnoteDefinitions.keys().toArray()
+    const footnotes = footnoteDefinitions.values().toArray()
 
     const state: CompilerState = {
         path,
-        definitions,
         footnoteDefinitions,
         footnoteIdentifiers,
     }
 
     const body = renderChildren(state, content as mdast.Root)
-    const footnotes = state.footnoteDefinitions.values().toArray()
 
     return (
         <article>

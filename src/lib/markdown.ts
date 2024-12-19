@@ -11,6 +11,7 @@ import { gfm } from 'micromark-extension-gfm'
 import { math } from 'micromark-extension-math'
 import { mdxExpression } from 'micromark-extension-mdx-expression'
 import { mdxJsx } from 'micromark-extension-mdx-jsx'
+import { visit } from 'unist-util-visit'
 
 export interface Alert extends mdast.Parent {
     type: 'alert'
@@ -37,6 +38,17 @@ export const parseMarkdown = (content: string, filePath: string, options?: Optio
     const tree = options_.useMDX
         ? fromMDX(content)
         : fromCommonMark(content)
+
+    const definitions = new Map<string, mdast.Definition>()
+    visit(tree, (node) => {
+        if (node.type === 'definition' || node.type === 'footnoteDefinition') {
+            const id = (node as mdast.Definition).identifier
+            if (!definitions.has(id)) {
+                // id が重複する場合は先行する定義が優先される
+                definitions.set(id, node as never)
+            }
+        }
+    })
 
     let matter: string | null = null
     const result = flatMap(tree, (node) => {
@@ -102,6 +114,34 @@ export const parseMarkdown = (content: string, filePath: string, options?: Optio
             // in-document comments. Therefore, all of their contents are completely removed
             // from the document regardless of whether the expressions are valid JavaScript
             // program or not.
+            return []
+        }
+
+        if (node.type === 'imageReference') {
+            const ref = node as mdast.ImageReference
+            const img = definitions.get(ref.identifier)
+            return img ? [{
+                type: 'image',
+                url: img.url,
+                title: img.title,
+                alt: ref.alt,
+                position: ref.position,
+            } satisfies mdast.Image] : []
+        }
+
+        if (node.type === 'linkReference') {
+            const ref = node as mdast.LinkReference
+            const link = definitions.get(ref.identifier)
+            return link ? [{
+                type: 'link',
+                url: link.url,
+                title: link.title,
+                position: ref.position,
+                children: ref.children,
+            } satisfies mdast.Link] : []
+        }
+
+        if (node.type === 'definition') {
             return []
         }
 
