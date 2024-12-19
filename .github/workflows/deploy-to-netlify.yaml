@@ -1,9 +1,9 @@
 name: deploy-to-netlify
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 jobs:
   deploy-to-netlify:
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
     - uses: nwtgck/actions-netlify@v3.0
       with:
         publish-dir: './out'
-        production-branch: master
+        production-branch: main
         github-token: ${{ secrets.GITHUB_TOKEN }}
         deploy-message: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         fails-without-credentials: true

@@ -38,7 +38,7 @@ const PostPage = async ({ params }: { params: Promise<Params> }) => {
         assert.fail(`invalid post id: ${id}`)
     }
     const { sourcePath, title, published, categories, tags, content } = post
-    const sourceUrl = `${siteRepoUrl}/blob/master/_posts/${sourcePath}`;
+    const sourceUrl = `${siteRepoUrl}/blob/main/_posts/${sourcePath}`;
 
     return (
         <>
