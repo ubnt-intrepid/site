@@ -3,8 +3,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { glob } from 'glob'
 import yaml from 'js-yaml'
-import { parseMarkdown } from '@/lib/markdown'
-import mdast from 'mdast'
+import { Content, parseMarkdown } from '@/lib/markdown'
 
 const postsDir = path.join(process.cwd(), '_posts')
 
@@ -15,7 +14,7 @@ export type Post = {
     published: Date
     tags: string[]
     categories: string[]
-    content: mdast.Root
+    content: Content
 }
 
 export const getPosts = async () => {
@@ -61,7 +60,7 @@ const _cachedPosts: Promise<Post[]> = (async () => {
             published: data.published,
             tags: data.tags ?? [],
             categories: data.categories ?? [],
-            content
+            content,
         })
     }
 

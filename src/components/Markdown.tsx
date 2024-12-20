@@ -1,11 +1,10 @@
 import Image from 'next/image'
 import React from 'react'
 import mdast from 'mdast'
-import { normalizeUri, sanitizeUri } from 'micromark-util-sanitize-uri'
+import { sanitizeUri } from 'micromark-util-sanitize-uri'
 import type { InlineMath, Math as MathDirective } from 'mdast-util-math'
-import { visit } from 'unist-util-visit'
 
-import type { Alert, AlertKind } from '@/lib/markdown'
+import type { Alert, AlertKind, Content, FootnoteReference } from '@/lib/markdown'
 import MaterialIcon from './MaterialIcon'
 import Math from './Math'
 import Code from './Code'
@@ -15,18 +14,14 @@ interface NodeTypeMap {
     blockquote: mdast.Blockquote
     break: mdast.Break
     code: mdast.Code
-    definition: mdast.Definition
     delete: mdast.Delete
     emphasis: mdast.Emphasis
-    footnoteDefinition: mdast.Definition
-    footnoteReference: mdast.FootnoteReference
+    footnoteReference: FootnoteReference
     heading: mdast.Heading
     image: mdast.Image
-    imageReference: mdast.ImageReference
     inlineCode: mdast.InlineCode
     inlineMath: InlineMath
     link: mdast.Link
-    linkReference: mdast.LinkReference
     list: mdast.List
     listItem: mdast.ListItem
     math: MathDirective
@@ -69,8 +64,6 @@ const components: {
         )
     },
 
-    definition: () => undefined,
-
     delete: ({ state, node }) => (
         <del>
             { renderChildren(state, node) }
@@ -83,23 +76,13 @@ const components: {
         </em>
     ),
 
-    footnoteDefinition: () => undefined,
-
-    footnoteReference: ({ state, node }) => {
-        const ref = state.footnoteDefinitions.get(node.identifier)
-        if (!ref) {
-            return <code>[^{node.identifier}]</code>
-        }
-
-        const index = state.footnoteIdentifiers.indexOf(node.identifier)
-        const footnoteId = safeFootnoteId(state, ref.identifier)
-
-        return <sup>
-            <ColoredLink href={`#${footnoteId}`}>
-                {index + 1})
+    footnoteReference: ({ node }) => (
+        <sup>
+            <ColoredLink href={`#${node.identifier}`}>
+                {node.label})
             </ColoredLink>
         </sup>
-    },
+    ),
 
     heading: ({ state, node }) => {
         if (node.depth === 1) {
@@ -143,16 +126,6 @@ const components: {
             height={320} />
     ),
 
-    imageReference: ({ state, node }) => {
-        const ref = state.definitions.get(node.identifier)
-        return <Image
-            src={sanitizeUri(ref?.url)}
-            alt={node.alt || ''}
-            title={ref?.title || undefined}
-            width={480}
-            height={320} />
-    },
-
     inlineCode: ({ node }) => (
         <code>
             {node.value}
@@ -172,15 +145,6 @@ const components: {
             { renderChildren(state, node) }
         </ColoredLink>
     ),
-
-    linkReference: ({ state, node }) => {
-        const ref = state.definitions.get(node.identifier)
-        return <ColoredLink
-            href={sanitizeUri(ref?.url)}
-            title={ref?.title || undefined}>
-            { renderChildren(state, node) }
-        </ColoredLink>
-    },
 
     list: ({ state, node }) => (
         node.ordered
@@ -276,15 +240,8 @@ const renderChildren = (state: CompilerState, { children }: mdast.Parent) => {
     } </>
 }
 
-const safeFootnoteId = (state: CompilerState, id: string) => {
-    return `footnote-${normalizeUri(id.toLowerCase())}`
-}
-
 type CompilerState = {
-    path?: string
-    definitions: Map<string, mdast.Definition>,
-    footnoteDefinitions: Map<string, mdast.FootnoteDefinition>,
-    footnoteIdentifiers: string[],
+    dummy: ''
 }
 
 // ---
@@ -311,40 +268,20 @@ const Footnotes: React.FC<{
 // ----
 
 export type Props = {
-    path?: string
-    content: mdast.Node
+    content: Content
 }
 
-const Markdown: React.FC<Props> = async ({ path, content }) => {
-    const definitions = new Map()
-    const footnoteDefinitions = new Map()
-    visit(content, (node) => {
-        if (node.type === 'definition' || node.type === 'footnoteDefinition') {
-            const id = (node as mdast.Definition | mdast.FootnoteDefinition).identifier
-            const map = node.type === 'definition' ? definitions : footnoteDefinitions
-            if (!map.has(id)) {
-                // id が重複する場合は先行する定義が優先される
-                map.set(id, node as never)
-            }
-        }
-    })
-    const footnoteIdentifiers = footnoteDefinitions.keys().toArray()
-
+const Markdown: React.FC<Props> = async ({ content }) => {
     const state: CompilerState = {
-        path,
-        definitions,
-        footnoteDefinitions,
-        footnoteIdentifiers,
+        dummy: ''
     }
-
     const body = renderChildren(state, content as mdast.Root)
-    const footnotes = state.footnoteDefinitions.values().toArray()
 
     return (
         <article>
             {body}
-            { footnotes.length > 0
-                ? <Footnotes state={state} footnotes={footnotes} />
+            { content.footnotes.length > 0
+                ? <Footnotes state={state} footnotes={content.footnotes} />
                 : null }
         </article>
     )
