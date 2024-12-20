@@ -4,7 +4,6 @@ import path from 'path'
 import { glob } from 'glob'
 import yaml from 'js-yaml'
 import { Content, parseMarkdown } from '@/lib/markdown'
-import mdast from 'mdast'
 
 const postsDir = path.join(process.cwd(), '_posts')
 

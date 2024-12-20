@@ -240,7 +240,9 @@ const renderChildren = (state: CompilerState, { children }: mdast.Parent) => {
     } </>
 }
 
-type CompilerState = {}
+type CompilerState = {
+    dummy: ''
+}
 
 // ---
 
@@ -270,7 +272,9 @@ export type Props = {
 }
 
 const Markdown: React.FC<Props> = async ({ content }) => {
-    const state: CompilerState = {}
+    const state: CompilerState = {
+        dummy: ''
+    }
     const body = renderChildren(state, content as mdast.Root)
 
     return (
