@@ -4,11 +4,11 @@ import mdast from 'mdast'
 import { sanitizeUri } from 'micromark-util-sanitize-uri'
 import type { InlineMath, Math as MathDirective } from 'mdast-util-math'
 
-import type { Alert, AlertKind, Content, FootnoteReference } from '@/lib/markdown'
-import MaterialIcon from './MaterialIcon'
+import type { Alert as AlertNode, Content, FootnoteReference } from '@/lib/markdown'
 import Math from './Math'
 import Code from './Code'
 import ColoredLink from './ColoredLink'
+import Alert from './Alert'
 
 interface NodeTypeMap {
     blockquote: mdast.Blockquote
@@ -30,19 +30,16 @@ interface NodeTypeMap {
     text: mdast.Text
     thematicBreak: mdast.ThematicBreak
     // custom directives
-    alert: Alert,
+    alert: AlertNode,
 }
 type NodeType = keyof NodeTypeMap
 
 const components: {
-    [key in NodeType]: React.FC<{
-        state: CompilerState
-        node: NodeTypeMap[key]
-    }>
+    [key in NodeType]: React.FC<{ node: NodeTypeMap[key] }>
 } = {
-    blockquote: ({ state, node }) => (
+    blockquote: ({ node }) => (
         <blockquote className='px-5 py-0.5 mx-6 my-10 border-l-4 border-orange-800 bg-orange-50'>
-            { renderChildren(state, node) }
+            { renderChildren(node) }
         </blockquote>
     ),
 
@@ -64,15 +61,15 @@ const components: {
         )
     },
 
-    delete: ({ state, node }) => (
+    delete: ({ node }) => (
         <del>
-            { renderChildren(state, node) }
+            { renderChildren(node) }
         </del>
     ),
 
-    emphasis: ({ state, node }) => (
+    emphasis: ({ node }) => (
         <em>
-            { renderChildren(state, node) }
+            { renderChildren(node) }
         </em>
     ),
 
@@ -84,37 +81,18 @@ const components: {
         </sup>
     ),
 
-    heading: ({ state, node }) => {
-        if (node.depth === 1) {
-            return <h1 className='text-3xl mt-5 mb-3'>
-                { renderChildren(state, node) }
-            </h1>
-        }
-        if (node.depth === 2) {
-            return <h2 className='text-2xl mt-5 mb-3'>
-                { renderChildren(state, node) }
-            </h2>
-        }
-        if (node.depth === 3) {
-            return <h3 className='text-xl mt-5 mb-3'>
-                { renderChildren(state, node) }
-            </h3>
-        }
-        if (node.depth === 4) {
-            return <h4 className='text-xl mt-5 mb-3'>
-                { renderChildren(state, node) }
-            </h4>
-        }
-        if (node.depth === 5) {
-            return <h5 className='text-xl mt-5 mb-3'>
-                { renderChildren(state, node) }
-            </h5>
-        }
-        if (node.depth === 6) {
-            return <h6 className='text-xl mt-5 mb-3'>
-                { renderChildren(state, node) }
-            </h6>
-        }
+    heading: ({ node }) => {
+        const Heading = (props: any) => (
+            node.depth == 1 ? <h1 className='text-3xl mt-5 mb-3' {...props} />
+                : node.depth == 2 ? <h2 className='text-2xl mt-5 mb-3'{...props} />
+                : node.depth == 3 ? <h3 className='text-xl mt-5 mb-3' {...props} />
+                : node.depth == 4 ? <h4 className='text-xl mt-5 mb-3' {...props} />
+                : node.depth == 5 ? <h5 className='text-xl mt-5 mb-3' {...props} />
+                : <h6 className='text-2xl mt-5 mb-3' {...props} />
+        )
+        return <Heading>
+            { renderChildren(node) }
+        </Heading>
     },
 
     image: ({ node }) => (
@@ -138,23 +116,23 @@ const components: {
         </Math>
     ),
 
-    link: ({ state, node }) => (
+    link: ({ node }) => (
         <ColoredLink
             href={sanitizeUri(node?.url)}
             title={node.title || undefined}>
-            { renderChildren(state, node) }
+            { renderChildren(node) }
         </ColoredLink>
     ),
 
-    list: ({ state, node }) => (
+    list: ({ node }) => (
         node.ordered
-            ? <ol className='my-6 list-outside pl-4 list-decimal'>{ renderChildren(state, node) }</ol>
-            : <ul className='my-6 list-outside pl-4 list-disc'>{ renderChildren(state, node) }</ul>
+            ? <ol className='my-6 list-outside pl-4 list-decimal'>{ renderChildren(node) }</ol>
+            : <ul className='my-6 list-outside pl-4 list-disc'>{ renderChildren(node) }</ul>
     ),
 
-    listItem: ({ state, node }) => (
+    listItem: ({ node }) => (
         <li className='ml-6'>
-            { renderChildren(state, node) }
+            { renderChildren(node) }
         </li>
     ),
 
@@ -164,15 +142,15 @@ const components: {
         </Math>
     ),
 
-    paragraph: ({ state, node }) => (
+    paragraph: ({ node }) => (
         <p className='my-6'>
-            { renderChildren(state, node) }
+            { renderChildren(node) }
         </p>
     ),
 
-    strong: ({ state, node }) => (
-        <strong className='text-red-400'>
-            { renderChildren(state, node) }
+    strong: ({ node }) => (
+        <strong>
+            { renderChildren(node) }
         </strong>
     ),
 
@@ -182,50 +160,16 @@ const components: {
         <hr className='flex mx-auto w-20' />
     ),
 
-    alert: ({ state, node }) => {
-        const { icon, title } = alertStyles[node.kind]
-
-        return <div className='px-5 py-3 my-10 border-l-4 border-orange-600 relative'>
-            <div className='font-bold text-xl text-orange-600 my-0'>
-                <MaterialIcon name={icon} />
-                &nbsp;
-                {title}
-            </div>
-            { renderChildren(state, node) }
-        </div>
-    },
+    alert: ({ node }) => (
+        <Alert kind={node.kind}>
+            { renderChildren(node) }
+        </Alert>
+    ),
 }
 
-const alertStyles: Record<AlertKind, { icon: string, title: string }> = {
-    'note': {
-        icon: 'error',
-        title: 'Note'
-    },
-    'tip': {
-        icon: 'lightbulb',
-        title: 'Tip'
-    },
-    'important': {
-        icon: 'warning',
-        title: 'Important'
-    },
-    'warning': {
-        icon: 'warning',
-        title: 'Warning'
-    },
-    'caution': {
-        icon: 'error',
-        title: 'Caution'
-    }
-}
-
-const Node: React.FC<{
-    state: CompilerState
-    node: mdast.Node
-}> = ({ state, node }) => {
+const Node: React.FC<{ node: mdast.Node }> = ({ node }) => {
     if (node.type in components) {
         return components[node.type as NodeType]({
-            state,
             node: node as never,
         })
     }
@@ -234,22 +178,17 @@ const Node: React.FC<{
     </span>
 }
 
-const renderChildren = (state: CompilerState, { children }: mdast.Parent) => {
+const renderChildren = ({ children }: mdast.Parent) => {
     return <> {
-        children.map((child, i) => <Node state={state} node={child} key={i.toString()} />)
+        children.map((child, i) => <Node node={child} key={i.toString()} />)
     } </>
-}
-
-type CompilerState = {
-    dummy: ''
 }
 
 // ---
 
 const Footnotes: React.FC<{
-    state: CompilerState
     footnotes: mdast.FootnoteDefinition[]
-}> = ({ state, footnotes }) => (
+}> = ({ footnotes }) => (
     <section>
         <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
         <ol className='list-outside pl-4 list-decimal'>
@@ -258,7 +197,7 @@ const Footnotes: React.FC<{
                     key={node.identifier}
                     id={`footnote-${node.identifier}`}
                     className='ml-6' >
-                    { renderChildren(state, node) }
+                    { renderChildren(node) }
                 </li>
             }) }
         </ol>
@@ -272,16 +211,13 @@ export type Props = {
 }
 
 const Markdown: React.FC<Props> = async ({ content }) => {
-    const state: CompilerState = {
-        dummy: ''
-    }
-    const body = renderChildren(state, content as mdast.Root)
+    const body = renderChildren(content)
 
     return (
         <article>
             {body}
             { content.footnotes.length > 0
-                ? <Footnotes state={state} footnotes={content.footnotes} />
+                ? <Footnotes footnotes={content.footnotes} />
                 : null }
         </article>
     )
