@@ -6,19 +6,13 @@ My blog for technical topics.
 
 ## Requirements
 
-* Node.js (10.0 or later)
+* Node.js (24 or higher)
+* `yarn`
 * Inspiration for writing
 
 ## Development
 
-```shell-session
-$ npm install
-$ npm run dev
-```
-
-## Deployment
-
-```shell-session
-$ npm run build
-$ /path/to/deploy ./out/ $DEST
+```sh
+$ yarn
+$ yarn dev
 ```
