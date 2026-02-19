@@ -7,6 +7,7 @@
 - [x] React を RC 版から正式リリース版へ更新 — react@19.2.4（安定版）に更新済み
 - [x] `@types/react`, `@types/react-dom` を v19 に更新 — @types/react@19.2.14, @types/react-dom@19.2.3 に更新済み
 - [x] `eslint-config-next` を Next.js 16 に合わせて更新 — eslint-config-next@16.1.6 に更新済み
+- [x] コードブロックタイトルの文字色クラスを `text-orange-5` から `text-orange-50` に修正。
 
 ## 優先度：高
 
@@ -15,8 +16,6 @@
 - [ ] Link の非推奨 `as` prop を `href` に置き換え — `src/components/PostList.tsx`, `src/components/ColoredLink.tsx`
   - `PostList.tsx:17-18`: `href="/[id]" as={...}` → `href={`/${post.id}`}` に変更
   - `ColoredLink.tsx`: `as` prop の定義も併せて削除する
-- [ ] コードブロックタイトルの文字色クラスが typo — `src/components/Code.tsx:48`
-  - `text-orange-5` は Tailwind に存在しないクラス。`text-orange-50` の誤りと思われる
 
 ## 優先度：中
 
