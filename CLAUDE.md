@@ -12,6 +12,7 @@ Personal technical blog ("missing documentation for life") by @ubnt-intrepid. A 
 pnpm install         # Install dependencies
 pnpm dev             # Dev server with Turbopack (localhost:3000)
 pnpm build           # Production build (static export to ./out/)
+pnpm new-post <slug> [-t <title>] [--mdx]  # Create a new blog post
 ```
 
 No test framework is configured.
