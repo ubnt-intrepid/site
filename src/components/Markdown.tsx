@@ -27,6 +27,9 @@ interface NodeTypeMap {
     math: MathDirective
     paragraph: mdast.Paragraph
     strong: mdast.Strong
+    table: mdast.Table
+    tableRow: mdast.TableRow
+    tableCell: mdast.TableCell
     text: mdast.Text
     thematicBreak: mdast.ThematicBreak
     // custom directives
@@ -152,6 +155,54 @@ const components: {
         <strong>
             { renderChildren(node) }
         </strong>
+    ),
+
+    table: ({ node }) => {
+        const [headRow, ...bodyRows] = node.children
+        return (
+            <div className="my-6 overflow-x-auto">
+                <table className="border-collapse w-full">
+                    {headRow && (
+                        <thead>
+                            <tr>
+                                {headRow.children.map((cell, i) => (
+                                    <th key={i}
+                                        className="border border-gray-300 px-4 py-2 bg-gray-100 font-semibold"
+                                        style={node.align?.[i] ? { textAlign: node.align[i] } : undefined}>
+                                        { renderChildren(cell) }
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                    )}
+                    {bodyRows.length > 0 && (
+                        <tbody>
+                            {bodyRows.map((row, ri) => (
+                                <tr key={ri} className={ri % 2 === 1 ? 'bg-gray-50' : undefined}>
+                                    {row.children.map((cell, ci) => (
+                                        <td key={ci}
+                                            className="border border-gray-300 px-4 py-2"
+                                            style={node.align?.[ci] ? { textAlign: node.align[ci] } : undefined}>
+                                            { renderChildren(cell) }
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    )}
+                </table>
+            </div>
+        )
+    },
+
+    tableRow: ({ node }) => (
+        <tr>{ renderChildren(node) }</tr>
+    ),
+
+    tableCell: ({ node }) => (
+        <td className="border border-gray-300 px-4 py-2">
+            { renderChildren(node) }
+        </td>
     ),
 
     text: ({ node }) => node.value,
