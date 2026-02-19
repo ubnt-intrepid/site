@@ -9,13 +9,12 @@ Personal technical blog ("missing documentation for life") by @ubnt-intrepid. A 
 ## Commands
 
 ```bash
-npm install          # Install dependencies
-npm run dev          # Dev server with Turbopack (localhost:3000)
-npm run build        # Production build (static export to ./out/)
-npm run lint         # ESLint (next lint)
+pnpm install         # Install dependencies
+pnpm dev             # Dev server with Turbopack (localhost:3000)
+pnpm build           # Production build (static export to ./out/)
 ```
 
-No test framework is configured. README mentions `yarn` but the project uses `npm` (package-lock.json).
+No test framework is configured.
 
 ## Architecture
 

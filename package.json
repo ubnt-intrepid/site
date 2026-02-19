@@ -51,5 +51,11 @@
   "overrides": {
     "react": "$react",
     "react-dom": "$react-dom"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }

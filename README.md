@@ -7,12 +7,12 @@ My blog for technical topics.
 ## Requirements
 
 * Node.js (24 or higher)
-* `yarn`
+* `pnpm`
 * Inspiration for writing
 
 ## Development
 
 ```sh
-$ yarn
-$ yarn dev
+$ pnpm install
+$ pnpm dev
 ```
