@@ -7,7 +7,7 @@ const ColoredLink: React.FC<{
     target?: HTMLAttributeAnchorTarget
     children?: React.ReactNode
 }> = (props) => (
-    <Link {...props} className='no-underline text-orange-600 hover:underline' />
+    <Link {...props} className='no-underline text-accent hover:underline' />
 )
 
 export default ColoredLink

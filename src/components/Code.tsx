@@ -45,7 +45,7 @@ const Code: React.FC<{
     return <div className='my-6'>
         { title ? <span className='inline-block px-2 py-1 -mb-px rounded-t-sm
             text-sm font-mono font-bold
-            bg-orange-600 text-orange-50'>{title}</span> : null }
+            bg-accent text-white'>{title}</span> : null }
         {codeBlock}
     </div>
 }

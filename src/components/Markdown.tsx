@@ -41,7 +41,7 @@ const components: {
     [key in NodeType]: React.FC<{ node: NodeTypeMap[key] }>
 } = {
     blockquote: ({ node }) => (
-        <blockquote className='px-5 py-0.5 mx-6 my-10 border-l-4 border-orange-800 bg-orange-50'>
+        <blockquote className='px-5 py-0.5 mx-6 my-10 border-l-4 border-accent-dark bg-accent-light'>
             { renderChildren(node) }
         </blockquote>
     ),

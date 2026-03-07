@@ -19,7 +19,7 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPages }) => {
       {hasPrev ? (
         <Link
           href={getPageHref(currentPage - 1)}
-          className="px-3 py-2 rounded text-orange-600 hover:bg-orange-50"
+          className="px-3 py-2 rounded text-accent hover:bg-accent-light"
         >
           <NavigateBefore /> Prev
         </Link>
@@ -30,7 +30,7 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPages }) => {
       {hasNext ? (
         <Link
           href={getPageHref(currentPage + 1)}
-          className="px-3 py-2 rounded text-orange-600 hover:bg-orange-50"
+          className="px-3 py-2 rounded text-accent hover:bg-accent-light"
         >
           Next <NavigateNext />
         </Link>

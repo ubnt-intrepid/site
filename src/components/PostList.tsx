@@ -24,7 +24,7 @@ const PostCard = ({ post }: { post: Post }) => {
                     <span className='inline-flex items-center gap-1.5'>
                         {post.categories.map(category => (
                             <ColoredLink key={category} href={`/categories/${category}`}>
-                                <span className='inline-block px-2 py-0.5 text-xs rounded-full bg-orange-50 text-orange-700 border border-orange-200'>
+                                <span className='inline-block px-2 py-0.5 text-xs rounded-full bg-accent-light text-accent border border-accent-border'>
                                     {category}
                                 </span>
                             </ColoredLink>

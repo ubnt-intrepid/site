@@ -9,7 +9,7 @@ const Header: React.FC = () => {
     const pathname = usePathname()
     const isRoot = pathname === '/'
     return (
-        <header className='flex items-center justify-between py-2 bg-orange-800 text-orange-200'>
+        <header className='flex items-center justify-between py-2 bg-header-bg text-header-text'>
             <div className='px-2'>
                 {isRoot ? null : <Link href="/">{siteTitle}</Link>}
             </div>

@@ -30,8 +30,8 @@ const Alert: React.FC<{
 }> = ({ kind, children }) => {
     const { icon, title } = alertStyles[kind]
 
-    return <div className='px-5 py-3 my-10 border-l-4 border-orange-600 relative'>
-        <div className='font-bold text-xl text-orange-600 my-0'>
+    return <div className='px-5 py-3 my-10 border-l-4 border-accent relative'>
+        <div className='font-bold text-xl text-accent my-0'>
             <MaterialIcon name={icon} />
             &nbsp;
             {title}

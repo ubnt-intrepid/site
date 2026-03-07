@@ -10,7 +10,7 @@ export type Props = {
 
 const Headline: React.FC<Props> = ({ title, href, subtitle, children }) => {
     return (
-            <header className='text-center py-8 bg-orange-400 text-orange-50'>
+            <header className='text-center py-8 bg-headline-bg text-headline-text'>
                 <h1 className='text-3xl'>
                     { href ? <Link href={href}>{title}</Link> : title }
                 </h1>
