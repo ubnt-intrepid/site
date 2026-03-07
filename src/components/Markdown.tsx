@@ -41,7 +41,7 @@ const components: {
     [key in NodeType]: React.FC<{ node: NodeTypeMap[key] }>
 } = {
     blockquote: ({ node }) => (
-        <blockquote className='px-5 py-0.5 mx-6 my-10 border-l-4 border-accent-dark bg-accent-light'>
+        <blockquote className='px-5 py-0.5 mx-0 my-6 border-l-4 border-accent-dark bg-accent-light rounded-r'>
             { renderChildren(node) }
         </blockquote>
     ),
@@ -86,12 +86,12 @@ const components: {
 
     heading: ({ node }) => {
         const Heading = (props: any) => (
-            node.depth == 1 ? <h1 className='text-3xl mt-5 mb-3' {...props} />
-                : node.depth == 2 ? <h2 className='text-2xl mt-5 mb-3'{...props} />
-                : node.depth == 3 ? <h3 className='text-xl mt-5 mb-3' {...props} />
-                : node.depth == 4 ? <h4 className='text-xl mt-5 mb-3' {...props} />
-                : node.depth == 5 ? <h5 className='text-xl mt-5 mb-3' {...props} />
-                : <h6 className='text-base mt-5 mb-3' {...props} />
+            node.depth == 1 ? <h1 className='text-2xl font-bold mt-10 mb-4 leading-tight tracking-tight' {...props} />
+                : node.depth == 2 ? <h2 className='text-xl font-bold mt-10 mb-4 leading-tight tracking-tight' {...props} />
+                : node.depth == 3 ? <h3 className='text-lg font-semibold mt-8 mb-3 leading-snug' {...props} />
+                : node.depth == 4 ? <h4 className='text-base font-semibold mt-6 mb-2 leading-snug' {...props} />
+                : node.depth == 5 ? <h5 className='text-sm font-semibold mt-4 mb-2 uppercase tracking-wide' {...props} />
+                : <h6 className='text-sm font-medium mt-4 mb-2 text-gray-500' {...props} />
         )
         return <Heading>
             { renderChildren(node) }
@@ -108,7 +108,7 @@ const components: {
     ),
 
     inlineCode: ({ node }) => (
-        <code>
+        <code className='px-1.5 py-0.5 rounded bg-accent-light text-sm font-mono'>
             {node.value}
         </code>
     ),
@@ -129,12 +129,12 @@ const components: {
 
     list: ({ node }) => (
         node.ordered
-            ? <ol className='my-6 list-outside pl-4 list-decimal'>{ renderChildren(node) }</ol>
-            : <ul className='my-6 list-outside pl-4 list-disc'>{ renderChildren(node) }</ul>
+            ? <ol className='my-4 list-outside pl-4 list-decimal'>{ renderChildren(node) }</ol>
+            : <ul className='my-4 list-outside pl-4 list-disc'>{ renderChildren(node) }</ul>
     ),
 
     listItem: ({ node }) => (
-        <li className='ml-6'>
+        <li className='ml-6 [&>p]:my-0.5'>
             { renderChildren(node) }
         </li>
     ),
@@ -146,7 +146,7 @@ const components: {
     ),
 
     paragraph: ({ node }) => (
-        <p className='my-6'>
+        <p className='my-4'>
             { renderChildren(node) }
         </p>
     ),
@@ -241,7 +241,7 @@ const Footnotes: React.FC<{
     footnotes: mdast.FootnoteDefinition[]
 }> = ({ footnotes }) => (
     <section>
-        <h2 className='text-2xl mt-5 mb-3'>Footnotes</h2>
+        <h2 className='text-xl font-bold mt-10 mb-4 leading-tight tracking-tight'>Footnotes</h2>
         <ol className='list-outside pl-4 list-decimal'>
             { footnotes.map(node => {
                 return <li

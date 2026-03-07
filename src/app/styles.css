@@ -53,6 +53,20 @@
     --color-footer-text: #57534e;     /* stone-600: 柔らかい文字色 */
 }
 
+/* === ベースタイポグラフィ === */
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+    overflow-wrap: break-word;
+}
+
 .material-icons {
     font-size: 18px !important;
     vertical-align: middle !important;

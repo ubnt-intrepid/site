@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import React, { ReactNode } from 'react'
 import Header from '@/components/Header'
 import { authorName, authorUrl, baseUrl, siteDescription, siteTitle } from '@/config'
+import { ibmPlexSans, notoSansJP } from './fonts'
 
 import './styles.css'
 
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 
 const RootLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
-        <html lang="ja">
+        <html lang="ja" className={`${ibmPlexSans.variable} ${notoSansJP.variable}`}>
             <head>
                 <link
                     rel="stylesheet"
@@ -34,7 +35,7 @@ const RootLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
                     integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T"
                     crossOrigin="anonymous" />
             </head>
-            <body className='flex flex-col min-h-screen bg-page-bg text-body-text'>
+            <body className='flex flex-col min-h-screen bg-page-bg text-body-text font-sans'>
                 <Header />
                 <main className='flex-grow'>
                     {children}
