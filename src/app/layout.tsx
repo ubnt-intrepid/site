@@ -41,7 +41,7 @@ const RootLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
                 </main>
                 <footer className='bg-orange-100 text-orange-800'>
                     <p className='text-center text-xs p-2'>
-                        &copy; 2019-2024 <strong><a href={authorUrl}>{authorName}</a></strong>
+                        &copy; 2019-{new Date().getFullYear()} <strong><a href={authorUrl}>{authorName}</a></strong>
                     </p>
                 </footer>
             </body>
