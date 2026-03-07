@@ -78,8 +78,8 @@ const components: {
 
     footnoteReference: ({ node }) => (
         <sup>
-            <ColoredLink href={`#${node.identifier}`}>
-                {node.label})
+            <ColoredLink href={`#footnote-${node.identifier}`}>
+                [{node.label}]
             </ColoredLink>
         </sup>
     ),
