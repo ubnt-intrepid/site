@@ -91,7 +91,7 @@ const components: {
                 : node.depth == 3 ? <h3 className='text-xl mt-5 mb-3' {...props} />
                 : node.depth == 4 ? <h4 className='text-xl mt-5 mb-3' {...props} />
                 : node.depth == 5 ? <h5 className='text-xl mt-5 mb-3' {...props} />
-                : <h6 className='text-2xl mt-5 mb-3' {...props} />
+                : <h6 className='text-base mt-5 mb-3' {...props} />
         )
         return <Heading>
             { renderChildren(node) }
