@@ -14,8 +14,7 @@ const PostCard = ({ post }: { post: Post }) => {
             <Calendar /> <FormattedDate date={post.published} />
             &nbsp; - &nbsp;
             <ColoredLink
-                href="/[id]"
-                as={`/${post.id}`}>
+                href={`/${post.id}`}>
                 {post.title}
             </ColoredLink>
         </span>

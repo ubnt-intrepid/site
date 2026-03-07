@@ -3,7 +3,6 @@ import { HTMLAttributeAnchorTarget } from 'react'
 
 const ColoredLink: React.FC<{
     href: string
-    as?: string
     title?: string
     target?: HTMLAttributeAnchorTarget
     children?: React.ReactNode
