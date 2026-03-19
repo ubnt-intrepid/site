@@ -85,6 +85,7 @@ const components: {
     ),
 
     heading: ({ node }) => {
+        const id = (node.data as { id?: string })?.id
         const Heading = (props: any) => (
             node.depth == 1 ? <h1 className='text-2xl font-bold mt-10 mb-4 leading-tight tracking-tight' {...props} />
                 : node.depth == 2 ? <h2 className='text-xl font-bold mt-10 mb-4 leading-tight tracking-tight' {...props} />
@@ -93,7 +94,7 @@ const components: {
                 : node.depth == 5 ? <h5 className='text-sm font-semibold mt-4 mb-2 uppercase tracking-wide' {...props} />
                 : <h6 className='text-sm font-medium mt-4 mb-2 text-gray-500' {...props} />
         )
-        return <Heading>
+        return <Heading id={id}>
             { renderChildren(node) }
         </Heading>
     },

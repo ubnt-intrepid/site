@@ -35,6 +35,40 @@ export type AlertKind = (typeof alertKindArray)[number]
 
 // ---
 
+type HeadingData = { id: string; text: string }
+
+function slugify(text: string): string {
+    return text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+}
+
+function nodeToText(node: mdast.Node): string {
+    if ('value' in node) return (node as { value: string }).value
+    if ('children' in node) return (node as mdast.Parent).children.map(nodeToText).join('')
+    return ''
+}
+
+export type HeadingItem = {
+    depth: number
+    text: string
+    id: string
+}
+
+export function extractHeadings(content: Content): HeadingItem[] {
+    return content.children
+        .filter((node): node is mdast.Heading => node.type === 'heading')
+        .map(node => {
+            const { id, text } = node.data as HeadingData
+            return { depth: node.depth, text, id }
+        })
+}
+
+// ---
+
 export type Options = {
     useMDX?: boolean
 }
@@ -172,7 +206,14 @@ export const parseMarkdown = (content: string, filePath: string, options?: Optio
                 type: 'footnoteReference',
                 identifier,
                 label: `${index + 1}`,
-            } satisfies FootnoteReference]    
+            } satisfies FootnoteReference]
+        }
+
+        if (node.type === 'heading') {
+            const heading = node as mdast.Heading
+            const text = heading.children.map(nodeToText).join('')
+            const data: HeadingData = { id: slugify(text), text }
+            return [{ ...heading, data }]
         }
 
         return [node]
